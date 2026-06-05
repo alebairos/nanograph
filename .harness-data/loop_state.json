@@ -1,22 +1,21 @@
 {
-  "goal_id": "G14",
+  "goal_id": "G15",
   "current_issue": 35,
-  "milestone": "G14",
-  "product_proof_step": "G14-blind-falsification",
+  "milestone": "G15",
+  "product_proof_step": "G15-operational-error-matrix",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/LIVE-AGENT-EVAL.md",
+    "spec_path": "docs/specs/MICROOP-FLOOR.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-001-product-verdict.md",
     "eval_logs": [
-      ".harness-data/agent-eval/live-agent/run-g14-stacked.jsonl",
-      ".harness-data/agent-eval/live-agent/run-g14-auditor-only.jsonl"
+      ".harness-data/agent-eval/operational-errors/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G14 closed: retry-reduction trigger NOT MET; both arms 1 round/1 exec blind. Retry positioning dropped. No committed next goal; parked list in NANO-GOALS."
+    "note": "G15 done: deterministic operational-error matrix; static gate rejects 3/4 bad classes pre-execution, 1 documented blind spot (correct value wrong position). Claim reframed to pre-execution rejection. Gated in check-all-proofs."
   },
   "history": [
     {
@@ -72,7 +71,13 @@
       "issue": 35,
       "milestone": "G14",
       "closed": "2026-06-05",
-      "note": "Blind falsification; skill leak removed, author discovers offset; both arms 1r/1exec; ADR-001 retry-reduction trigger NOT MET; positioning dropped, question closed"
+      "note": "Blind falsification; skill leak removed but answer still in ~18 repo files and no tool-call trace, so inconclusive; retry-count framing dropped as wrong claim"
+    },
+    {
+      "issue": 35,
+      "milestone": "G15",
+      "closed": "2026-06-05",
+      "note": "Operational-error matrix; deterministic; static gate rejects value_mismatch/not_rodata/bounds pre-execution (0 exec), misses correct-value-wrong-position (blind spot); gated in check-all-proofs; claim = pre-execution rejection"
     }
   ]
 }

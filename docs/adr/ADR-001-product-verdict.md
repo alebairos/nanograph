@@ -106,7 +106,20 @@ Logs: `.harness-data/agent-eval/live-agent/run-g14-{stacked,auditor-only}.jsonl`
 
 This is a falsification run, not a demo, so the null result is the answer and the question is closed. Forcing a wrong round (weaker model, or a task tuned until the author fails) would manufacture the result rather than measure it. The retry-reduction positioning is dropped, the same way the speed positioning was dropped. The product claim stands on deterministic integrity (1000/1000 fuzz) and execution-grounded conformance (G9), neither of which needs a live retry count.
 
-Caveat. The harness logs the author's emitted patch, not its internal tool calls, so this run does not independently prove the author discovered the offset versus inferring it. The verdict does not depend on that distinction. Zero errors means the gate saved nothing either way.
+Caveats on G14. The harness logs the author's emitted patch, not its internal tool calls, so this run does not independently prove the author discovered the offset versus inferring it. Worse, the answer (`152`, `32:33`) is written in roughly eighteen repo files the author could read with `--workspace $ROOT`, so the run was not truly blind. The blinding was incomplete and the live retry question is best treated as inconclusive, not cleanly settled. Either way the gate had nothing to cut because there were no errors, and the retry-count framing is the wrong claim to chase.
+
+## The claim that survives, measured (operational-error matrix, 2026-06-05)
+
+Rather than chase a model-dependent retry count, the right test is deterministic. `scripts/agent-eval/operational-error-matrix.sh` enumerates every operational error class for a `rodata_byte_write` and records where each is caught, static gate versus auditor-only.
+
+| Error class | Static gate | Auditor-only | Execution saved |
+| --- | --- | --- | --- |
+| wrong value | reject `value_mismatch` (0 exec) | reject `stdout` (1 exec) | yes |
+| wrong target, instruction byte | reject `not_rodata` (0 exec) | reject `behavior` (1 exec) | yes |
+| out of bounds | reject `bounds` (0 exec) | `ngb-patch` reject (0 exec) | no |
+| correct value, wrong position | accept (blind spot) | reject `stdout` (1 exec) | no |
+
+Three of four bad classes are rejected before any ELF runs. One is a documented blind spot the value claim cannot see. This is the honest, gated, model-free claim. The product value is **pre-execution rejection of operational errors**, not fewer agent retries. Detail in [`../specs/MICROOP-FLOOR.md`](../specs/MICROOP-FLOOR.md). Gated in `check-all-proofs.sh`.
 
 ## Kill triggers
 

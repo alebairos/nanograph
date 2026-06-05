@@ -14,7 +14,8 @@ What the program has settled versus what still needs a goal.
 | Static micro-op rejects structural mistakes | **Proven** | G10 `not_rodata`, G12 `value_mismatch`, CI-gated |
 | Miscompilation caught by conformance floor | **Proven** | G9 `add_two_patched` negative (exit 3 vs spec 2) |
 | Live Cursor CLI author completes the loop | **Proven** | G13 first run, 1 round, `composer-2.5` |
-| Stacked gates reduce live-agent retries | **Disproven (this task/model)** | G14 blind A/B: both arms 1 round, 1 exec; zero author errors; trigger NOT MET |
+| Static gate rejects operational errors pre-execution | **Proven** | Operational-error matrix: 3/4 bad classes rejected at 0 executions; 1 documented blind spot; gated in `check-all-proofs.sh` |
+| Stacked gates reduce live-agent retries | **Not the claim** | G14 blind A/B was inconclusive (answer leaked across ~18 repo files, no tool-call trace); reframed to pre-execution rejection above |
 | Live eval generalizes beyond print_42 | **Parked** | Single program only; no reason to expand until a workload needs it |
 | Human-auditable verdict trail | **Parked** | `probe_bundle` is text concatenation; revisit if an external auditor needs it |
 
@@ -42,7 +43,8 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G11 | Computed oracle for the two-agent loop (`yield=stdout`) | #33 | Done |
 | G12 | Value-bound micro-op (`--expect-new` derived digit) | #34 | Done |
 | G13 | Live-agent harness + first run (Cursor CLI author) | #35 | Done |
-| G14 | Blind live falsification of retry-reduction claim | #35 | Done (trigger NOT MET) |
+| G14 | Blind live falsification of retry-reduction claim | #35 | Done (inconclusive; claim reframed) |
+| G15 | Operational-error matrix (deterministic gate coverage) | #35 | Done (3/4 pre-exec, 1 blind spot) |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -92,4 +94,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #32 | G10 micro-op floor |
 | #33 | G11 computed oracle |
 | #34 | G12 value-bound micro-op |
-| #35 | G13 live-agent harness + G14 blind falsification |
+| #35 | G13 live harness, G14 blind falsification, G15 operational-error matrix |
