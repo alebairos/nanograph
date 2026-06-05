@@ -7,7 +7,7 @@ Specialist repo for the **agent-first binary graph** (`.ngb`) and post-hoc **Nan
 1. [`nanograph.md`](nanograph.md) — concept thread (v3 stance)
 2. [`docs/CANONICAL.md`](docs/CANONICAL.md) — doc ownership
 3. [`docs/specs/AGENT-HARNESS.md`](docs/specs/AGENT-HARNESS.md) — execution loop
-4. [`docs/specs/MILESTONES.md`](docs/specs/MILESTONES.md) — **M0–M4**
+4. [`docs/specs/MILESTONES.md`](docs/specs/MILESTONES.md) — **M0–M7** (done); [`PRODUCT-PROOF.md`](docs/specs/PRODUCT-PROOF.md) — **P01–P20** (active)
 5. [`docs/specs/ISSUE-LABELS.md`](docs/specs/ISSUE-LABELS.md) — GitHub labels
 6. [`docs/STORY-SO-FAR.md`](docs/STORY-SO-FAR.md) — lab notebook (from git; run `update-story.sh`)
 

@@ -1,24 +1,32 @@
 {
-  "goal_id": "P01",
-  "current_issue": 9,
+  "goal_id": "P20",
+  "current_issue": 28,
   "milestone": "product-proof",
-  "product_proof_step": "P01",
-  "phase": "idle",
-  "iteration": 0,
+  "product_proof_step": "P20",
+  "phase": "complete",
+  "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/PRODUCT-PROOF.md",
-    "queue_path": ".harness-data/product_proof_queue.json"
+    "queue_path": ".harness-data/product_proof_queue.json",
+    "verdict_adr": "docs/adr/ADR-001-product-verdict.md"
   },
   "next_action": {
-    "type": "implement",
-    "note": "Start P01 docs/harness sync; loop one issue at a time through P20"
+    "type": "eval",
+    "note": "Run Task A/B agent evals; fill AGENT-EVAL-METRICS.md"
   },
   "history": [
     {
       "issue": 8,
       "milestone": "M7",
       "closed": "2026-06-05",
-      "note": "G7 print_42 complete; technical goals done"
+      "note": "G7 print_42 complete"
+    },
+    {
+      "issue": 28,
+      "milestone": "product-proof",
+      "product_proof_step": "P20",
+      "closed": "2026-06-05",
+      "note": "ADR-001 Continue; proofs green P01-P19"
     }
   ]
 }

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+echo "== all proofs =="
+
+make -C tools -s all
+
+./scripts/check-canonical-drift.sh
+./scripts/check-hello-proof.sh
+./scripts/check-add-two-proof.sh
+./scripts/check-add-two-patched-proof.sh
+./scripts/check-probe-diff.sh
+./scripts/check-probe-disassemble.sh
+./scripts/check-print-42-proof.sh
+./scripts/check-ngb-patch-cli.sh
+./scripts/check-ngb-parse-json.sh
+./scripts/check-probe-trace.sh
+./scripts/check-print-42-patched-proof.sh
+./scripts/check-add-two-chain-proof.sh
+./scripts/check-patch-reject.sh
+chmod +x scripts/agent-eval/run-task.sh 2>/dev/null || true
+./scripts/agent-eval/run-task.sh --dry-run task-a
+
+echo "ALL-PROOFS OK"

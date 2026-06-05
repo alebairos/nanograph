@@ -13,17 +13,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build tools
         run: make -C tools
-      - name: Hello proof P1-P4
-        run: ./scripts/check-hello-proof.sh
-      - name: add_two proof P1-P4
-        run: ./scripts/check-add-two-proof.sh
-      - name: add_two patched proof P1-P4
-        run: ./scripts/check-add-two-patched-proof.sh
-      - name: probe diff
-        run: ./scripts/check-probe-diff.sh
-      - name: probe disassemble
-        run: ./scripts/check-probe-disassemble.sh
-      - name: print_42 proof P1-P4
-        run: ./scripts/check-print-42-proof.sh
-      - name: Canonical drift
-        run: ./scripts/check-canonical-drift.sh
+      - name: All proofs
+        run: ./scripts/check-all-proofs.sh

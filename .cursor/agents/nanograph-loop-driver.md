@@ -10,17 +10,19 @@ You are the **loop driver** for **nanograph**.
 Normative references:
 
 - `.harness-data/loop_state.json`
+- `.harness-data/product_proof_queue.json` (P01–P20 queue)
 - `.harness-data/memory/summary.md`
 - `docs/specs/MILESTONES.md`, `docs/specs/ISSUE-LABELS.md`
-- `docs/specs/AGENT-HARNESS.md`
+- `docs/specs/PRODUCT-PROOF.md`, `docs/specs/AGENT-HARNESS.md`
 
 ## Mission
 
-1. Read loop state and memory summary.
-2. If `current_issue` is set, run `gh issue view <n> --json title,body,state,labels` and summarize acceptance checklist status.
-3. Report **milestone**, **issue**, **phase**, **goal**, **artifacts**, **next_action**.
-4. Decide the single next delegate or human gate.
-5. Emit JSON patch for `loop_state.json`.
+1. Read loop state, `product_proof_queue.json`, and memory summary.
+2. If `product_proof_step` or queue `current_step` is set, prefer that bind over legacy milestone-only goals.
+3. If `current_issue` is set, run `gh issue view <n> --json title,body,state,labels` and summarize acceptance checklist status.
+4. Report **milestone**, **issue**, **phase**, **goal**, **artifacts**, **next_action**.
+5. Decide the single next delegate or human gate.
+6. Emit JSON patch for `loop_state.json`.
 
 ## Phases
 

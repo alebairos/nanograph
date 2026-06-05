@@ -18,6 +18,20 @@ static int ranges_overlap(uint32_t a0, uint32_t alen, uint32_t b0, uint32_t blen
   return a0 < b1 && b0 < a1;
 }
 
+static size_t patch_log_end(const uint8_t *data, size_t len, uint32_t patch_off) {
+  size_t pos = patch_off;
+  while (pos + NGB_PATCH_HDR <= len) {
+    uint32_t dlen = u32le(data + pos + 76);
+    if (dlen == 0 || dlen % 2 != 0)
+      break;
+    size_t next = pos + NGB_PATCH_HDR + dlen;
+    if (next > len || next <= pos)
+      break;
+    pos = next;
+  }
+  return pos;
+}
+
 NgbStatus ngb_apply_patch(const uint8_t *base, size_t base_len,
                           const NgbPatchInput *patch, uint8_t **out,
                           size_t *out_len) {
@@ -64,7 +78,8 @@ NgbStatus ngb_apply_patch(const uint8_t *base, size_t base_len,
   }
 
   size_t patch_log_len = NGB_PATCH_HDR + patch->delta_len;
-  size_t total = patch_off + patch_log_len;
+  size_t append_at = patch_log_end(base, base_len, patch_off);
+  size_t total = append_at + patch_log_len;
   uint8_t *buf = malloc(total);
   if (!buf) {
     free(image);
@@ -72,11 +87,11 @@ NgbStatus ngb_apply_patch(const uint8_t *base, size_t base_len,
     return NGB_ERR_ALLOC;
   }
 
-  memcpy(buf, base, patch_off);
+  memcpy(buf, base, append_at);
   memcpy(buf + image_off, image, image_len);
   memcpy(buf + node_off, nodes, nodes_sz);
 
-  uint8_t *ph = buf + patch_off;
+  uint8_t *ph = buf + append_at;
   memset(ph, 0, NGB_PATCH_HDR);
   memcpy(ph, &patch->patch_id, 8);
   memcpy(ph + 40, base + 32, 32);
@@ -152,13 +167,8 @@ NgbStatus ngb_validate_patch_chain(const uint8_t *data, size_t len) {
   memcpy(nodes, data + node_off, nodes_sz);
 
   uint8_t expect[32];
-  size_t hash_in_len = 32 + 24 + image_len + nodes_sz;
-  uint8_t *hash_in = malloc(hash_in_len);
-  if (!hash_in) {
-    free(image);
-    free(nodes);
-    return NGB_ERR_ALLOC;
-  }
+  uint8_t *hash_in = NULL;
+  size_t hash_in_len = 0;
 
   size_t pos = patch_off;
   while (pos + NGB_PATCH_HDR <= len) {
@@ -178,11 +188,27 @@ NgbStatus ngb_validate_patch_chain(const uint8_t *data, size_t len) {
       return NGB_ERR_I6_PATCH_CHAIN;
     }
 
+    size_t prior_patch_len = pos - patch_off;
+    size_t need = 32 + 24 + image_len + nodes_sz + prior_patch_len;
+    if (!hash_in || need > hash_in_len) {
+      free(hash_in);
+      hash_in_len = need;
+      hash_in = malloc(hash_in_len);
+      if (!hash_in) {
+        free(image);
+        free(nodes);
+        return NGB_ERR_ALLOC;
+      }
+    }
+
     memcpy(hash_in, data, 32);
     memset(hash_in + 32, 0, 24);
     memcpy(hash_in + 32 + 24, image, image_len);
     memcpy(hash_in + 32 + 24 + image_len, nodes, nodes_sz);
-    ngb_sha256(hash_in, hash_in_len, expect);
+    if (prior_patch_len > 0)
+      memcpy(hash_in + 32 + 24 + image_len + nodes_sz, data + patch_off,
+             prior_patch_len);
+    ngb_sha256(hash_in, need, expect);
 
     if (memcmp(expect, ph + 40, 32) != 0) {
       free(image);

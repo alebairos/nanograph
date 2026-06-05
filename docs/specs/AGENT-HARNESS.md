@@ -43,7 +43,7 @@ One open `milestone:p*` issue at a time. P20 (#28) is the continue/pivot/kill ve
 | DC mechanism | Why omitted |
 | --- | --- |
 | `agency.sh` / BrainDB | Contract memory in git is enough |
-| Standing adversarial loop | Optional at P17+; scripts are hard gate |
+| Standing adversarial loop | Optional at P17+ via `nanograph-adversary`; scripts are hard gate |
 | Eval bundles | P12–P16 agent-eval harness |
 
 ## Default execution loop

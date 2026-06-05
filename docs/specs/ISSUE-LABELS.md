@@ -1,20 +1,21 @@
 # Issue labels
 
-Use GitHub Issues to persist work units. Milestones (`M0–M4`) stay in [`MILESTONES.md`](MILESTONES.md). Issues track execution, PR linkage, and closure.
+Use GitHub Issues to persist work units. Technical milestones **M0–M7** and product proof **P01–P20** are tracked via labels.
 
 ## Label groups
 
 | Group | Labels | Rule |
 | --- | --- | --- |
-| milestone | `milestone:m0` … `milestone:m4` | Exactly 1 when using issues |
-| type | `type:feature`, `type:bug`, `type:chore`, `type:docs`, `type:harness` | Exactly 1 required |
+| milestone | `milestone:m0` … `milestone:m7` | Technical milestone issues |
+| milestone | `milestone:p01` … `milestone:p20` | Product proof steps |
+| type | `type:feature`, `type:bug`, `type:chore`, `type:docs`, `type:harness`, `type:product-proof` | Exactly 1 required |
 | area | `area:ngb`, `area:probe`, `area:harness`, `area:docs` | Optional, max 1 |
-| meta | `meta:umbrella` | Optional; parent tracking issue |
+| meta | `meta:umbrella`, `meta:product-program` | Optional tracking |
 
 ## Query ready work
 
 ```bash
-gh issue list --search "is:open label:milestone:m1 label:type:feature" --json number,title,labels
+gh issue list --search "is:open label:milestone:p01 label:type:product-proof" --json number,title,labels
 ```
 
 ## Issue body template
@@ -28,10 +29,10 @@ gh issue list --search "is:open label:milestone:m1 label:type:feature" --json nu
 
 ## Milestone
 
-Bound milestone: M*n*
+Bound milestone: M*n* or P*n*
 
 ## Verification
 
 - [ ] ./scripts/check-canonical-drift.sh
-- [ ] (milestone-gate commands)
+- [ ] ./scripts/check-all-proofs.sh
 ```
