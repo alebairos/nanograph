@@ -1,18 +1,24 @@
 {
-  "goal_id": "#5",
-  "current_issue": 5,
-  "milestone": "M4",
+  "goal_id": "#6",
+  "current_issue": 6,
+  "milestone": "M5",
   "phase": "idle",
   "iteration": 0,
   "artifacts": {
-    "spec_path": "docs/specs/CANONICAL-ADD-TWO.md",
+    "spec_path": "docs/specs/NANO-GOALS.md",
     "nano_goals": "docs/specs/NANO-GOALS.md"
   },
   "next_action": {
     "type": "ship",
-    "note": "Refs #5 commit pushed; close issue after CI"
+    "note": "Refs #6 commit; close issue after CI"
   },
   "history": [
+    {
+      "issue": 5,
+      "milestone": "M4",
+      "closed": "2026-06-05",
+      "note": "add_two genesis P1-P4"
+    },
     {
       "issue": 4,
       "milestone": "M3",

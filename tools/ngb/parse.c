@@ -46,22 +46,20 @@ NgbStatus ngb_parse_validate(const uint8_t *data, size_t len) {
   if (patch_off > len)
     return NGB_ERR_I2_BOUNDS;
 
-  uint8_t expect[32];
-  size_t body_len = 24 + image_len + node_count * NGB_NODE_SIZE;
-  uint8_t *hash_in = malloc(32 + body_len);
-  if (!hash_in)
+  uint8_t *tmp = malloc(len);
+  if (!tmp)
     return NGB_ERR_ALLOC;
-  memcpy(hash_in, data, 32);
-  memset(hash_in + 32, 0, 24);
-  memcpy(hash_in + 32 + 24, data + image_off, image_len);
-  if (node_count > 0)
-    memcpy(hash_in + 32 + 24 + image_len, data + node_off,
-           node_count * NGB_NODE_SIZE);
-  ngb_sha256(hash_in, 32 + body_len, expect);
-  free(hash_in);
-
-  if (memcmp(expect, data + 32, 32) != 0)
+  memcpy(tmp, data, len);
+  NgbStatus st = ngb_fill_root_hash(tmp, len);
+  if (st != NGB_OK) {
+    free(tmp);
+    return st;
+  }
+  if (memcmp(tmp + 32, data + 32, 32) != 0) {
+    free(tmp);
     return NGB_ERR_ROOT_HASH;
+  }
+  free(tmp);
 
   for (uint32_t i = 0; i < node_count; i++) {
     const uint8_t *n = data + node_off + i * NGB_NODE_SIZE;
@@ -78,6 +76,12 @@ NgbStatus ngb_parse_validate(const uint8_t *data, size_t len) {
       if (nid == u64le(data + node_off + j * NGB_NODE_SIZE))
         return NGB_ERR_I5_NODE_DUP;
     }
+  }
+
+  if (patch_off < len) {
+    st = ngb_validate_patch_chain(data, len);
+    if (st != NGB_OK)
+      return st;
   }
 
   return NGB_OK;

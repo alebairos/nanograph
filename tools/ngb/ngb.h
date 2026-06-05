@@ -38,6 +38,14 @@ typedef struct {
   uint32_t length;
 } NgbNodeSpec;
 
+typedef struct {
+  uint64_t patch_id;
+  uint32_t delta_off;
+  uint32_t delta_len;
+  const uint8_t *delta;
+  uint64_t timestamp;
+} NgbPatchInput;
+
 typedef enum {
   NGB_OK = 0,
   NGB_ERR_IO,
@@ -66,6 +74,14 @@ NgbStatus ngb_pack_elf_nodes(const uint8_t *elf, size_t elf_len, uint16_t arch_i
 
 NgbStatus ngb_pack_elf(const uint8_t *elf, size_t elf_len, uint16_t arch_id,
                        uint64_t node_id, uint8_t **out, size_t *out_len);
+
+NgbStatus ngb_fill_root_hash(uint8_t *buf, size_t len);
+
+NgbStatus ngb_apply_patch(const uint8_t *base, size_t base_len,
+                          const NgbPatchInput *patch, uint8_t **out,
+                          size_t *out_len);
+
+NgbStatus ngb_validate_patch_chain(const uint8_t *data, size_t len);
 
 /* parse.c — validate invariants I1–I6 */
 NgbStatus ngb_parse_validate(const uint8_t *data, size_t len);

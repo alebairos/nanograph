@@ -17,5 +17,9 @@ jobs:
         run: ./scripts/check-hello-proof.sh
       - name: add_two proof P1-P4
         run: ./scripts/check-add-two-proof.sh
+      - name: add_two patched proof P1-P4
+        run: ./scripts/check-add-two-patched-proof.sh
+      - name: probe diff
+        run: ./scripts/check-probe-diff.sh
       - name: Canonical drift
         run: ./scripts/check-canonical-drift.sh

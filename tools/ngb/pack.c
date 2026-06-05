@@ -71,21 +71,13 @@ NgbStatus ngb_pack_elf_nodes(const uint8_t *elf, size_t elf_len, uint16_t arch_i
   memcpy(buf, hdr, sizeof(hdr));
   memcpy(buf + image_off, elf, elf_len);
   memcpy(buf + node_off, nodes, node_count * sizeof(NgbNode));
-
-  size_t hash_len = 32 + 24 + elf_len + node_count * sizeof(NgbNode);
-  uint8_t *hash_in = malloc(hash_len);
-  if (!hash_in) {
-    free(buf);
-    free(nodes);
-    return NGB_ERR_ALLOC;
-  }
-  memcpy(hash_in, buf, 32);
-  memcpy(hash_in + 32, buf + 40, 24);
-  memcpy(hash_in + 32 + 24, elf, elf_len);
-  memcpy(hash_in + 32 + 24 + elf_len, nodes, node_count * sizeof(NgbNode));
-  ngb_sha256(hash_in, hash_len, buf + 32);
-  free(hash_in);
   free(nodes);
+
+  st = ngb_fill_root_hash(buf, total);
+  if (st != NGB_OK) {
+    free(buf);
+    return st;
+  }
 
   *out = buf;
   *out_len = total;
