@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
       b = strtol(val, NULL, 10);
       have_b = 1;
     } else if (strcmp(key, "yield") == 0) {
-      if (strcmp(val, "exit") != 0) {
-        fprintf(stderr, "conf-eval: unsupported yield %s (v0: exit)\n", val);
+      if (strcmp(val, "exit") != 0 && strcmp(val, "stdout") != 0) {
+        fprintf(stderr, "conf-eval: unsupported yield %s (v0: exit, stdout)\n", val);
         fclose(f);
         return 3;
       }

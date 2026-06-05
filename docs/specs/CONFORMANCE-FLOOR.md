@@ -17,9 +17,9 @@ Compute-not-lookup. The expected consequence is **computed from the spec** by an
 | `op` | `add`, `sub`, `mul` | binary integer operation |
 | `a` | integer | left operand |
 | `b` | integer | right operand |
-| `yield` | `exit` | how the result manifests (v0: process exit code) |
+| `yield` | `exit`, `stdout` | how the consumer compares the result |
 
-`conf-eval` output is the computed integer on stdout, exit 0. Malformed spec exits non-zero with no integer.
+`conf-eval` output is the computed integer rendered as `%ld\n` on stdout, exit 0. Malformed spec exits non-zero with no integer. The `yield` field is consumer-side. For `exit` the harness compares the integer to the process exit code. For `stdout` it compares the rendered string to captured stdout bytes. The two-agent loop (G11) derives its want-stdout from `add(21,22) yield=stdout`, so `43` is computed from operands, not the literal it once hardcoded.
 
 Verdict line: `verdict=accept expected=N observed=N` or `verdict=reject expected=N observed=M detail=<one line>`.
 

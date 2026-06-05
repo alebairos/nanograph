@@ -1,19 +1,19 @@
 {
-  "goal_id": "G10",
-  "current_issue": 32,
-  "milestone": "G10",
-  "product_proof_step": "G10-microop-floor",
+  "goal_id": "G11",
+  "current_issue": 33,
+  "milestone": "G11",
+  "product_proof_step": "G11-computed-oracle",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/MICROOP-FLOOR.md",
+    "spec_path": "docs/specs/CONFORMANCE-FLOOR.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-002-ground-truth-conformance.md",
     "eval_logs": []
   },
   "next_action": {
-    "type": "live-agent",
-    "note": "Live LLM author with stacked static micro-op + execution gates; measure retry reduction"
+    "type": "computed-oracle",
+    "note": "conf-eval yield=stdout; two-agent loop derives want-stdout from add(21,22) spec, not literal 43"
   },
   "history": [
     {
@@ -46,6 +46,12 @@
       "milestone": "G10",
       "closed": "2026-06-05",
       "note": "RODATA_BYTE_WRITE micro-op; static accept rodata off 152, reject code off 135; gated in check-all-proofs"
+    },
+    {
+      "issue": 33,
+      "milestone": "G11",
+      "closed": "2026-06-05",
+      "note": "Computed oracle; conf-eval yield=stdout; two-agent loop derives want-stdout from add(21,22), no literal 43"
     }
   ]
 }

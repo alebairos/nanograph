@@ -11,7 +11,7 @@ PATCHED_HASH=2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1
 PATCH_OFF=152
 PATCH_ID=1
 PATCH_TS=1700000000
-WANT_STDOUT=$'43\n'
+ORACLE_SPEC="fixtures/conformance/print_43_stdout.spec"
 MAX_ROUNDS=5
 
 LOG_DIR=".harness-data/agent-eval/two-agent"
@@ -73,7 +73,7 @@ auditor_round() {
   local bundle="$WORK/bundle_r${round_n}.txt"
   local verdict="$WORK/verdict_r${round_n}.txt"
   local want="$WORK/want_stdout"
-  printf '%s' "$WANT_STDOUT" >"$want"
+  tools/bin/conf-eval "$ORACLE_SPEC" >"$want" || fail "round $round_n: conf-eval failed"
 
   ./scripts/agent-eval/two-agent-auditor.sh "$GENESIS" "$patched" "$want" "$bundle" "$verdict"
 
