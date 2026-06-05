@@ -66,6 +66,32 @@ Log: `.harness-data/agent-eval/two-agent/run.jsonl`.
 
 The auditor never trusts author claims. It reads genesis + `patched.ngb`, builds `probe_bundle`, and runs `run-linux-elf-capture.sh` for behavioral proof.
 
+## Live-agent eval (G13, issue #35)
+
+Measured 2026-06-05 via `./scripts/agent-eval/run-live-agent-loop.sh`. Cursor CLI `agent` as author; auditor scripted. Model `composer-2.5`. Opt-in only.
+
+| Condition | Rounds | Wall time | Patch | Verdict |
+| --- | --- | --- | --- | --- |
+| stacked (`--with-static-gate`) | 1 | 34s | off 152, `32:33` | accept |
+| auditor-only (`--no-static-gate`) | 1 | 42s | off 152, `32:33` | accept |
+
+Logs: `.harness-data/agent-eval/live-agent/run-{stacked,auditor-only}.jsonl`.
+
+The live author computed `21+22=43`, found rodata offset 152, and proposed the correct digit on round 1. Both modes succeeded immediately. The G13 skill leaked the offset and digit, so the author did not have to discover them.
+
+## Live-agent falsification (G14, issue #35)
+
+Measured 2026-06-05. Skill leak removed; author discovers the offset via `disassemble`. Static gate runs on the author's offset. Both arms blind, model `composer-2.5`.
+
+| Condition | Rounds | Auditor execs | Wall time | Patch |
+| --- | --- | --- | --- | --- |
+| stacked (`--with-static-gate`) | 1 | 1 | 43s | off 152, `32:33` |
+| auditor-only (`--no-static-gate`) | 1 | 1 | 53s | off 152, `32:33` |
+
+Logs: `.harness-data/agent-eval/live-agent/run-g14-{stacked,auditor-only}.jsonl`.
+
+The author made zero errors in both arms even when blind. The static gate had nothing to cut. **ADR-001 re-open trigger NOT MET.** Retry-reduction positioning dropped. The question is closed, not retried on a tuned task.
+
 ## Interpretation
 
-NanoGraph's value is verifiable editing, not edit speed. The integrity test is the fair, deterministic comparison. The two-agent loop proves the author/auditor message interchange works at tool speed. Live LLM iteration counts remain unmeasured until `run-live-agent-loop.sh` runs with a Cursor CLI author. See [`LIVE-AGENT-EVAL.md`](LIVE-AGENT-EVAL.md) (G13). Opt-in only; not in `check-all-proofs.sh`.
+NanoGraph's value is verifiable editing, not edit speed and not live retry reduction. The integrity test is the fair, deterministic comparison (1000/1000 versus ~270/1000). The conformance floor (G9) grounds intent in real execution. The live harness works end-to-end (G13), and G14 falsified the retry-reduction claim for a capable model on a single-byte task. Both speed and retry positioning are dropped. The claim is integrity and execution-grounded conformance.

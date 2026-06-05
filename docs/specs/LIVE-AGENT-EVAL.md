@@ -209,10 +209,22 @@ Add `scripts/check-live-agent-prereqs.sh` to verify `agent` exists and auth is c
 - `.cursor/skills/live-ngb-author/SKILL.md`
 - Cursor CLI `agent` ([headless docs](https://cursor.com/docs/cli/headless))
 
-## Demonstration (target)
+## Demonstration (first run, 2026-06-05)
 
-| Condition | Expected outcome |
-| --- | --- |
-| stacked | wrong digit rejected at static gate; correct digit accepted in ≤5 rounds |
-| auditor-only | wrong digit rejected at stdout; correct digit accepted in ≤5 rounds |
-| comparison | stacked ≤ auditor-only rounds (hypothesis) |
+| Condition | Rounds | Wall time | Outcome |
+| --- | --- | --- | --- |
+| stacked | 1 | 34s | accept `32:33` at off 152; static gate accept |
+| auditor-only | 1 | 42s | accept `32:33` at off 152 |
+
+Both modes succeeded on round 1. The author got the patch right immediately, so the stacked-gate retry hypothesis was not exercised. See G14 (adversarial scenario) in [`NANO-GOALS.md`](NANO-GOALS.md).
+
+## Demonstration (G14 blind falsification, 2026-06-05)
+
+Skill leak removed. Author discovers the offset via `disassemble`; static gate runs on the author's offset.
+
+| Condition | Rounds | Auditor execs | Wall time | Outcome |
+| --- | --- | --- | --- | --- |
+| stacked | 1 | 1 | 43s | accept `32:33` at off 152; static gate accept |
+| auditor-only | 1 | 1 | 53s | accept `32:33` at off 152 |
+
+The author made zero errors in both arms even when blind. The static gate had nothing to cut. ADR-001 retry-reduction trigger NOT MET. See [`../adr/ADR-001-product-verdict.md`](../adr/ADR-001-product-verdict.md). The question is closed, not retried on a tuned task.

@@ -17,8 +17,17 @@ Patch `genesis.ngb` so the ELF stdout matches the declared conf spec (`yield=std
 - Read `fixtures/conformance/*.spec` for operands and yield kind.
 - Read `probe_bundle` and `verdict` from the **prior** round when the harness provides them.
 - Run `tools/bin/ngb-parse --json` on your proposed output path.
-- Run `tools/bin/nano-probe disassemble` on genesis or your patched file.
+- Run `tools/bin/nano-probe disassemble` on the genesis to locate the rodata bytes.
 - Propose exactly **one** patch per round.
+
+## Finding the patch
+
+You are not given the offset. Discover it.
+
+1. Run `nano-probe disassemble` on the genesis. The rodata string shows as `db 0x..` lines with an `image_offset`.
+2. Identify which byte holds the digit you must change.
+3. Compute the new byte from the conf spec. Sum the operands, render the decimal digit, take its ASCII hex.
+4. The pair is `<current_hex>:<new_hex>` at that byte's offset.
 
 ## You must not
 
@@ -32,18 +41,11 @@ Patch `genesis.ngb` so the ELF stdout matches the declared conf spec (`yield=std
 End your response with these two lines so the harness can parse without guessing:
 
 ```text
-patch_off=<u32 image offset>
-patch_pairs=<old:new in hex, space-separated if multiple bytes>
+patch_off=<u32 image offset you discovered>
+patch_pairs=<old_hex>:<new_hex>
 ```
 
-Example for print_42 rodata digit change:
-
-```text
-patch_off=152
-patch_pairs=32:33
-```
-
-Alternatively, a single `ngb-patch` command with the same `--off` and `--pair` is acceptable.
+The offset and bytes are placeholders. Fill them from your own discovery and computation. Do not copy literal values from this skill. Alternatively, a single `ngb-patch` command with the same `--off` and `--pair` is acceptable.
 
 ## On reject
 

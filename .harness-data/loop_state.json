@@ -1,19 +1,22 @@
 {
-  "goal_id": "G13",
+  "goal_id": "G14",
   "current_issue": 35,
-  "milestone": "G13",
-  "product_proof_step": "G13-live-agent-eval",
-  "phase": "spec",
+  "milestone": "G14",
+  "product_proof_step": "G14-blind-falsification",
+  "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/LIVE-AGENT-EVAL.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-002-ground-truth-conformance.md",
-    "eval_logs": []
+    "verdict_adr": "docs/adr/ADR-001-product-verdict.md",
+    "eval_logs": [
+      ".harness-data/agent-eval/live-agent/run-g14-stacked.jsonl",
+      ".harness-data/agent-eval/live-agent/run-g14-auditor-only.jsonl"
+    ]
   },
   "next_action": {
-    "type": "live-agent-run",
-    "note": "Run run-live-agent-loop.sh A/B (stacked vs auditor-only) with CURSOR_API_KEY; measure rounds to accept"
+    "type": "none",
+    "note": "G14 closed: retry-reduction trigger NOT MET; both arms 1 round/1 exec blind. Retry positioning dropped. No committed next goal; parked list in NANO-GOALS."
   },
   "history": [
     {
@@ -58,6 +61,18 @@
       "milestone": "G12",
       "closed": "2026-06-05",
       "note": "Value-bound micro-op; ngb-microop --expect-new from conf-eval digit; reject new=34 value_mismatch, accept new=33; static, no execution"
+    },
+    {
+      "issue": 35,
+      "milestone": "G13",
+      "closed": "2026-06-05",
+      "note": "Live-agent harness + first run; Cursor CLI composer-2.5; stacked 1r/34s, auditor-only 1r/42s; skill leaked answer, retry claim untested"
+    },
+    {
+      "issue": 35,
+      "milestone": "G14",
+      "closed": "2026-06-05",
+      "note": "Blind falsification; skill leak removed, author discovers offset; both arms 1r/1exec; ADR-001 retry-reduction trigger NOT MET; positioning dropped, question closed"
     }
   ]
 }

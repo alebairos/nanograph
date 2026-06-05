@@ -78,7 +78,35 @@ An agent or human editing a graph gets a typed rejection the moment an edit is m
 | Auditor negative | Wrong rodata patch (`32:34`) → `verdict=reject invariant=stdout` |
 | Auditor positive | Correct patch (`32:33`) → `verdict=accept`, hash matches oracle |
 
-Log: `.harness-data/agent-eval/two-agent/run.jsonl`. The interchange works at tool speed; live LLM iteration counts remain unmeasured.
+Log: `.harness-data/agent-eval/two-agent/run.jsonl`. The interchange works at tool speed.
+
+## Live-agent evidence (G13, 2026-06-05)
+
+| Condition | Rounds | Wall time | Patch |
+| --- | --- | --- |
+| stacked (`--with-static-gate`) | 1 | 34s | `32:33` at off 152 |
+| auditor-only | 1 | 42s | `32:33` at off 152 |
+
+Harness: `scripts/agent-eval/run-live-agent-loop.sh`. Model `composer-2.5`. Logs: `.harness-data/agent-eval/live-agent/run-{stacked,auditor-only}.jsonl`.
+
+The live loop works. The G13 runs used a skill that leaked the answer (`patch_off=152 patch_pairs=32:33`), so the author did not have to discover anything. The retry-reduction trigger stayed unsettled.
+
+## Live-agent falsification (G14, 2026-06-05)
+
+The skill leak was removed. The author is told nothing about the offset and must discover the rodata byte with `nano-probe disassemble`, then compute the digit from the conf spec. The static gate runs on the author's own offset. Same A/B, both arms blind.
+
+| Condition | Rounds | Auditor execs | Wall time | Patch |
+| --- | --- | --- | --- |
+| stacked (`--with-static-gate`) | 1 | 1 | 43s | `32:33` at off 152 |
+| auditor-only | 1 | 1 | 53s | `32:33` at off 152 |
+
+Logs: `.harness-data/agent-eval/live-agent/run-g14-{stacked,auditor-only}.jsonl`.
+
+**Re-open trigger result: NOT MET.** `composer-2.5` discovered offset 152, computed `0x33`, and emitted the correct patch on round 1 in both arms. With zero author errors there were zero retries for typed errors to cut. The static gate accepted (correct digit), saving nothing. The trigger as worded requires errors the model did not make on a single-byte patch.
+
+This is a falsification run, not a demo, so the null result is the answer and the question is closed. Forcing a wrong round (weaker model, or a task tuned until the author fails) would manufacture the result rather than measure it. The retry-reduction positioning is dropped, the same way the speed positioning was dropped. The product claim stands on deterministic integrity (1000/1000 fuzz) and execution-grounded conformance (G9), neither of which needs a live retry count.
+
+Caveat. The harness logs the author's emitted patch, not its internal tool calls, so this run does not independently prove the author discovered the offset versus inferring it. The verdict does not depend on that distinction. Zero errors means the gate saved nothing either way.
 
 ## Kill triggers
 
@@ -87,5 +115,5 @@ Log: `.harness-data/agent-eval/two-agent/run.jsonl`. The interchange works at to
 
 ## Re-open / expand triggers
 
-- A live-agent eval shows NanoGraph's typed errors cut real retry counts.
+- ~~A live-agent eval shows NanoGraph's typed errors cut real retry counts.~~ **Tested 2026-06-05 (G14): not met. `composer-2.5` made zero errors on the blind single-byte task, so there were no retries to cut. Retry-reduction positioning dropped.** Re-open only if a real workload (not a tuned demo) shows agents erring at author time often enough that pre-execution typed rejects measurably reduce cost.
 - Task B (stdout / rodata) shows the structured graph prevents a corruption ELF rodata edits ship.
