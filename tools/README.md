@@ -16,6 +16,7 @@ make -C tools
 | `bin/ngb-pack` | Pack ELF → `.ngb` v0 (single genesis node) |
 | `bin/ngb-parse` | Validate I1–I6 + print `graph_root_hash` |
 | `bin/ngb-extract` | Extract ELF image from `.ngb` |
+| `bin/nano-probe` | L3 probe (`audit-log` on `.ngb`) |
 
 ## macOS P3 (run linux ELF)
 

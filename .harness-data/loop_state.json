@@ -1,17 +1,24 @@
 {
-  "goal_id": "#3",
-  "current_issue": 3,
-  "milestone": "M2",
+  "goal_id": "#4",
+  "current_issue": 4,
+  "milestone": "M3",
   "phase": "idle",
   "iteration": 0,
   "artifacts": {
     "spec_path": "docs/specs/NGB-V0.md",
-    "nano_goals": "docs/specs/NANO-GOALS.md"
+    "nano_goals": "docs/specs/NANO-GOALS.md",
+    "hello_canonical": "docs/specs/HELLO-CANONICAL.md"
   },
   "next_action": {
-    "type": "delegate",
-    "agent": "nanograph-loop-driver",
-    "note": "Implement ngb-pack/parse per issue #3"
+    "type": "ship",
+    "note": "Commit Refs #4, CI green, close issue"
   },
-  "history": []
+  "history": [
+    {
+      "issue": 3,
+      "milestone": "M2",
+      "closed": "2026-06-05",
+      "note": "C core pack/parse, P1–P3 CI green"
+    }
+  ]
 }
