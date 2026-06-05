@@ -38,7 +38,8 @@ static_gate() {
   printf 'kind=rodata_byte_write\nimage_off=%s\nnew=%s\n' "$off" "$new" >"$spec"
   set +e
   local out
-  out="$(tools/bin/ngb-microop "$GENESIS" "$spec" /dev/null --check-only --expect-new "$EXPECT_NEW" 2>&1)"
+  out="$(tools/bin/ngb-microop "$GENESIS" "$spec" /dev/null --check-only \
+    --expect-off "$TARGET_OFF" --expect-new "$EXPECT_NEW" 2>&1)"
   local code=$?
   set -e
   printf '%s\t%s' "$code" "$out"
@@ -130,8 +131,7 @@ run_class() {
     [[ "$sdecision" == "reject bounds" ]] || fail "out_of_bounds: expected static reject bounds, got $sdecision"
     ;;
   correct_value_wrong_position)
-    [[ "$sdecision" == "accept" ]] || fail "wrong_position: expected static accept (blind spot), got $sdecision"
-    printf '%s' "$adecision" | grep -q '^auditor reject' || fail "wrong_position: expected auditor reject, got $adecision"
+    [[ "$sdecision" == "reject position_mismatch" ]] || fail "wrong_position: expected static reject position_mismatch, got $sdecision"
     ;;
   esac
 }
@@ -149,7 +149,7 @@ echo "gate blind spots (needed execution to catch): $gate_misses"
 
 emit "{\"ts\":\"$(now)\",\"event\":\"summary\",\"bad_classes\":$total_bad,\"caught_pre_exec\":$caught_pre_exec,\"gate_misses\":$gate_misses}"
 
-[[ "$caught_pre_exec" -eq 3 ]] || fail "expected 3 bad classes caught pre-execution, got $caught_pre_exec"
-[[ "$gate_misses" -eq 1 ]] || fail "expected 1 documented blind spot, got $gate_misses"
+[[ "$caught_pre_exec" -eq 4 ]] || fail "expected 4 bad classes caught pre-execution, got $caught_pre_exec"
+[[ "$gate_misses" -eq 0 ]] || fail "expected 0 blind spots, got $gate_misses"
 
-echo "OPERATIONAL-ERROR-MATRIX OK (3/4 bad edits caught pre-execution; 1 documented blind spot) log=$LOG"
+echo "OPERATIONAL-ERROR-MATRIX OK (4/4 bad edits caught pre-execution) log=$LOG"

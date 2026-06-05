@@ -1,0 +1,4 @@
+# correct digit (0x33) at wrong rodata byte (the '4' not the '2')
+kind=rodata_byte_write
+image_off=151
+new=33

@@ -25,7 +25,7 @@ This is integrity over the delta. Wrong rodata target classes reject structurall
 
 ## Value binding (G12)
 
-`--expect-new HH` adds a value claim on top of the structural one. After rodata validation, the written byte must equal `HH` or the gate emits `static=reject invariant=value_mismatch`. The expected byte is derived independently, not asserted. The gate runs `conf-eval` on `fixtures/conformance/print_43_stdout.spec` (`add(21,22)` renders `43\n`), takes the digit at `image_off - string_off`, and passes it as `--expect-new`. The wrong-digit author (`new=34`) rejects before any execution, the round-2-to-round-1 reduction at the static layer. The correct author (`new=33`) passes.
+`--expect-off N` and `--expect-new HH` add positional and value claims on top of the structural one. After rodata validation, `image_off` must equal `N` (`position_mismatch`) and the written byte must equal `HH` (`value_mismatch`). Both are derived independently from `conf-eval` on `fixtures/conformance/print_43_stdout.spec` (`add(21,22)` renders `43\n`). The harness computes `expect_off = string_off + digit_index` and `expect_new` from the rendered digit. Wrong digit (`new=34`), wrong position (`off=151`), and wrong target class all reject before execution.
 
 ## Components
 
@@ -44,6 +44,7 @@ This is integrity over the delta. Wrong rodata target classes reject structurall
 | `print_42_code_imm.microop` (off 135, mov edx) | reject `not_rodata` | not run |
 | `print_42_rodata_43.microop` + `--expect-new 33` | accept (value-bound) | not run |
 | `print_42_rodata_44.microop` + `--expect-new 33` | reject `value_mismatch` | not run |
+| `print_42_rodata_43_wrongpos.microop` + `--expect-off 152 --expect-new 33` | reject `position_mismatch` | not run |
 
 ## Operational-error coverage (the proper test)
 
@@ -55,14 +56,14 @@ What the gate actually buys is measured deterministically by `scripts/agent-eval
 | wrong value | off 152, 32→34 | reject `value_mismatch` (0 exec) | reject `stdout` (1 exec) | yes |
 | wrong target, instruction byte | off 135, ba→33 | reject `not_rodata` (0 exec) | reject `behavior` (1 exec) | yes |
 | out of bounds | off 999999 | reject `bounds` (0 exec) | `ngb-patch` reject (0 exec) | no, `ngb-patch` already blocks |
-| correct value, wrong position | off 151, 34→33 | **accept (blind spot)** | reject `stdout` (1 exec) | no, gate misses it |
+| correct value, wrong position | off 151, 34→33 | reject `position_mismatch` (0 exec) | reject `stdout` (1 exec) | yes |
 
-Measured 2026-06-05. Three of four bad classes are rejected before any ELF runs. The honest result is what the gate proves and what it does not.
+Measured 2026-06-05. Four of four bad classes are rejected before any ELF runs when both `--expect-off` and `--expect-new` are derived from the conf spec.
 
-- **Proven.** The static gate rejects value, target-type, and bounds errors at author time, with zero executions. Auditor-only catches the value and target errors only after running the ELF.
-- **Blind spot.** A correct value written at the wrong rodata position passes the static gate. The value claim checks the byte, not its location. Only execution catches it. Closing this would need a positional claim (which byte in the string), not just a value claim.
+- **Proven.** The static gate rejects value, position, target-type, and bounds errors at author time, with zero executions. Auditor-only catches value, position, and target errors only after running the ELF (bounds is already blocked by `ngb-patch`).
+- **Intent binding is two-part.** Value alone was insufficient. Position plus value, both computed from the spec, closes the last gap.
 
-This reframes the product claim away from retry-count reduction (model-dependent, falsified for a capable model in G14) toward **pre-execution rejection of operational errors** (deterministic, gated in CI).
+The product claim is **pre-execution rejection of operational errors** (deterministic, gated in CI), not agent retry-count reduction.
 
 ## Relation to raw `ngb-patch`
 

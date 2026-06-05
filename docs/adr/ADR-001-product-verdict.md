@@ -117,9 +117,9 @@ Rather than chase a model-dependent retry count, the right test is deterministic
 | wrong value | reject `value_mismatch` (0 exec) | reject `stdout` (1 exec) | yes |
 | wrong target, instruction byte | reject `not_rodata` (0 exec) | reject `behavior` (1 exec) | yes |
 | out of bounds | reject `bounds` (0 exec) | `ngb-patch` reject (0 exec) | no |
-| correct value, wrong position | accept (blind spot) | reject `stdout` (1 exec) | no |
+| correct value, wrong position | reject `position_mismatch` (0 exec) | reject `stdout` (1 exec) | yes |
 
-Three of four bad classes are rejected before any ELF runs. One is a documented blind spot the value claim cannot see. This is the honest, gated, model-free claim. The product value is **pre-execution rejection of operational errors**, not fewer agent retries. Detail in [`../specs/MICROOP-FLOOR.md`](../specs/MICROOP-FLOOR.md). Gated in `check-all-proofs.sh`.
+Four of four bad classes are rejected before any ELF runs when intent binding includes both position (`--expect-off`) and value (`--expect-new`) derived from the conf spec. The value-only gate had a blind spot. Position binding closed it. This is the honest, gated, model-free claim. The product value is **pre-execution rejection of operational errors**, not fewer agent retries. Detail in [`../specs/MICROOP-FLOOR.md`](../specs/MICROOP-FLOOR.md). Gated in `check-all-proofs.sh`.
 
 ## Kill triggers
 

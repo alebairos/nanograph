@@ -66,10 +66,8 @@ emit "{\"ts\":\"$(now)\",\"event\":\"loop_start\",\"genesis\":\"$GENESIS\",\"wit
 
 accepted=0
 round=0
-auditor_execs=0
 prior_bundle=""
 prior_verdict=""
-prior_static=""
 
 parse_patch_from_text() {
   local text="$1"
@@ -170,7 +168,7 @@ EOF
 
   set +e
   out="$(tools/bin/ngb-microop "$WORK/genesis.ngb" "$microop" /dev/null \
-    --check-only --expect-new "$expect_new")"
+    --check-only --expect-off "$PATCH_OFF" --expect-new "$expect_new")"
   code=$?
   set -e
   echo "$out"
@@ -227,10 +225,6 @@ for round in $(seq 1 "$MAX_ROUNDS"); do
     echo "Round $round of $MAX_ROUNDS."
     echo "Genesis copy: $WORK/genesis.ngb"
     echo "Conf spec: $ORACLE_SPEC"
-    echo "You are not told the offset. Discover the rodata byte with nano-probe disassemble on the genesis, then compute the new byte from the conf spec sum."
-    if [[ -n "$prior_static" ]]; then
-      echo "Prior static-gate rejection: $prior_static"
-    fi
     if [[ -n "$prior_verdict" ]]; then
       echo "Prior verdict: $prior_verdict"
       echo "Prior probe_bundle: $prior_bundle"
@@ -246,15 +240,12 @@ for round in $(seq 1 "$MAX_ROUNDS"); do
 
   if [[ "$WITH_STATIC" -eq 1 ]]; then
     if ! static_gate "$round" "$patch_off" "$patch_pairs"; then
-      prior_static="off=$patch_off pairs=$patch_pairs rejected before execution"
-      echo "round $round: static gate rejected patch (no auditor execution)"
+      echo "round $round: static gate rejected patch"
       continue
     fi
   fi
-  prior_static=""
 
   patched="$(apply_patch "$round" "$patch_off" "$patch_pairs")"
-  auditor_execs=$((auditor_execs + 1))
   if auditor_round "$round" "$patched"; then
     echo "round $round OK: auditor accepted"
     break
@@ -268,6 +259,6 @@ got_hash="$(tools/bin/ngb-parse "$patched" 2>/dev/null | sed -n 's/.*graph_root_
 [[ "$got_hash" == "$PATCHED_HASH" ]] || fail "final hash $got_hash != oracle $PATCHED_HASH"
 
 wall_ms=$((SECONDS * 1000))
-emit "{\"ts\":\"$(now)\",\"event\":\"loop_end\",\"success\":true,\"rounds\":$round,\"auditor_execs\":$auditor_execs,\"wall_ms\":$wall_ms,\"with_static_gate\":$WITH_STATIC,\"final_graph_root_hash\":\"$got_hash\"}"
+emit "{\"ts\":\"$(now)\",\"event\":\"loop_end\",\"success\":true,\"rounds\":$round,\"wall_ms\":$wall_ms,\"with_static_gate\":$WITH_STATIC,\"final_graph_root_hash\":\"$got_hash\"}"
 
-echo "LIVE-AGENT-LOOP OK rounds=$round auditor_execs=$auditor_execs wall_ms=$wall_ms static=$WITH_STATIC log=$LOG"
+echo "LIVE-AGENT-LOOP OK rounds=$round wall_ms=$wall_ms static=$WITH_STATIC log=$LOG"

@@ -54,7 +54,7 @@ Read `verdict=reject invariant=... detail=...` and the `probe_bundle` file path 
 | Invariant | Action |
 | --- | --- |
 | `stdout` | Wrong byte value or wrong offset. Use `disassemble` and `diff` in bundle to find rodata. |
-| `not_rodata` / `value_mismatch` | Static gate failed. Fix offset or digit. |
+| `not_rodata` / `value_mismatch` / `position_mismatch` | Static gate failed. Fix offset or digit. `position_mismatch` means right value at wrong byte. |
 | `I1`–`I6` | Fix structural violation from parse JSON in bundle. |
 | `behavior` | ELF failed to run. Re-check offset and pairs. |
 

@@ -63,7 +63,8 @@ echo "conf-eval rendered '${rendered%$'\n'}' digit[$idx]=$digit expect_new=$expe
 
 set +e
 val_accept="$(tools/bin/ngb-microop fixtures/print_42.ngb \
-  fixtures/microop/print_42_rodata_43.microop /dev/null --check-only --expect-new "$expect_new")"
+  fixtures/microop/print_42_rodata_43.microop /dev/null --check-only \
+  --expect-off 152 --expect-new "$expect_new")"
 val_accept_code=$?
 set -e
 echo "$val_accept"
@@ -72,11 +73,23 @@ echo "$val_accept"
 
 set +e
 val_reject="$(tools/bin/ngb-microop fixtures/print_42.ngb \
-  fixtures/microop/print_42_rodata_44.microop /dev/null --check-only --expect-new "$expect_new")"
+  fixtures/microop/print_42_rodata_44.microop /dev/null --check-only \
+  --expect-off 152 --expect-new "$expect_new")"
 val_reject_code=$?
 set -e
 echo "$val_reject"
 [[ "$val_reject_code" -eq 1 ]] || fail "value-bound: expected reject for new=34"
 [[ "$val_reject" == *"value_mismatch"* ]] || fail "value-bound: expected value_mismatch"
 
-echo "MICROOP-FLOOR OK (accept rodata, reject code imm, value-bound accept/reject)"
+echo "-- position-bound (G15): correct value at wrong rodata offset --"
+set +e
+pos_reject="$(tools/bin/ngb-microop fixtures/print_42.ngb \
+  fixtures/microop/print_42_rodata_43_wrongpos.microop /dev/null --check-only \
+  --expect-off 152 --expect-new "$expect_new")"
+pos_reject_code=$?
+set -e
+echo "$pos_reject"
+[[ "$pos_reject_code" -eq 1 ]] || fail "position-bound: expected reject for off=151"
+[[ "$pos_reject" == *"position_mismatch"* ]] || fail "position-bound: expected position_mismatch"
+
+echo "MICROOP-FLOOR OK (accept rodata, reject code imm, value-bound, position-bound)"

@@ -46,6 +46,8 @@ static int write_file(const char *path, const uint8_t *data, size_t len) {
 int main(int argc, char **argv) {
   int check_only = 0;
   int have_expect_new = 0;
+  int have_expect_off = 0;
+  uint32_t expect_off = 0;
   uint8_t expect_new = 0;
   uint64_t patch_id = 1;
   uint64_t timestamp = 1700000000ULL;
@@ -56,7 +58,10 @@ int main(int argc, char **argv) {
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "--check-only") == 0)
       check_only = 1;
-    else if (strcmp(argv[i], "--expect-new") == 0 && i + 1 < argc) {
+    else if (strcmp(argv[i], "--expect-off") == 0 && i + 1 < argc) {
+      expect_off = (uint32_t)strtoul(argv[++i], NULL, 10);
+      have_expect_off = 1;
+    } else if (strcmp(argv[i], "--expect-new") == 0 && i + 1 < argc) {
       unsigned int v = 0;
       if (sscanf(argv[++i], "%2x", &v) != 1 || v > 255) {
         fprintf(stderr, "ngb-microop: bad --expect-new hex\n");
@@ -79,7 +84,7 @@ int main(int argc, char **argv) {
   if (!genesis_path || !spec_path || (!check_only && !out_path)) {
     fprintf(stderr,
             "usage: %s <genesis.ngb> <microop.spec> <out.ngb> [--check-only] "
-            "[--expect-new HH] [--patch-id N] [--timestamp T]\n",
+            "[--expect-off N] [--expect-new HH] [--patch-id N] [--timestamp T]\n",
             argv[0]);
     return 2;
   }
@@ -102,6 +107,13 @@ int main(int argc, char **argv) {
   if (ms != MICROOP_OK) {
     printf("static=reject invariant=%s detail=microop %s\n", microop_status_str(ms),
            microop_status_str(ms));
+    free(genesis);
+    return 1;
+  }
+
+  if (have_expect_off && op.image_off != expect_off) {
+    printf("static=reject invariant=position_mismatch detail=off %u want %u\n",
+           op.image_off, expect_off);
     free(genesis);
     return 1;
   }
