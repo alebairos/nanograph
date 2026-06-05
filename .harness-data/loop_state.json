@@ -1,22 +1,21 @@
 {
-  "goal_id": "#30",
-  "current_issue": 30,
-  "milestone": "G8",
-  "product_proof_step": "G8-two-agent-loop",
+  "goal_id": "G9",
+  "current_issue": 31,
+  "milestone": "G9",
+  "product_proof_step": "G9-conformance-floor",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/TWO-AGENT-PROBE-PROTOCOL.md",
+    "spec_path": "docs/specs/CONFORMANCE-FLOOR.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-001-product-verdict.md",
+    "verdict_adr": "docs/adr/ADR-002-ground-truth-conformance.md",
     "eval_logs": [
-      ".harness-data/agent-eval/two-agent/run.jsonl",
-      ".harness-data/agent-eval/integrity/run.jsonl"
+      ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
-    "type": "live-agent",
-    "note": "Replace scripted author with live LLM; measure iteration counts vs ELF baseline"
+    "type": "build-conformance-floor",
+    "note": "conf-eval computes expected from spec independently; check accepts add_two (exit 2) rejects add_two_chain (exit 4) vs add(1,1)"
   },
   "history": [
     {
@@ -37,6 +36,12 @@
       "milestone": "G8",
       "closed": "2026-06-05",
       "note": "Deterministic two-agent loop; 2 rounds (reject wrong stdout + accept); gated in check-all-proofs"
+    },
+    {
+      "issue": 31,
+      "milestone": "G9",
+      "closed": "2026-06-05",
+      "note": "Ground-truth conformance floor; conf-eval computes expected from spec independently; accept add_two (exit 2) reject add_two_chain (exit 4) vs add(1,1); gated in check-all-proofs"
     }
   ]
 }

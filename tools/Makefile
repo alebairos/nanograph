@@ -12,7 +12,7 @@ PROBE_OBJS := $(PROBE_SRCS:.c=.o)
 BINS := bin/ngb-pack bin/ngb-parse bin/ngb-patch bin/ngb-extract bin/hello-fixture \
         bin/add-two-fixture bin/add-two-patch-fixture bin/print-42-fixture \
         bin/print-42-patch-fixture bin/add-two-chain-fixture bin/ngb-fuzz \
-        bin/nano-probe
+        bin/nano-probe bin/conf-eval
 
 .PHONY: all clean test
 
@@ -55,6 +55,9 @@ bin/ngb-fuzz: bin/ngb-fuzz.c $(LIB_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 bin/ngb-extract: bin/ngb-extract.c
+	$(CC) $(CFLAGS) $^ -o $@
+
+bin/conf-eval: bin/conf-eval.c
 	$(CC) $(CFLAGS) $^ -o $@
 
 bin/nano-probe: bin/nano-probe.c $(LIB_OBJS) $(PROBE_OBJS)

@@ -19,10 +19,11 @@ Ordered goals for NanoGraph v3. Each canonical program gets the same proof ladde
 | ID | Goal | Issue | Status |
 | --- | --- | --- | --- |
 | G8 | Deterministic two-agent author/auditor loop | #30 | Done |
+| G9 | Ground-truth conformance floor (compute expected from spec) | #31 | Done |
 
-Spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md)
+G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
-Harness: `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
+G9 spec: [`CONFORMANCE-FLOOR.md`](CONFORMANCE-FLOOR.md), decision [`../adr/ADR-002-ground-truth-conformance.md`](../adr/ADR-002-ground-truth-conformance.md). Harness `scripts/agent-eval/conformance-check.sh`, gated by `scripts/check-conformance-floor.sh`.
 
 ## Completed product proof
 
@@ -44,3 +45,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #3–#8 | G1–G7 technical milestones |
 | #9–#28 | P01–P20 product proof |
 | #30 | G8 two-agent loop |
+| #31 | G9 conformance floor |
