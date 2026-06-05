@@ -1,24 +1,23 @@
 {
-  "goal_id": "#4",
-  "current_issue": 4,
-  "milestone": "M3",
+  "goal_id": "#5",
+  "current_issue": 5,
+  "milestone": "M4",
   "phase": "idle",
   "iteration": 0,
   "artifacts": {
-    "spec_path": "docs/specs/NGB-V0.md",
-    "nano_goals": "docs/specs/NANO-GOALS.md",
-    "hello_canonical": "docs/specs/HELLO-CANONICAL.md"
+    "spec_path": "docs/specs/CANONICAL-ADD-TWO.md",
+    "nano_goals": "docs/specs/NANO-GOALS.md"
   },
   "next_action": {
     "type": "ship",
-    "note": "Commit Refs #4, CI green, close issue"
+    "note": "Refs #5 commit pushed; close issue after CI"
   },
   "history": [
     {
-      "issue": 3,
-      "milestone": "M2",
+      "issue": 4,
+      "milestone": "M3",
       "closed": "2026-06-05",
-      "note": "C core pack/parse, P1–P3 CI green"
+      "note": "nano-probe audit-log, hello P4"
     }
   ]
 }

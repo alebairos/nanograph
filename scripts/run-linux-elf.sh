@@ -4,7 +4,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 NGb="${1:-fixtures/hello.ngb}"
-ELF="/tmp/nanograph-hello-test"
+ELF="/tmp/nanograph-elf-test-$$"
 
 make -C tools -s bin/ngb-extract
 tools/bin/ngb-extract "$NGb" "$ELF"

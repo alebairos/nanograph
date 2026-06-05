@@ -1,6 +1,7 @@
-# Fixtures (canonical hello)
+# Fixtures (canonical programs)
 
-See [`docs/specs/HELLO-CANONICAL.md`](../docs/specs/HELLO-CANONICAL.md).
+Hello: [`docs/specs/HELLO-CANONICAL.md`](../docs/specs/HELLO-CANONICAL.md)  
+add_two: [`docs/specs/CANONICAL-ADD-TWO.md`](../docs/specs/CANONICAL-ADD-TWO.md)
 
 | File | Notes |
 | --- | --- |
@@ -20,3 +21,15 @@ See [`docs/specs/HELLO-CANONICAL.md`](../docs/specs/HELLO-CANONICAL.md).
 | `hello.ngb` | 242 |
 
 `hello-fixture --no-write --print-ms` must report ≤ 50ms (expected sub-ms; ceiling catches hangs).
+
+## add_two (M4)
+
+| File | Notes |
+| --- | --- |
+| `add_two_elf.bin` | x86_64-linux ELF, `1+1` via `add`, exit(2) |
+| `add_two.ngb` / `add_two.ngb.hex` | Regenerate with `tools/bin/add-two-fixture` |
+| `add_two.audit-log.golden` | `nano-probe audit-log` stdout |
+
+**graph_root_hash:** `5a74198abb4229f2a85dd2320f4e3d6fbc359c9c99da20556d7fa815a65a6cf2`
+
+**P1 budgets** (`scripts/check-add-two-proof.sh`): ELF 137 B, `.ngb` 345 B, exit code 2.

@@ -2,12 +2,14 @@ CC ?= cc
 CFLAGS ?= -std=c11 -Wall -Wextra -O2 -Ingb
 ROOT := $(abspath ..)
 
-LIB_SRCS := ngb/sha256.c ngb/hello_elf.c ngb/pack.c ngb/parse.c ngb/status.c
+LIB_SRCS := ngb/sha256.c ngb/canonical_elf.c ngb/hello_elf.c ngb/add_two_elf.c \
+            ngb/pack.c ngb/parse.c ngb/status.c
 PROBE_SRCS := probe/audit_log.c
 LIB_OBJS := $(LIB_SRCS:.c=.o)
 PROBE_OBJS := $(PROBE_SRCS:.c=.o)
 
-BINS := bin/ngb-pack bin/ngb-parse bin/ngb-extract bin/hello-fixture bin/nano-probe
+BINS := bin/ngb-pack bin/ngb-parse bin/ngb-extract bin/hello-fixture \
+        bin/add-two-fixture bin/nano-probe
 
 .PHONY: all clean test
 
@@ -26,6 +28,9 @@ bin/ngb-parse: bin/ngb-parse.c $(LIB_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 bin/hello-fixture: bin/hello-fixture.c $(LIB_OBJS)
+	$(CC) $(CFLAGS) $^ -o $@
+
+bin/add-two-fixture: bin/add-two-fixture.c $(LIB_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 bin/ngb-extract: bin/ngb-extract.c

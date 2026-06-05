@@ -2,8 +2,8 @@
 
 **Direction:** v3 binary graph; canonical programs with proof ladders.
 
-**Hello:** M3 P1–P4 done (`8444570de269709c`). C core + `nano-probe audit-log`.
+**Hello:** M3 P1–P4 (`8444570de269709c`). **add_two:** M4 P1–P4 (`5a74198abb4229f`).
 
-**Roadmap:** [`docs/specs/NANO-GOALS.md`](../docs/specs/NANO-GOALS.md). **add_two** at M4 (G3).
+**Roadmap:** M5 patch on add_two next (G5–G6).
 
-**Open work:** Ship M3 (Refs #4), then open issue #5 for add_two.
+**Open work:** Close issue #5 after CI green.

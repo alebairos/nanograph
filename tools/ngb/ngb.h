@@ -32,6 +32,12 @@ typedef struct {
   uint8_t content_hash[32];
 } NgbNode;
 
+typedef struct {
+  uint64_t node_id;
+  uint32_t offset;
+  uint32_t length;
+} NgbNodeSpec;
+
 typedef enum {
   NGB_OK = 0,
   NGB_ERR_IO,
@@ -48,10 +54,16 @@ typedef enum {
 
 const char *ngb_status_str(NgbStatus s);
 
-/* hello_elf.c — minimal x86_64-linux exit(0) image for M2 */
-size_t ngb_hello_elf_build(uint8_t *out, size_t cap);
+size_t ngb_canonical_elf_build(const uint8_t *code, size_t code_len, uint8_t *out,
+                               size_t cap);
 
-/* pack.c — single-node genesis pack (patch_count = 0) */
+size_t ngb_hello_elf_build(uint8_t *out, size_t cap);
+size_t ngb_add_two_elf_build(uint8_t *out, size_t cap);
+
+NgbStatus ngb_pack_elf_nodes(const uint8_t *elf, size_t elf_len, uint16_t arch_id,
+                             const NgbNodeSpec *specs, uint32_t node_count,
+                             uint8_t **out, size_t *out_len);
+
 NgbStatus ngb_pack_elf(const uint8_t *elf, size_t elf_len, uint16_t arch_id,
                        uint64_t node_id, uint8_t **out, size_t *out_len);
 

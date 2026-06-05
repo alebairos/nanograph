@@ -13,6 +13,7 @@ make -C tools
 | Binary | Role |
 | --- | --- |
 | `bin/hello-fixture` | Canonical hello ELF + `.ngb` fixtures |
+| `bin/add-two-fixture` | Canonical add_two ELF + `.ngb` (3 nodes) |
 | `bin/ngb-pack` | Pack ELF → `.ngb` v0 (single genesis node) |
 | `bin/ngb-parse` | Validate I1–I6 + print `graph_root_hash` |
 | `bin/ngb-extract` | Extract ELF image from `.ngb` |

@@ -5,6 +5,7 @@
 /tools/bin/ngb-parse
 /tools/bin/ngb-extract
 /tools/bin/hello-fixture
+/tools/bin/add-two-fixture
 /tools/bin/nano-probe
 /tools/**/target/
 .DS_Store
