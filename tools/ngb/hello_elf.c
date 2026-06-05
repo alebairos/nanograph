@@ -9,7 +9,7 @@ size_t ngb_hello_elf_build(uint8_t *out, size_t cap) {
   const uint32_t ph_off = 64;
   const uint32_t ph_num = 1;
   const uint32_t ph_entsize = 56;
-  const uint32_t code_off = ph_off + ph_num * ph_entsize;
+  const uint64_t code_off = (uint64_t)ph_off + (uint64_t)ph_num * ph_entsize;
   const size_t total = 64 + 56 + sizeof(code);
 
   if (cap < total)
@@ -25,7 +25,8 @@ size_t ngb_hello_elf_build(uint8_t *out, size_t cap) {
   out[18] = 0x3e;
   out[20] = 1;
   memcpy(out + 24, &e_entry, 8);
-  memcpy(out + 32, &ph_off, 4);
+  const uint64_t ph_off64 = ph_off;
+  memcpy(out + 32, &ph_off64, 8);
   out[52] = 64;
   out[54] = 56;
   out[56] = 1;
@@ -46,6 +47,6 @@ size_t ngb_hello_elf_build(uint8_t *out, size_t cap) {
   uint64_t align = 0x1000;
   memcpy(ph + 48, &align, 8);
 
-  memcpy(out + code_off, code, sizeof(code));
+  memcpy(out + (size_t)code_off, code, sizeof(code));
   return total;
 }
