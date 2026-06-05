@@ -1,22 +1,17 @@
 {
-  "goal_id": null,
-  "current_issue": null,
-  "milestone": "M1",
+  "goal_id": "#3",
+  "current_issue": 3,
+  "milestone": "M2",
   "phase": "idle",
   "iteration": 0,
   "artifacts": {
-    "spec_path": "docs/specs/HELLO-CANONICAL.md",
-    "graph_root_hash": "f0012547f33b2e0e"
+    "spec_path": "docs/specs/NGB-V0.md",
+    "nano_goals": "docs/specs/NANO-GOALS.md"
   },
   "next_action": {
     "type": "delegate",
-    "agent": "issue-intake",
-    "note": "Open M2 issue for pack/parse + P3 run proof"
+    "agent": "nanograph-loop-driver",
+    "note": "Implement ngb-pack/parse per issue #3"
   },
-  "history": [
-    {
-      "at": "2026-06-04",
-      "note": "Closed #2; M1 P1 static complete"
-    }
-  ]
+  "history": []
 }

@@ -7,6 +7,8 @@
 | **Concept / philosophy** | [`nanograph.md`](../nanograph.md) | Zerolang contrast, v3 stance (raw `.ngb`, NanoProbe post-hoc) |
 | **`.ngb` v0 byte layout** | [`docs/specs/NGB-V0.md`](specs/NGB-V0.md) | Executable spec for container (offsets, hashes, invariants) |
 | **Canonical hello** | [`docs/specs/HELLO-CANONICAL.md`](specs/HELLO-CANONICAL.md) | P1–P4 proof ladder for the first sound artifact |
+| **Nano goals** | [`docs/specs/NANO-GOALS.md`](specs/NANO-GOALS.md) | Ordered G1–G7 roadmap (decided) |
+| **Canonical add_two** | [`docs/specs/CANONICAL-ADD-TWO.md`](specs/CANONICAL-ADD-TWO.md) | Second program (M4), 1+1 via exit code 2 |
 | **Milestones** | [`docs/specs/MILESTONES.md`](specs/MILESTONES.md) | M0–M4 gates and verification |
 | **Implementation map** | [`docs/specs/ARCHITECTURE.md`](specs/ARCHITECTURE.md) | Layer → path in this repo |
 | **Agent harness** | [`docs/specs/AGENT-HARNESS.md`](specs/AGENT-HARNESS.md) | How agents run work here |

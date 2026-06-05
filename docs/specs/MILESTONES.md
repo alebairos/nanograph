@@ -8,7 +8,11 @@ Bind agent work to **one milestone** at a time. **M1–M3** collectively deliver
 | **M1** | Canonical hello **P1 static** | [`HELLO-CANONICAL.md`](HELLO-CANONICAL.md) + `fixtures/hello.ngb` + `check-hello-proof.sh` P1 |
 | **M2** | Hello **P2 structural** + **P3 behavioral** | `ngb-pack`/`ngb-parse` reproduce golden; roundtrip; ELF runs (CI/linux) |
 | **M3** | Hello **P4 audit** | `nano-probe audit-log` vs golden stdout |
-| **M4** | Optional depth | `probe diff`, `disassemble`; sim only with ADR |
+| **M4** | Canonical **add_two** (1+1 → exit 2) | Second program + P1–P3; see [`CANONICAL-ADD-TWO.md`](CANONICAL-ADD-TWO.md) |
+| **M5** | Patch + diff | One signed patch on add_two; `probe diff` |
+| **M6** | Optional depth | `disassemble`; print_42 or sim only with ADR |
+
+See [`NANO-GOALS.md`](NANO-GOALS.md) for full goal ordering (G1–G7).
 
 ## Per-milestone verification
 
