@@ -1,9 +1,9 @@
 {
-  "goal_id": "#2",
-  "current_issue": 2,
+  "goal_id": null,
+  "current_issue": null,
   "milestone": "M1",
-  "phase": "verifying",
-  "iteration": 1,
+  "phase": "idle",
+  "iteration": 0,
   "artifacts": {
     "spec_path": "docs/specs/HELLO-CANONICAL.md",
     "graph_root_hash": "f0012547f33b2e0e"
@@ -16,7 +16,7 @@
   "history": [
     {
       "at": "2026-06-04",
-      "note": "M1 P1 static hello landed"
+      "note": "Closed #2; M1 P1 static complete"
     }
   ]
 }
