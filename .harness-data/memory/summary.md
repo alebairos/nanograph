@@ -1,11 +1,9 @@
 # NanoGraph contract memory
 
-**Direction:** v3 specialist repo — raw `.ngb`, post-hoc NanoProbe, GitHub issues for work persistence.
+**Direction:** v3 specialist repo; canonical hello proves soundness (P1–P4 ladder).
 
-**Current milestone:** M0 (harness + issues).
+**Milestone:** M1 P1 static done (`graph_root_hash=f0012547f33b2e0e`).
 
-**Bound issue:** #1 umbrella (GitHub issue persistence).
+**Next:** M2 pack/parse + P3 run proof (linux/qemu CI). Then M3 audit-log golden.
 
-**Next:** Close #1; open M1 issue for `NGB-V0` fixtures and hex dump.
-
-**Non-negotiables:** Dual bind milestone + issue; system design at `.cursor/rules/01-system-design.mdc`.
+**Issue:** #2 M1 canonical hello (close after merge).

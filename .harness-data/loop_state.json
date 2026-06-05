@@ -1,21 +1,22 @@
 {
-  "goal_id": null,
-  "current_issue": null,
-  "milestone": "M0",
-  "phase": "idle",
-  "iteration": 0,
+  "goal_id": "#2",
+  "current_issue": 2,
+  "milestone": "M1",
+  "phase": "verifying",
+  "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/AGENT-HARNESS.md"
+    "spec_path": "docs/specs/HELLO-CANONICAL.md",
+    "graph_root_hash": "f0012547f33b2e0e"
   },
   "next_action": {
     "type": "delegate",
     "agent": "issue-intake",
-    "note": "Create M1 issue for NGB-V0 fixtures"
+    "note": "Open M2 issue for pack/parse + P3 run proof"
   },
   "history": [
     {
       "at": "2026-06-04",
-      "note": "Closed umbrella #1; issue harness verified"
+      "note": "M1 P1 static hello landed"
     }
   ]
 }

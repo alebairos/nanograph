@@ -1,10 +1,13 @@
-# Fixtures (M1+)
+# Fixtures (canonical hello)
 
-Golden artifacts for `.ngb` v0. See [`docs/specs/NGB-V0.md`](../docs/specs/NGB-V0.md).
+See [`docs/specs/HELLO-CANONICAL.md`](../docs/specs/HELLO-CANONICAL.md).
 
-| File | Milestone | Notes |
-| --- | --- | --- |
-| `hello.ngb` | M2 | Packed minimal x86_64 ELF |
-| `hello.ngb.hex` | M1 | Optional hex dump for review before packer exists |
+| File | Notes |
+| --- | --- |
+| `hello_elf.bin` | Minimal x86_64-linux ELF, exit(0) |
+| `hello.ngb` / `hello.ngb.hex` | Canonical `.ngb` v0 (regenerate with `scripts/build-canonical-hello.py`) |
 
-Do not commit large binaries without documenting expected `graph_root_hash` in the M2 PR.
+**graph_root_hash (sha256):** `f0012547f33b2e0e`
+
+**image_len:** 130  
+**node_count:** 1 (`node_id=1`, offset 0, length 130)

@@ -21,9 +21,9 @@ Canonical definitions: [`docs/specs/MILESTONES.md`](../../docs/specs/MILESTONES.
 | Milestone | Must pass |
 | --- | --- |
 | M0 | Session script + drift check; harness files present |
-| M1 | Drift check; `NGB-V0.md` + `fixtures/README.md` reviewed |
-| M2 | Roundtrip script; golden `fixtures/hello.ngb` |
-| M3 | Probe audit-log golden stdout |
+| M1 | `./scripts/check-hello-proof.sh` P1; drift check |
+| M2 | `check-hello-proof.sh` P1–P3; `check-ngb-roundtrip.sh` |
+| M3 | `check-hello-proof.sh` P1–P4; `check-probe-audit-log.sh` |
 | M4 | Per ADR; no sim without explicit scope |
 
 Do not duplicate full gate tables in PRs. Link the milestone section in `MILESTONES.md`.
