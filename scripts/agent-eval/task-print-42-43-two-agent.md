@@ -35,6 +35,16 @@ Patch genesis `fixtures/print_42.ngb` so stdout is `43\n` and exit is 0.
 - ≤5 author rounds
 - Eval log written to `scripts/agent-eval/logs/p14-two-agent-<timestamp>.md`
 
+## Deterministic harness (G8)
+
+Run without a live LLM:
+
+```bash
+./scripts/check-two-agent-loop.sh
+```
+
+Log: `.harness-data/agent-eval/two-agent/run.jsonl`
+
 ## Metrics (for P16)
 
 Record author rounds, wall clock, and whether author succeeded without reading forbidden paths.

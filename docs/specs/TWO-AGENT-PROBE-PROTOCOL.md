@@ -71,6 +71,32 @@ verdict=reject invariant=<I1-I6|behavior|stdout> detail=<one line>
 
 Auditor rejects are unactionable (author cannot fix from bundle alone), or two-agent needs more rounds than single-agent Task B with the same tools. Then the split is overhead, not leverage.
 
+## Deterministic harness (G8)
+
+The protocol is runnable without a live LLM. Scripts implement both roles; the conversation is an append-only JSONL log.
+
+| Script | Role |
+| --- | --- |
+| `scripts/agent-eval/two-agent-auditor.sh` | Auditor: `probe_bundle` + `verdict` from bytes only |
+| `scripts/agent-eval/run-two-agent-loop.sh` | Full loop: scripted author rounds + auditor gates |
+| `scripts/check-two-agent-loop.sh` | CI gate via `check-all-proofs.sh` |
+
+Log: `.harness-data/agent-eval/two-agent/run.jsonl`
+
+### Harness scenarios
+
+1. **Wrong author (round 1).** Author patches `32:34` at offset 152. Auditor rejects `invariant=stdout` from captured ELF output. Author never runs behavioral proof.
+2. **Correct author (round 2).** Author patches `32:33`. Auditor accepts; `graph_root_hash` matches oracle from `print-42-patch-fixture` (harness-only, not author-readable).
+
+### JSONL message types
+
+| `msg_type` | Role | Fields |
+| --- | --- | --- |
+| `patch_request` | author | `precondition_hash`, `delta_off`, `delta_pairs` |
+| `patched_ngb` | author | `graph_root_hash` |
+| `probe_bundle` | auditor | `bundle_sha256` |
+| `verdict` | auditor | `decision`, `graph_root_hash` or `invariant` + `detail` |
+
 ## Depends on
 
 - P04 `ngb-patch` CLI

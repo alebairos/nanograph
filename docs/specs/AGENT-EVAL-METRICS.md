@@ -49,6 +49,23 @@ NanoGraph catches every image mutation because every image byte is in the root h
 | `check-add-two-chain-proof.sh` | green (I6 chain) |
 | `run-eval-sprint.sh` | green (control + integrity) |
 
+## Two-agent loop (G8, issue #30)
+
+Measured via `./scripts/check-two-agent-loop.sh`. Deterministic scripted author; auditor verdict from bytes only.
+
+| Metric | Value |
+| --- | --- |
+| Task | print_42 → stdout `43\n`, exit 0 |
+| Rounds to accept | 2 (1 reject + 1 accept) |
+| Max rounds rubric | ≤5 |
+| Negative case | Round 1 wrong patch (`32:34`) → `verdict=reject invariant=stdout` |
+| Positive case | Round 2 correct patch (`32:33`) → `verdict=accept` |
+| Final hash | Matches `print-42-patch-fixture` oracle |
+
+Log: `.harness-data/agent-eval/two-agent/run.jsonl`.
+
+The auditor never trusts author claims. It reads genesis + `patched.ngb`, builds `probe_bundle`, and runs `run-linux-elf-capture.sh` for behavioral proof.
+
 ## Interpretation
 
-NanoGraph's value is verifiable editing, not edit speed. The integrity test is the fair, deterministic comparison. The speed comparison is left unmeasured until a live-agent harness exists; it must not be claimed from a scripted run.
+NanoGraph's value is verifiable editing, not edit speed. The integrity test is the fair, deterministic comparison. The two-agent loop proves the author/auditor message interchange works at tool speed. Live LLM iteration counts remain unmeasured until a live-agent harness replaces the scripted author.

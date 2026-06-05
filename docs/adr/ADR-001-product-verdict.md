@@ -67,7 +67,18 @@ An agent or human editing a graph gets a typed rejection the moment an edit is m
 
 ## What the next maintainer inherits
 
-`run-eval-sprint.sh` is bash plus the C tools, no Python. It runs the control and the integrity test deterministically without Docker. Extend it with more bad-edit classes or a live-agent harness rather than re-running the speed race.
+`run-eval-sprint.sh` is bash plus the C tools, no Python. It runs the control and the integrity test deterministically without Docker. `run-two-agent-loop.sh` (G8, issue #30) runs the author/auditor message interchange with a scripted author: round 1 wrong stdout patch rejected, round 2 correct patch accepted in 2 rounds total. Extend with a live LLM author rather than re-running the speed race.
+
+## Two-agent loop evidence (G8, 2026-06-05)
+
+| Metric | Value |
+| --- | --- |
+| Harness | `scripts/check-two-agent-loop.sh` |
+| Rounds | 2 (1 reject + 1 accept) |
+| Auditor negative | Wrong rodata patch (`32:34`) → `verdict=reject invariant=stdout` |
+| Auditor positive | Correct patch (`32:33`) → `verdict=accept`, hash matches oracle |
+
+Log: `.harness-data/agent-eval/two-agent/run.jsonl`. The interchange works at tool speed; live LLM iteration counts remain unmeasured.
 
 ## Kill triggers
 

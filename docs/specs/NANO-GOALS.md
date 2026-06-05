@@ -14,13 +14,21 @@ Ordered goals for NanoGraph v3. Each canonical program gets the same proof ladde
 | G6 | probe diff | M5 | Done (#6) |
 | G7 | print_42 stdout | M7 | Done (#8) |
 
-## Active program
+## Active program (post-P20)
 
-**Product proof P01–P20** decides whether NanoGraph is agent-native product or research demo.
+| ID | Goal | Issue | Status |
+| --- | --- | --- | --- |
+| G8 | Deterministic two-agent author/auditor loop | #30 | Done |
+
+Spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md)
+
+Harness: `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
+
+## Completed product proof
+
+**Product proof P01–P20** decided Continue scoped to verifiable editing (ADR-001).
 
 Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
-
-Execute one GitHub issue at a time. Start at P01 (#9).
 
 ## Explicitly not in P01–P20
 
@@ -35,3 +43,4 @@ Execute one GitHub issue at a time. Start at P01 (#9).
 | --- | --- |
 | #3–#8 | G1–G7 technical milestones |
 | #9–#28 | P01–P20 product proof |
+| #30 | G8 two-agent loop |

@@ -26,11 +26,22 @@ Reproducible tasks for product proof P12–P16. Logs land under `.harness-data/a
 | elf-a | `task-elf-baseline-exit4.md` | Raw ELF hex edit → exit 4 |
 | elf-b | `task-elf-baseline-43.md` | Raw ELF hex edit → stdout `43\n` |
 
+## Two-agent loop (G8)
+
+| Script | Purpose |
+| --- | --- |
+| `two-agent-auditor.sh` | Emit `probe_bundle` + `verdict` from genesis + patched `.ngb` |
+| `run-two-agent-loop.sh` | Deterministic author/auditor rounds with JSONL log |
+| `check-two-agent-loop.sh` | CI gate (wrong patch rejected, correct patch accepted ≤5 rounds) |
+
+Log: `.harness-data/agent-eval/two-agent/run.jsonl`
+
 ## Run
 
 ```bash
 ./scripts/agent-eval/run-task.sh --dry-run task-a
 ./scripts/agent-eval/run-eval-sprint.sh
+./scripts/check-two-agent-loop.sh
 ```
 
 `run-eval-sprint.sh` executes measured Task A + ELF baseline (issue #29) and appends JSONL logs. Dry-run checks task file presence only.

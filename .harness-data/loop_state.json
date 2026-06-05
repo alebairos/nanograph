@@ -1,22 +1,22 @@
 {
-  "goal_id": "eval-sprint",
-  "current_issue": 29,
-  "milestone": "product-proof",
-  "product_proof_step": "eval-sprint",
+  "goal_id": "#30",
+  "current_issue": 30,
+  "milestone": "G8",
+  "product_proof_step": "G8-two-agent-loop",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/PRODUCT-PROOF.md",
+    "spec_path": "docs/specs/TWO-AGENT-PROBE-PROTOCOL.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-001-product-verdict.md",
     "eval_logs": [
-      ".harness-data/agent-eval/task-a/run.jsonl",
-      ".harness-data/agent-eval/elf-a/run.jsonl"
+      ".harness-data/agent-eval/two-agent/run.jsonl",
+      ".harness-data/agent-eval/integrity/run.jsonl"
     ]
   },
   "next_action": {
-    "type": "continue-scoped",
-    "note": "Verifiable-editing verdict; extend integrity test or live-agent harness, no speed race"
+    "type": "live-agent",
+    "note": "Replace scripted author with live LLM; measure iteration counts vs ELF baseline"
   },
   "history": [
     {
@@ -31,6 +31,12 @@
       "milestone": "eval-sprint",
       "closed": "2026-06-05",
       "note": "ADR-001 Continue scoped to verifiable editing; integrity test ngb 3/3 vs elf 0/3; Python removed from eval"
+    },
+    {
+      "issue": 30,
+      "milestone": "G8",
+      "closed": "2026-06-05",
+      "note": "Deterministic two-agent loop; 2 rounds (reject wrong stdout + accept); gated in check-all-proofs"
     }
   ]
 }
