@@ -1,19 +1,19 @@
 {
-  "goal_id": "G11",
-  "current_issue": 33,
-  "milestone": "G11",
-  "product_proof_step": "G11-computed-oracle",
+  "goal_id": "G12",
+  "current_issue": 34,
+  "milestone": "G12",
+  "product_proof_step": "G12-value-bound-microop",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/CONFORMANCE-FLOOR.md",
+    "spec_path": "docs/specs/MICROOP-FLOOR.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-002-ground-truth-conformance.md",
     "eval_logs": []
   },
   "next_action": {
-    "type": "computed-oracle",
-    "note": "conf-eval yield=stdout; two-agent loop derives want-stdout from add(21,22) spec, not literal 43"
+    "type": "value-bound-microop",
+    "note": "ngb-microop --expect-new from conf-eval-derived digit; reject wrong digit statically before execution"
   },
   "history": [
     {
@@ -52,6 +52,12 @@
       "milestone": "G11",
       "closed": "2026-06-05",
       "note": "Computed oracle; conf-eval yield=stdout; two-agent loop derives want-stdout from add(21,22), no literal 43"
+    },
+    {
+      "issue": 34,
+      "milestone": "G12",
+      "closed": "2026-06-05",
+      "note": "Value-bound micro-op; ngb-microop --expect-new from conf-eval digit; reject new=34 value_mismatch, accept new=33; static, no execution"
     }
   ]
 }

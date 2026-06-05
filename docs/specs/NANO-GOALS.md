@@ -22,6 +22,7 @@ Ordered goals for NanoGraph v3. Each canonical program gets the same proof ladde
 | G9 | Ground-truth conformance floor (compute expected from spec) | #31 | Done |
 | G10 | Micro-op static floor (`RODATA_BYTE_WRITE`) | #32 | Done |
 | G11 | Computed oracle for the two-agent loop (`yield=stdout`) | #33 | Done |
+| G12 | Value-bound micro-op (`--expect-new` derived digit) | #34 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -52,3 +53,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #31 | G9 conformance floor |
 | #32 | G10 micro-op floor |
 | #33 | G11 computed oracle |
+| #34 | G12 value-bound micro-op |

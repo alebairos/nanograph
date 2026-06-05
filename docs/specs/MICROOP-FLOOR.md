@@ -21,7 +21,11 @@ Static verdict: `static=accept` or `static=reject invariant=<reason>`.
 
 Exactly one byte changes. The offset must classify as rodata under the same linear disassembly walk `nano-probe disassemble` uses. Instruction immediates and opcodes reject with `not_rodata`.
 
-This is integrity over the delta, not intention. Wrong rodata values still pass static and fail at execution (G8/G9).
+This is integrity over the delta. Wrong rodata target classes reject structurally.
+
+## Value binding (G12)
+
+`--expect-new HH` adds a value claim on top of the structural one. After rodata validation, the written byte must equal `HH` or the gate emits `static=reject invariant=value_mismatch`. The expected byte is derived independently, not asserted. The gate runs `conf-eval` on `fixtures/conformance/print_43_stdout.spec` (`add(21,22)` renders `43\n`), takes the digit at `image_off - string_off`, and passes it as `--expect-new`. The wrong-digit author (`new=34`) rejects before any execution, the round-2-to-round-1 reduction at the static layer. The correct author (`new=33`) passes.
 
 ## Components
 
@@ -38,6 +42,8 @@ This is integrity over the delta, not intention. Wrong rodata values still pass 
 | --- | --- | --- |
 | `print_42_rodata_43.microop` (off 152, 32→33) | accept | stdout `43\n`, hash matches `print_42_patched` |
 | `print_42_code_imm.microop` (off 135, mov edx) | reject `not_rodata` | not run |
+| `print_42_rodata_43.microop` + `--expect-new 33` | accept (value-bound) | not run |
+| `print_42_rodata_44.microop` + `--expect-new 33` | reject `value_mismatch` | not run |
 
 ## Relation to raw `ngb-patch`
 

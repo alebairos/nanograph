@@ -1,0 +1,5 @@
+# wrong-digit author: writes '4' (0x34) where intent computes '3'
+kind=rodata_byte_write
+image_off=152
+expect_old=32
+new=34

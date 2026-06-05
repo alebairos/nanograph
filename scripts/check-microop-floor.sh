@@ -8,8 +8,11 @@ fail() { echo "MICROOP-FLOOR FAIL: $1" >&2; exit 1; }
 PATCHED_HASH=2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1
 WANT_STDOUT=$'43\n'
 
-echo "== micro-op floor (G10) =="
-make -C tools -s bin/ngb-microop bin/ngb-parse >/dev/null
+ORACLE_SPEC="fixtures/conformance/print_43_stdout.spec"
+STRING_OFF=151
+
+echo "== micro-op floor (G10/G12) =="
+make -C tools -s bin/ngb-microop bin/ngb-parse bin/conf-eval >/dev/null
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
@@ -51,4 +54,29 @@ echo "$reject_static"
 [[ "$reject_static" == *"static=reject"* ]] || fail "missing static=reject"
 [[ "$reject_static" == *"not_rodata"* ]] || fail "expected not_rodata invariant"
 
-echo "MICROOP-FLOOR OK (accept rodata, reject code imm)"
+echo "-- value-bound (G12): expected digit derived from conf-eval --"
+rendered="$(tools/bin/conf-eval "$ORACLE_SPEC")"
+idx=$((152 - STRING_OFF))
+digit="${rendered:$idx:1}"
+expect_new="$(printf '%02x' "'$digit")"
+echo "conf-eval rendered '${rendered%$'\n'}' digit[$idx]=$digit expect_new=$expect_new"
+
+set +e
+val_accept="$(tools/bin/ngb-microop fixtures/print_42.ngb \
+  fixtures/microop/print_42_rodata_43.microop /dev/null --check-only --expect-new "$expect_new")"
+val_accept_code=$?
+set -e
+echo "$val_accept"
+[[ "$val_accept_code" -eq 0 ]] || fail "value-bound: expected accept for new=33"
+[[ "$val_accept" == *"static=accept"* ]] || fail "value-bound: missing accept"
+
+set +e
+val_reject="$(tools/bin/ngb-microop fixtures/print_42.ngb \
+  fixtures/microop/print_42_rodata_44.microop /dev/null --check-only --expect-new "$expect_new")"
+val_reject_code=$?
+set -e
+echo "$val_reject"
+[[ "$val_reject_code" -eq 1 ]] || fail "value-bound: expected reject for new=34"
+[[ "$val_reject" == *"value_mismatch"* ]] || fail "value-bound: expected value_mismatch"
+
+echo "MICROOP-FLOOR OK (accept rodata, reject code imm, value-bound accept/reject)"
