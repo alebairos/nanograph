@@ -1,0 +1,32 @@
+{
+  "program": "product-proof",
+  "spec_path": "docs/specs/PRODUCT-PROOF.md",
+  "current_step": "P01",
+  "current_issue": 9,
+  "total_steps": 20,
+  "phase": "idle",
+  "verdict_issue": 28,
+  "execution_rule": "one_open_issue_at_a_time",
+  "steps": [
+    {"step": "P01", "issue": 9, "title": "Docs and harness sync"},
+    {"step": "P02", "issue": 10, "title": "Link PRODUCT-PROOF in canonical map"},
+    {"step": "P03", "issue": 11, "title": "check-all-proofs.sh"},
+    {"step": "P04", "issue": 12, "title": "ngb-patch CLI"},
+    {"step": "P05", "issue": 13, "title": "ngb-parse --json"},
+    {"step": "P06", "issue": 14, "title": "nano-probe trace"},
+    {"step": "P07", "issue": 15, "title": "Agent patch skill"},
+    {"step": "P08", "issue": 16, "title": "print_42 patched to 43"},
+    {"step": "P09", "issue": 17, "title": "add_two two-patch chain"},
+    {"step": "P10", "issue": 18, "title": "Invalid patch rejection suite"},
+    {"step": "P11", "issue": 19, "title": "Wrong precondition rejection"},
+    {"step": "P12", "issue": 20, "title": "Agent eval harness skeleton"},
+    {"step": "P13", "issue": 21, "title": "Task A add_two exit 4"},
+    {"step": "P14", "issue": 22, "title": "Task B print_42 to 43"},
+    {"step": "P15", "issue": 23, "title": "ELF hex baseline tasks"},
+    {"step": "P16", "issue": 24, "title": "Metrics comparison"},
+    {"step": "P17", "issue": 25, "title": "nanograph-adversary gate"},
+    {"step": "P18", "issue": 26, "title": "NGB C API doc"},
+    {"step": "P19", "issue": 27, "title": "Loop driver product-proof queue"},
+    {"step": "P20", "issue": 28, "title": "ADR product verdict"}
+  ]
+}

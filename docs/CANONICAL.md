@@ -7,9 +7,10 @@
 | **Concept / philosophy** | [`nanograph.md`](../nanograph.md) | Zerolang contrast, v3 stance (raw `.ngb`, NanoProbe post-hoc) |
 | **`.ngb` v0 byte layout** | [`docs/specs/NGB-V0.md`](specs/NGB-V0.md) | Executable spec for container (offsets, hashes, invariants) |
 | **Canonical hello** | [`docs/specs/HELLO-CANONICAL.md`](specs/HELLO-CANONICAL.md) | P1–P4 proof ladder for the first sound artifact |
-| **Nano goals** | [`docs/specs/NANO-GOALS.md`](specs/NANO-GOALS.md) | Ordered G1–G7 roadmap (decided) |
+| **Nano goals** | [`docs/specs/NANO-GOALS.md`](specs/NANO-GOALS.md) | G1–G7 complete; product proof queue |
+| **Product proof** | [`docs/specs/PRODUCT-PROOF.md`](specs/PRODUCT-PROOF.md) | P01–P20 agent-native falsification program |
 | **Canonical add_two** | [`docs/specs/CANONICAL-ADD-TWO.md`](specs/CANONICAL-ADD-TWO.md) | Second program (M4), 1+1 via exit code 2 |
-| **Milestones** | [`docs/specs/MILESTONES.md`](specs/MILESTONES.md) | M0–M4 gates and verification |
+| **Milestones** | [`docs/specs/MILESTONES.md`](specs/MILESTONES.md) | M0–M7 technical gates; P01–P20 product proof |
 | **Implementation map** | [`docs/specs/ARCHITECTURE.md`](specs/ARCHITECTURE.md) | Layer → path in this repo |
 | **Agent harness** | [`docs/specs/AGENT-HARNESS.md`](specs/AGENT-HARNESS.md) | How agents run work here |
 | **Issue labels** | [`docs/specs/ISSUE-LABELS.md`](specs/ISSUE-LABELS.md) | GitHub label taxonomy |

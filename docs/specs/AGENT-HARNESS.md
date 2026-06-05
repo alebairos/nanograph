@@ -25,13 +25,26 @@ Lightweight harness modeled on **boxless-web-poc** lite delivery and **durable-c
 | Labels script | `scripts/setup-github-labels.sh` | One-time repo label setup |
 | Session | `scripts/harness-session-start.sh` | State + optional `gh issue view` |
 
+## Product proof queue (P01–P20)
+
+After G1–G7 (issues #3–#8), work binds to **product proof** steps in [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md).
+
+| Piece | Path |
+| --- | --- |
+| Spec | `docs/specs/PRODUCT-PROOF.md` |
+| Queue state | `.harness-data/product_proof_queue.json` |
+| Issue factory | `scripts/create-product-proof-issues.sh` |
+| Labels | `scripts/setup-product-proof-labels.sh` |
+
+One open `milestone:p*` issue at a time. P20 (#28) is the continue/pivot/kill verdict.
+
 ## Omitted from durable-chat (on purpose)
 
 | DC mechanism | Why omitted |
 | --- | --- |
 | `agency.sh` / BrainDB | Contract memory in git is enough |
-| Ready queue / adversarial loop | Specialist repo; query issues by label |
-| Eval bundles | Use milestone-gate scripts |
+| Standing adversarial loop | Optional at P17+; scripts are hard gate |
+| Eval bundles | P12–P16 agent-eval harness |
 
 ## Default execution loop
 

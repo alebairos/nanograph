@@ -1,29 +1,24 @@
 {
-  "goal_id": "#8",
-  "current_issue": 8,
-  "milestone": "M7",
+  "goal_id": "P01",
+  "current_issue": 9,
+  "milestone": "product-proof",
+  "product_proof_step": "P01",
   "phase": "idle",
   "iteration": 0,
   "artifacts": {
-    "spec_path": "docs/specs/NANO-GOALS.md",
-    "nano_goals": "docs/specs/NANO-GOALS.md"
+    "spec_path": "docs/specs/PRODUCT-PROOF.md",
+    "queue_path": ".harness-data/product_proof_queue.json"
   },
   "next_action": {
-    "type": "ship",
-    "note": "Refs #8 commit; close issue after CI"
+    "type": "implement",
+    "note": "Start P01 docs/harness sync; loop one issue at a time through P20"
   },
   "history": [
     {
-      "issue": 7,
-      "milestone": "M6",
+      "issue": 8,
+      "milestone": "M7",
       "closed": "2026-06-05",
-      "note": "nano-probe disassemble G4"
-    },
-    {
-      "issue": 6,
-      "milestone": "M5",
-      "closed": "2026-06-05",
-      "note": "add_two patch + probe diff"
+      "note": "G7 print_42 complete; technical goals done"
     }
   ]
 }
