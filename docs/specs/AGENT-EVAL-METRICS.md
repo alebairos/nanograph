@@ -29,6 +29,17 @@ Both reach exit 4. Not a differentiator.
 
 Logs: `.harness-data/agent-eval/integrity/run.jsonl`.
 
+## Fuzzed integrity gap (1000 random image mutations)
+
+`tools/bin/ngb-fuzz` flips a random image byte in both a valid `.ngb` and the raw ELF, then runs each surface's author-time validator.
+
+| Seed | ngb caught | ELF structural check caught |
+| --- | --- | --- |
+| 1 | 1000/1000 | 271/1000 |
+| 2 | 1000/1000 | 269/1000 |
+
+NanoGraph catches every image mutation because every image byte is in the root hash. The structural ELF check catches only header and phdr mutations (~27%); it cannot detect code or data tampering, because ELF stores no expectation of its contents. Log: `.harness-data/agent-eval/fuzz/run.jsonl`.
+
 ## Infrastructure evidence (automated)
 
 | Check | Status |

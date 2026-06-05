@@ -21,5 +21,6 @@ make -C tools -s all
 ./scripts/check-add-two-chain-proof.sh
 ./scripts/check-patch-reject.sh
 ./scripts/agent-eval/run-eval-sprint.sh
+./scripts/check-ngb-fuzz.sh 1000 1
 
 echo "ALL-PROOFS OK"

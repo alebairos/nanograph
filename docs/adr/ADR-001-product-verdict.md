@@ -44,11 +44,22 @@ Parity, not a differentiator. Neither surface wins on simple exit-code edits.
 
 Logs: `.harness-data/agent-eval/{task-a,elf-a,integrity}/run.jsonl`.
 
+### Fuzzed integrity gap (1000 random mutations, `tools/bin/ngb-fuzz`)
+
+The hand-picked N=3 was widened to 1000 random image-byte mutations per seed, each issued to both surfaces.
+
+| Seed | NanoGraph caught | Structural ELF check caught |
+| --- | --- | --- |
+| 1 | 1000/1000 | 271/1000 |
+| 2 | 1000/1000 | 269/1000 |
+
+NanoGraph catches 100% because every image byte is in the root hash. The structural ELF check (every invariant `readelf` enforces) catches only ~27%, the header and phdr region; it cannot detect the ~73% that are code or data tampering, because ELF stores no expectation of its contents. The gap is a property of the formats, confirmed across seeds.
+
 ## Honest caveats
 
-- No live LLM agent was run. The integrity result is a property of the formats and tools, so a deterministic script is legitimate evidence for it. The speed claim was not, and stays **unmeasured**.
-- N=3 bad-edit classes. They map to invariants I1–I3 and root-hash, the classes the tools are built to catch. Broader fuzzing would strengthen this.
-- The corrupt-header ELF case fails at load, not silently. It still escapes author-time review, which is the point, but "silent" applies most strongly to the code-tamper case.
+- No live LLM agent was run. The integrity result is a property of the formats and tools, so a deterministic fuzzer is legitimate evidence for it. The speed claim was not, and stays **unmeasured**.
+- The ELF baseline is a structural validator, not a strawman. It enforces magic, class, type, machine, and phdr bounds. It legitimately cannot check code bytes because the format records no expectation of them.
+- The corrupt-header ELF case fails at load, not silently. It still escapes author-time review, which is the point, but "silent" applies most strongly to the ~73% of code and data mutations.
 
 ## What this changes for the consumer
 
@@ -60,7 +71,7 @@ An agent or human editing a graph gets a typed rejection the moment an edit is m
 
 ## Kill triggers
 
-- A fuzzed bad-edit set shows NanoGraph misses a class raw ELF would also miss, with no compensating benefit.
+- A fuzzed bad-edit set shows NanoGraph misses a class raw ELF would also miss, with no compensating benefit. **Tested 2026-06-05: NanoGraph 1000/1000, no miss. Not triggered.**
 - The patch surface grows faster than invariant coverage.
 
 ## Re-open / expand triggers
