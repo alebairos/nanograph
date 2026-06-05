@@ -23,4 +23,8 @@ for required in nanograph.md docs/CANONICAL.md docs/specs/NGB-V0.md docs/specs/M
   [[ -f "$required" ]] || fail "missing canonical file: $required"
 done
 
+if [[ -f scripts/build-canonical-hello.py ]]; then
+  fail "python builder removed; use tools/bin/hello-fixture or scripts/build-canonical-hello.sh"
+fi
+
 echo "OK: canonical drift check passed"

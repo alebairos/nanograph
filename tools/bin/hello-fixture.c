@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 static int write_bytes(const char *path, const uint8_t *data, size_t len) {
   FILE *f = fopen(path, "wb");
@@ -33,13 +34,20 @@ static int write_hex(const char *path, const uint8_t *data, size_t len) {
 
 int main(int argc, char **argv) {
   int print_hash = 0;
+  int print_ms = 0;
   int write_fixtures = 1;
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "--print-hash") == 0)
       print_hash = 1;
+    if (strcmp(argv[i], "--print-ms") == 0)
+      print_ms = 1;
     if (strcmp(argv[i], "--no-write") == 0)
       write_fixtures = 0;
   }
+
+  struct timespec t0 = {0, 0};
+  if (print_ms)
+    clock_gettime(CLOCK_MONOTONIC, &t0);
 
   uint8_t elf[256];
   size_t elf_len = ngb_hello_elf_build(elf, sizeof(elf));
@@ -61,6 +69,14 @@ int main(int argc, char **argv) {
   ngb_root_hash_hex(ngb, ngb_len, hex);
   if (print_hash)
     printf("%s\n", hex);
+
+  if (print_ms) {
+    struct timespec t1;
+    clock_gettime(CLOCK_MONOTONIC, &t1);
+    long ms = (long)(t1.tv_sec - t0.tv_sec) * 1000L +
+              (long)(t1.tv_nsec - t0.tv_nsec) / 1000000L;
+    printf("%ld\n", ms);
+  }
 
   if (write_fixtures) {
     const char *root = getenv("NANOGRAPH_ROOT");

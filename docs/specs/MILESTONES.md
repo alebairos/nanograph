@@ -24,7 +24,7 @@ See [`NANO-GOALS.md`](NANO-GOALS.md) for full goal ordering (G1–G7).
 | M3 | `./scripts/check-hello-proof.sh` (P1–P4); `./scripts/check-probe-audit-log.sh` |
 | M4 | Per milestone-gate when tools land |
 
-Regenerate canonical bytes with `python3 scripts/build-canonical-hello.py` only when `NGB-V0.md` layout changes.
+Regenerate canonical bytes with `tools/bin/hello-fixture` only when `NGB-V0.md` layout changes.
 
 ## Out of scope until M4+
 

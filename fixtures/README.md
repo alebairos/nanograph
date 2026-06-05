@@ -11,3 +11,12 @@ See [`docs/specs/HELLO-CANONICAL.md`](../docs/specs/HELLO-CANONICAL.md).
 
 **image_len:** 130  
 **node_count:** 1 (`node_id=1`, offset 0, length 130)
+
+**P1 budgets** (enforced by `scripts/check-hello-proof.sh`):
+
+| Artifact | Bytes |
+| --- | --- |
+| `hello_elf.bin` | 130 |
+| `hello.ngb` | 242 |
+
+`hello-fixture --no-write --print-ms` must report ≤ 50ms (expected sub-ms; ceiling catches hangs).

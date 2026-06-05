@@ -7,3 +7,5 @@
 /tools/bin/hello-fixture
 /tools/**/target/
 .DS_Store
+__pycache__/
+*.pyc

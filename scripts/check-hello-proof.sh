@@ -6,6 +6,18 @@ cd "$ROOT"
 fail() { echo "HELLO-PROOF FAIL: $1" >&2; exit 1; }
 skip() { echo "HELLO-PROOF SKIP: $1"; }
 
+HELLO_ELF_BYTES=130
+HELLO_NGB_BYTES=242
+HELLO_FIXTURE_MS_CEILING=50
+
+filesize() {
+  if stat --version >/dev/null 2>&1; then
+    stat -c%s "$1"
+  else
+    stat -f%z "$1"
+  fi
+}
+
 echo "== canonical hello proof ladder =="
 
 make -C tools -s all
@@ -16,7 +28,13 @@ echo "-- P1 static --"
 BUILT_HASH="$(tools/bin/hello-fixture --no-write --print-hash)"
 FILE_HASH="$(tools/bin/ngb-parse fixtures/hello.ngb 2>/dev/null | sed -n 's/.*graph_root_hash=//p')"
 [[ "$BUILT_HASH" == "$FILE_HASH" ]] || fail "graph_root_hash drift (rebuild fixtures)"
-echo "P1 OK graph_root_hash=$FILE_HASH"
+elf_sz="$(filesize fixtures/hello_elf.bin)"
+ngb_sz="$(filesize fixtures/hello.ngb)"
+[[ "$elf_sz" -eq "$HELLO_ELF_BYTES" ]] || fail "hello_elf.bin size $elf_sz (want $HELLO_ELF_BYTES)"
+[[ "$ngb_sz" -eq "$HELLO_NGB_BYTES" ]] || fail "hello.ngb size $ngb_sz (want $HELLO_NGB_BYTES)"
+fixture_ms="$(tools/bin/hello-fixture --no-write --print-ms)"
+[[ "$fixture_ms" -le "$HELLO_FIXTURE_MS_CEILING" ]] || fail "hello-fixture ${fixture_ms}ms exceeds ${HELLO_FIXTURE_MS_CEILING}ms budget"
+echo "P1 OK graph_root_hash=$FILE_HASH elf=${elf_sz}B ngb=${ngb_sz}B fixture_ms=${fixture_ms}"
 
 echo "-- P2 structural --"
 ./scripts/check-ngb-roundtrip.sh

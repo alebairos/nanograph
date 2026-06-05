@@ -1,6 +1,6 @@
 # NanoGraph tools (C)
 
-M2 executable spec. Python builders are deprecated.
+M2 executable spec. C + bash only.
 
 ## Build
 
