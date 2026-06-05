@@ -23,12 +23,15 @@ Ordered goals for NanoGraph v3. Each canonical program gets the same proof ladde
 | G10 | Micro-op static floor (`RODATA_BYTE_WRITE`) | #32 | Done |
 | G11 | Computed oracle for the two-agent loop (`yield=stdout`) | #33 | Done |
 | G12 | Value-bound micro-op (`--expect-new` derived digit) | #34 | Done |
+| G13 | Live-agent eval (Cursor CLI author vs stacked gates) | #35 | Spec |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
 G9 spec: [`CONFORMANCE-FLOOR.md`](CONFORMANCE-FLOOR.md), decision [`../adr/ADR-002-ground-truth-conformance.md`](../adr/ADR-002-ground-truth-conformance.md). Harness `scripts/agent-eval/conformance-check.sh`, gated by `scripts/check-conformance-floor.sh`.
 
 G10 spec: [`MICROOP-FLOOR.md`](MICROOP-FLOOR.md). Harness `tools/bin/ngb-microop`, gated by `scripts/check-microop-floor.sh`.
+
+G13 spec: [`LIVE-AGENT-EVAL.md`](LIVE-AGENT-EVAL.md). Harness `scripts/agent-eval/run-live-agent-loop.sh`, opt-in (not CI-gated). Skill `.cursor/skills/live-ngb-author/SKILL.md`.
 
 ## Completed product proof
 
@@ -54,3 +57,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #32 | G10 micro-op floor |
 | #33 | G11 computed oracle |
 | #34 | G12 value-bound micro-op |
+| #35 | G13 live-agent eval |

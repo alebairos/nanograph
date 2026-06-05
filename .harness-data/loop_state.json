@@ -1,19 +1,19 @@
 {
-  "goal_id": "G12",
-  "current_issue": 34,
-  "milestone": "G12",
-  "product_proof_step": "G12-value-bound-microop",
-  "phase": "complete",
+  "goal_id": "G13",
+  "current_issue": 35,
+  "milestone": "G13",
+  "product_proof_step": "G13-live-agent-eval",
+  "phase": "spec",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/MICROOP-FLOOR.md",
+    "spec_path": "docs/specs/LIVE-AGENT-EVAL.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-002-ground-truth-conformance.md",
     "eval_logs": []
   },
   "next_action": {
-    "type": "value-bound-microop",
-    "note": "ngb-microop --expect-new from conf-eval-derived digit; reject wrong digit statically before execution"
+    "type": "live-agent-run",
+    "note": "Run run-live-agent-loop.sh A/B (stacked vs auditor-only) with CURSOR_API_KEY; measure rounds to accept"
   },
   "history": [
     {

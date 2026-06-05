@@ -68,4 +68,4 @@ The auditor never trusts author claims. It reads genesis + `patched.ngb`, builds
 
 ## Interpretation
 
-NanoGraph's value is verifiable editing, not edit speed. The integrity test is the fair, deterministic comparison. The two-agent loop proves the author/auditor message interchange works at tool speed. Live LLM iteration counts remain unmeasured until a live-agent harness replaces the scripted author.
+NanoGraph's value is verifiable editing, not edit speed. The integrity test is the fair, deterministic comparison. The two-agent loop proves the author/auditor message interchange works at tool speed. Live LLM iteration counts remain unmeasured until `run-live-agent-loop.sh` runs with a Cursor CLI author. See [`LIVE-AGENT-EVAL.md`](LIVE-AGENT-EVAL.md) (G13). Opt-in only; not in `check-all-proofs.sh`.
