@@ -1,0 +1,13 @@
+format=nano-probe-disassemble-v0
+graph_root_hash=5a74198abb4229f2a85dd2320f4e3d6fbc359c9c99da20556d7fa815a65a6cf2
+arch_id=1
+code_offset=120
+code_length=17
+instr #instr_1 image_offset=120 length=5 bytes=b8 01 00 00 00
+  mov eax, 1
+instr #instr_2 image_offset=125 length=3 bytes=83 c0 01
+  add eax, 1
+instr #instr_3 image_offset=128 length=9 bytes=89 c7 b8 3c 00 00 00 0f 05
+  mov edi, eax
+  mov eax, 60
+  syscall

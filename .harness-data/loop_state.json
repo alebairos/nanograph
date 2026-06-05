@@ -1,7 +1,7 @@
 {
-  "goal_id": "#6",
-  "current_issue": 6,
-  "milestone": "M5",
+  "goal_id": "#7",
+  "current_issue": 7,
+  "milestone": "M6",
   "phase": "idle",
   "iteration": 0,
   "artifacts": {
@@ -10,20 +10,20 @@
   },
   "next_action": {
     "type": "ship",
-    "note": "Refs #6 commit; close issue after CI"
+    "note": "Refs #7 commit; close issue after CI"
   },
   "history": [
+    {
+      "issue": 6,
+      "milestone": "M5",
+      "closed": "2026-06-05",
+      "note": "add_two patch + probe diff"
+    },
     {
       "issue": 5,
       "milestone": "M4",
       "closed": "2026-06-05",
       "note": "add_two genesis P1-P4"
-    },
-    {
-      "issue": 4,
-      "milestone": "M3",
-      "closed": "2026-06-05",
-      "note": "nano-probe audit-log, hello P4"
     }
   ]
 }

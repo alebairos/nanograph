@@ -21,5 +21,7 @@ jobs:
         run: ./scripts/check-add-two-patched-proof.sh
       - name: probe diff
         run: ./scripts/check-probe-diff.sh
+      - name: probe disassemble
+        run: ./scripts/check-probe-disassemble.sh
       - name: Canonical drift
         run: ./scripts/check-canonical-drift.sh
