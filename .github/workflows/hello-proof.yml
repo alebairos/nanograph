@@ -1,0 +1,19 @@
+name: hello-proof
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build tools
+        run: make -C tools
+      - name: P1-P3 hello proof
+        run: ./scripts/check-hello-proof.sh
+      - name: Canonical drift
+        run: ./scripts/check-canonical-drift.sh

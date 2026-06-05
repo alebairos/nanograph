@@ -1,0 +1,88 @@
+#include "../ngb/ngb.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static int write_bytes(const char *path, const uint8_t *data, size_t len) {
+  FILE *f = fopen(path, "wb");
+  if (!f)
+    return -1;
+  if (fwrite(data, 1, len, f) != len) {
+    fclose(f);
+    return -1;
+  }
+  fclose(f);
+  return 0;
+}
+
+static int write_hex(const char *path, const uint8_t *data, size_t len) {
+  FILE *f = fopen(path, "w");
+  if (!f)
+    return -1;
+  for (size_t i = 0; i < len; i += 16) {
+    fprintf(f, "%08zx  ", i);
+    size_t n = len - i < 16 ? len - i : 16;
+    for (size_t j = 0; j < n; j++)
+      fprintf(f, "%02x%s", data[i + j], j + 1 < n ? " " : "");
+    fprintf(f, "\n");
+  }
+  fclose(f);
+  return 0;
+}
+
+int main(int argc, char **argv) {
+  int print_hash = 0;
+  int write_fixtures = 1;
+  for (int i = 1; i < argc; i++) {
+    if (strcmp(argv[i], "--print-hash") == 0)
+      print_hash = 1;
+    if (strcmp(argv[i], "--no-write") == 0)
+      write_fixtures = 0;
+  }
+
+  uint8_t elf[256];
+  size_t elf_len = ngb_hello_elf_build(elf, sizeof(elf));
+  if (elf_len == 0) {
+    fprintf(stderr, "hello-fixture: elf build failed\n");
+    return 1;
+  }
+
+  uint8_t *ngb = NULL;
+  size_t ngb_len = 0;
+  NgbStatus st = ngb_pack_elf(elf, elf_len, NGB_ARCH_X86_64_LINUX_ELF, 1, &ngb,
+                              &ngb_len);
+  if (st != NGB_OK) {
+    fprintf(stderr, "hello-fixture: %s\n", ngb_status_str(st));
+    return 1;
+  }
+
+  char hex[65];
+  ngb_root_hash_hex(ngb, ngb_len, hex);
+  if (print_hash)
+    printf("%s\n", hex);
+
+  if (write_fixtures) {
+    const char *root = getenv("NANOGRAPH_ROOT");
+    char dir[1024];
+    if (root)
+      snprintf(dir, sizeof(dir), "%s/fixtures", root);
+    else
+      snprintf(dir, sizeof(dir), "fixtures");
+
+    char path[1200];
+    snprintf(path, sizeof(path), "%s/hello_elf.bin", dir);
+    if (write_bytes(path, elf, elf_len) != 0)
+      return 1;
+    snprintf(path, sizeof(path), "%s/hello.ngb", dir);
+    if (write_bytes(path, ngb, ngb_len) != 0)
+      return 1;
+    snprintf(path, sizeof(path), "%s/hello.ngb.hex", dir);
+    if (write_hex(path, ngb, ngb_len) != 0)
+      return 1;
+    fprintf(stderr, "wrote %s/ graph_root_hash=%s\n", dir, hex);
+  }
+
+  free(ngb);
+  return 0;
+}

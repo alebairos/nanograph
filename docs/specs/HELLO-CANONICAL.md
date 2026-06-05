@@ -17,7 +17,7 @@ All milestones **M1–M3** serve this artifact. Do not add a second hello varian
 
 | Layer | ID | Milestone | Claim | Check |
 | --- | --- | --- | --- | --- |
-| Static | P1 | M1 | Bytes match `NGB-V0.md` layout and documented `graph_root_hash` | `scripts/build-canonical-hello.py` + `check-hello-proof.sh` P1 |
+| Static | P1 | M1 | Bytes match `NGB-V0.md` layout and documented `graph_root_hash` | `tools/bin/hello-fixture` + `check-hello-proof.sh` P1 |
 | Structural | P2 | M2 | Pack/parse roundtrip; invariants I1–I6 | `check-ngb-roundtrip.sh` |
 | Behavioral | P3 | M2 | ELF in the image runs and exits 0 | `check-hello-proof.sh` P3 (linux or qemu-x86_64) |
 | Audit | P4 | M3 | Post-hoc audit output is deterministic | `check-probe-audit-log.sh` |
@@ -29,7 +29,8 @@ P1 is the concept proof before tools exist. P3 is the human-visible “hello run
 Recorded in [`fixtures/README.md`](../../fixtures/README.md) after generation. Recompute with:
 
 ```bash
-python3 scripts/build-canonical-hello.py --print-hash
+make -C tools -s bin/hello-fixture
+tools/bin/hello-fixture --no-write --print-hash
 ```
 
 ## Out of scope for hello

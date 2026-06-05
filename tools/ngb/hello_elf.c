@@ -1,0 +1,51 @@
+#include "ngb.h"
+
+#include <string.h>
+
+size_t ngb_hello_elf_build(uint8_t *out, size_t cap) {
+  static const uint8_t code[] = {0xB8, 0x3C, 0x00, 0x00, 0x00, 0x48,
+                                 0x31, 0xFF, 0x0F, 0x05};
+  const uint64_t e_entry = 0x400078;
+  const uint32_t ph_off = 64;
+  const uint32_t ph_num = 1;
+  const uint32_t ph_entsize = 56;
+  const uint32_t code_off = ph_off + ph_num * ph_entsize;
+  const size_t total = 64 + 56 + sizeof(code);
+
+  if (cap < total)
+    return 0;
+
+  static const uint8_t elf_magic[4] = {0x7f, 'E', 'L', 'F'};
+  memset(out, 0, 64);
+  memcpy(out, elf_magic, 4);
+  out[4] = 2;
+  out[5] = 1;
+  out[6] = 1;
+  out[16] = 2;
+  out[18] = 0x3e;
+  out[20] = 1;
+  memcpy(out + 24, &e_entry, 8);
+  memcpy(out + 32, &ph_off, 4);
+  out[52] = 64;
+  out[54] = 56;
+  out[56] = 1;
+
+  uint8_t *ph = out + 64;
+  memset(ph, 0, 56);
+  uint32_t load = 1;
+  memcpy(ph, &load, 4);
+  uint32_t flags = 5;
+  memcpy(ph + 4, &flags, 4);
+  uint64_t code_vaddr = e_entry;
+  memcpy(ph + 8, &code_off, 8);
+  memcpy(ph + 16, &code_vaddr, 8);
+  memcpy(ph + 24, &code_off, 8);
+  uint64_t filesz = sizeof(code);
+  memcpy(ph + 32, &filesz, 8);
+  memcpy(ph + 40, &filesz, 8);
+  uint64_t align = 0x1000;
+  memcpy(ph + 48, &align, 8);
+
+  memcpy(out + code_off, code, sizeof(code));
+  return total;
+}
