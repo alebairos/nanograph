@@ -21,7 +21,17 @@ echo "$accept_out"
 [[ "$accept_code" -eq 0 ]] || fail "expected accept for add_two.ngb"
 [[ "$accept_out" == *"verdict=accept"* ]] || fail "missing accept verdict"
 
-echo "-- negative: add_two_chain.ngb does not realize add(1,1) --"
+echo "-- negative (miscompilation): add_two_patched.ngb computes add(1,2)=3 --"
+set +e
+miscompile_out="$(./scripts/agent-eval/conformance-check.sh "$SPEC" fixtures/add_two_patched.ngb)"
+miscompile_code=$?
+set -e
+echo "$miscompile_out"
+[[ "$miscompile_code" -eq 1 ]] || fail "expected reject (exit 1) for add_two_patched.ngb"
+[[ "$miscompile_out" == *"verdict=reject"* ]] || fail "missing reject verdict"
+[[ "$miscompile_out" == *"expected=2 observed=3"* ]] || fail "expected 2 observed 3 mismatch"
+
+echo "-- negative (divergent): add_two_chain.ngb computes a different program --"
 set +e
 reject_out="$(./scripts/agent-eval/conformance-check.sh "$SPEC" fixtures/add_two_chain.ngb)"
 reject_code=$?
@@ -30,4 +40,4 @@ echo "$reject_out"
 [[ "$reject_code" -eq 1 ]] || fail "expected reject (exit 1) for add_two_chain.ngb"
 [[ "$reject_out" == *"verdict=reject"* ]] || fail "missing reject verdict"
 
-echo "CONFORMANCE-FLOOR OK (accept add_two, reject add_two_chain)"
+echo "CONFORMANCE-FLOOR OK (accept add_two, reject miscompile + divergent)"

@@ -39,13 +39,14 @@ The existing auditor (`scripts/agent-eval/two-agent-auditor.sh`) reads `WANT_STD
 | Spec | Bytes | Computed | Observed | Verdict |
 | --- | --- | --- | --- | --- |
 | `add(1,1)` yield=exit | `add_two.ngb` | 2 | 2 | accept |
+| `add(1,1)` yield=exit | `add_two_patched.ngb` | 2 | 3 | reject |
 | `add(1,1)` yield=exit | `add_two_chain.ngb` | 2 | 4 | reject |
 
-The expectation `2` is computed by `conf-eval` from `1+1`, independent of either binary. The floor accepts the binary whose real execution matches, and rejects the one that does not.
+The expectation `2` is computed by `conf-eval` from `1+1`, independent of either binary. The floor accepts the binary whose real execution matches, and rejects the ones that do not. `add_two_patched` is the true miscompilation negative, same spec with the `add` immediate at offset 127 flipped from `01` to `02` so it computes `1+2=3`. `add_two_chain` is the weaker divergent-program negative.
 
 ## Known limit
 
-The floor is only as strong as the reference evaluator. If `conf-eval` shared a bug with the byte producer, a wrong program would pass. Independent, minimal authorship of `conf-eval` is what gives the floor teeth. The negative fixture `add_two_chain` is a divergent program (computes 4), not a true codegen miscompilation of `add(1,1)`. A patched-immediate miscompilation fixture is a follow-up.
+The floor is only as strong as the reference evaluator. If `conf-eval` shared a bug with the byte producer, a wrong program would pass. Independent, minimal authorship of `conf-eval` is what gives the floor teeth. The miscompilation negative `add_two_patched` closes the earlier gap, same spec `add(1,1)` with a flipped immediate computing 3. The divergent `add_two_chain` is kept as the weaker negative.
 
 ## Kill trigger
 

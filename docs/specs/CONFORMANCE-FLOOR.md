@@ -44,12 +44,13 @@ Not covered. Inputs not run. The exit code is a single sampled consequence, not 
 
 ## Demonstration
 
-| Spec | Bytes | Computed | Observed | Verdict |
-| --- | --- | --- | --- | --- |
-| `add(1,1)` yield=exit | `add_two.ngb` | 2 | 2 | accept |
-| `add(1,1)` yield=exit | `add_two_chain.ngb` | 2 | 4 | reject |
+| Spec | Bytes | Computed | Observed | Verdict | Negative kind |
+| --- | --- | --- | --- | --- | --- |
+| `add(1,1)` yield=exit | `add_two.ngb` | 2 | 2 | accept | n/a |
+| `add(1,1)` yield=exit | `add_two_patched.ngb` | 2 | 3 | reject | miscompilation |
+| `add(1,1)` yield=exit | `add_two_chain.ngb` | 2 | 4 | reject | divergent program |
 
-`add_two` computes `1+1` and exits 2. `add_two_chain` applies two patches and exits 4. Against the computed expectation 2, the first conforms and the second does not.
+`add_two` is `mov eax,1; add eax,1` and exits 2. `add_two_patched` flips the `add` immediate at image offset 127 from `01` to `02`, so the same intent (add two numbers) computes `1+2=3`. That is a true miscompilation of `add(1,1)`, same spec, one wrong byte, wrong value. The floor rejects on the computed expectation `2` versus observed `3`. `add_two_chain` is a different program entirely (exit 4), the weaker divergent-program negative kept for coverage.
 
 ## Relation to the larger pipeline
 
@@ -61,6 +62,5 @@ This is the bottom tier of the layered verifier in [`ADR-002`](../adr/ADR-002-gr
 
 ## Future work
 
-- A patched-immediate miscompilation fixture (same intent, wrong bytes) to complement the divergent-program negative.
 - `yield=stdout` for programs whose consequence is output, not exit code.
 - A reference evaluator with operands fed at runtime, so the binary is a real function of inputs rather than a constant.
