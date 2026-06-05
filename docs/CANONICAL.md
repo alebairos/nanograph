@@ -9,6 +9,7 @@
 | **Canonical hello** | [`docs/specs/HELLO-CANONICAL.md`](specs/HELLO-CANONICAL.md) | P1–P4 proof ladder for the first sound artifact |
 | **Nano goals** | [`docs/specs/NANO-GOALS.md`](specs/NANO-GOALS.md) | G1–G7 complete; product proof queue |
 | **Product proof** | [`docs/specs/PRODUCT-PROOF.md`](specs/PRODUCT-PROOF.md) | P01–P20 agent-native falsification program |
+| **Two-agent protocol** | [`docs/specs/TWO-AGENT-PROBE-PROTOCOL.md`](specs/TWO-AGENT-PROBE-PROTOCOL.md) | Author/auditor probe bundle messages (P14) |
 | **Canonical add_two** | [`docs/specs/CANONICAL-ADD-TWO.md`](specs/CANONICAL-ADD-TWO.md) | Second program (M4), 1+1 via exit code 2 |
 | **Milestones** | [`docs/specs/MILESTONES.md`](specs/MILESTONES.md) | M0–M7 technical gates; P01–P20 product proof |
 | **Implementation map** | [`docs/specs/ARCHITECTURE.md`](specs/ARCHITECTURE.md) | Layer → path in this repo |

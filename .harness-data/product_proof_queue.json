@@ -21,7 +21,7 @@
     {"step": "P11", "issue": 19, "title": "Wrong precondition rejection"},
     {"step": "P12", "issue": 20, "title": "Agent eval harness skeleton"},
     {"step": "P13", "issue": 21, "title": "Task A add_two exit 4"},
-    {"step": "P14", "issue": 22, "title": "Task B print_42 to 43"},
+    {"step": "P14", "issue": 22, "title": "Two-agent Task B print_42 to 43"},
     {"step": "P15", "issue": 23, "title": "ELF hex baseline tasks"},
     {"step": "P16", "issue": 24, "title": "Metrics comparison"},
     {"step": "P17", "issue": 25, "title": "nanograph-adversary gate"},

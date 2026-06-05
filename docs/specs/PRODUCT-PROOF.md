@@ -66,7 +66,7 @@ Every new canonical graph uses P1–P4:
 | P11 | #19 | Wrong precondition hash rejected | cases in reject suite |
 | P12 | #20 | Agent eval harness (`scripts/agent-eval/`) | skeleton runs |
 | P13 | #21 | Task A spec + success rubric (add_two→exit 4) | documented in eval/ |
-| P14 | #22 | Task B spec (print_42→43) | documented in eval/ |
+| P14 | #22 | Task B + **two-agent probe protocol** (print_42→43) | eval log + protocol doc |
 | P15 | #23 | ELF hex baseline tasks (same goals) | documented in eval/ |
 | P16 | #24 | Metrics comparison doc | table with evidence |
 | P17 | #25 | `nanograph-adversary` agent | harness doc |
@@ -82,9 +82,19 @@ Every new canonical graph uses P1–P4:
 4. P12–P16 may run evals without a new canonical program.
 5. P20 requires P13–P16 evidence. No verdict without metrics.
 
+## Two-agent use case (P14)
+
+P14 is not only Task B. It is the first **author/auditor** eval.
+
+One agent patches `print_42.ngb` toward stdout `43\n`. A second agent verifies through a deterministic `probe_bundle` (parse JSON, disassemble, diff, audit-log). The author retries only from probe facts, not from golden patch files.
+
+Spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md)
+
+P16 metrics must compare P13 single-agent Task A vs P14 two-agent Task B on rounds and wall time.
+
 ## Agent intuition (hypothesis under test)
 
-Agents need a **validated byte graph** with **precondition-gated patches** and **deterministic audit probes** more than they need another syntax. NanoGraph is the artifact; NanoProbe is the human/agent shared verifier.
+Agents need a **validated byte graph** with **precondition-gated patches** and **deterministic audit probes** more than they need another syntax. NanoGraph is the artifact; NanoProbe is the shared verifier for humans **and** for a second agent. P14 tests whether that split enables metal-speed authoring with probe-gated correctness.
 
 If the hypothesis is wrong, ELF + objdump + git diff is enough and NanoGraph should remain a research repo.
 
