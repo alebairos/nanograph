@@ -9,6 +9,7 @@ Specialist repo for the **agent-first binary graph** (`.ngb`) and post-hoc **Nan
 3. [`docs/specs/AGENT-HARNESS.md`](docs/specs/AGENT-HARNESS.md) — execution loop
 4. [`docs/specs/MILESTONES.md`](docs/specs/MILESTONES.md) — **M0–M4**
 5. [`docs/specs/ISSUE-LABELS.md`](docs/specs/ISSUE-LABELS.md) — GitHub labels
+6. [`docs/STORY-SO-FAR.md`](docs/STORY-SO-FAR.md) — lab notebook (from git; run `update-story.sh`)
 
 ## Cursor harness
 

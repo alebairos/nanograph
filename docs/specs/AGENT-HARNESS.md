@@ -44,6 +44,7 @@ Lightweight harness modeled on **boxless-web-poc** lite delivery and **durable-c
 7. Verify per `milestone-gate`
 8. `issue-ship` on PR; `10-issue-sync` on progress
 9. Patch `loop_state.json` and `memory/items.yaml`
+10. Regenerate [`STORY-SO-FAR.md`](../STORY-SO-FAR.md) with `./scripts/update-story.sh` when closing an issue
 
 ## When to escalate
 

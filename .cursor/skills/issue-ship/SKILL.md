@@ -13,6 +13,7 @@ Use when opening PRs or finishing implementation.
 2. Working tree clean before PR (`git status` empty or only intentional unstaged).
 3. Post ship summary on the issue with PR link, verification commands run, remaining follow-ups.
 4. Close issue only when acceptance checklist is complete.
+5. Run `./scripts/update-story.sh` and commit `docs/STORY-SO-FAR.md` if the chronicle changed.
 
 ## Command patterns
 
