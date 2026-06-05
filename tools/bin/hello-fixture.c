@@ -1,3 +1,7 @@
+#if defined(__linux__)
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "../ngb/ngb.h"
 
 #include <stdio.h>
