@@ -1,32 +1,36 @@
 {
-  "goal_id": "P20",
-  "current_issue": 28,
+  "goal_id": "eval-sprint",
+  "current_issue": 29,
   "milestone": "product-proof",
-  "product_proof_step": "P20",
+  "product_proof_step": "eval-sprint",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/PRODUCT-PROOF.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-001-product-verdict.md"
+    "verdict_adr": "docs/adr/ADR-001-product-verdict.md",
+    "eval_logs": [
+      ".harness-data/agent-eval/task-a/run.jsonl",
+      ".harness-data/agent-eval/elf-a/run.jsonl"
+    ]
   },
   "next_action": {
-    "type": "eval",
-    "note": "Run Task A/B agent evals; fill AGENT-EVAL-METRICS.md"
+    "type": "pivot",
+    "note": "Task B eval + disassemble offset JSON; no new canonical program"
   },
   "history": [
-    {
-      "issue": 8,
-      "milestone": "M7",
-      "closed": "2026-06-05",
-      "note": "G7 print_42 complete"
-    },
     {
       "issue": 28,
       "milestone": "product-proof",
       "product_proof_step": "P20",
       "closed": "2026-06-05",
-      "note": "ADR-001 Continue; proofs green P01-P19"
+      "note": "ADR-001 initial Continue (infrastructure)"
+    },
+    {
+      "issue": 29,
+      "milestone": "eval-sprint",
+      "closed": "2026-06-05",
+      "note": "ADR-001 Pivot; Task A met iter budget, ELF won count"
     }
   ]
 }

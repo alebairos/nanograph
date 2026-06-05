@@ -30,6 +30,7 @@ Reproducible tasks for product proof P12–P16. Logs land under `.harness-data/a
 
 ```bash
 ./scripts/agent-eval/run-task.sh --dry-run task-a
+./scripts/agent-eval/run-eval-sprint.sh
 ```
 
-Dry-run checks task file presence and writes a skeleton log. Live agent runs are manual or Cursor-driven until an API runner lands.
+`run-eval-sprint.sh` executes measured Task A + ELF baseline (issue #29) and appends JSONL logs. Dry-run checks task file presence only.

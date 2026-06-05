@@ -1,44 +1,53 @@
 # ADR-001 — NanoGraph product verdict
 
-**Status:** Accepted (Continue with measured evals)  
-**Date:** 2026-06-05  
-**Program:** P01–P20 product proof
+**Status:** Accepted (**Pivot**)  
+**Date:** 2026-06-05 (revised after eval sprint #29)  
+**Program:** P01–P20 product proof + measured Task A / ELF baseline
 
 ## Context
 
-NanoGraph v3 tests whether agent-first `.ngb` graphs with post-hoc NanoProbe tooling beat raw ELF editing for bounded patch tasks. Technical milestones M0–M7 and product-proof infrastructure P01–P19 are shipped with green `check-all-proofs.sh`.
+NanoGraph v3 tests whether agent-first `.ngb` graphs with post-hoc NanoProbe tooling beat raw ELF editing for bounded patch tasks. Infrastructure P01–P19 is shipped. Eval sprint #29 measured Task A (add_two → exit 4) on both surfaces without golden leakage.
 
 ## Decision
 
-**Continue** investing in agent-native byte graphs and probe-gated patches.
+**Pivot** the product thesis before adding programs or syntax.
 
-## Evidence
+Keep the `.ngb` + NanoProbe stack as a **trust and audit substrate**. Do not claim agent-native editing beats ELF on iteration cost for simple exit-code patches until Task B (stdout / rodata) and improved offset discovery are measured.
+
+## Evidence (measured)
 
 | Falsification criterion | Result |
 | --- | --- |
-| Agent Task A ≤5 iterations | **Pending** — harness + tasks shipped; no live eval log yet |
-| `.ngb` beats ELF baseline | **Pending** — metrics table placeholders in `AGENT-EVAL-METRICS.md` |
-| Proofs green through P19 | **Met** — unified proof runner includes chain, reject, trace, patch CLI |
-| Invalid patches rejected | **Met** — `check-patch-reject.sh` + I6 chain on `add_two_chain.ngb` |
+| Agent Task A ≤5 iterations | **Met** — 4 iterations (`task-a/run.jsonl`) |
+| `.ngb` beats ELF baseline | **Not met** — ELF 3 iterations / 160 ms vs ngb 4 / 434 ms (`elf-a/run.jsonl`) |
+| Proofs green through P19 | **Met** |
+| Invalid patches rejected | **Met** |
 
-## Fixes discovered in program
+## What worked
 
-1. `ngb_apply_patch` must append after existing patch log, not overwrite at `patch_off`.
-2. I6 precondition check must hash prior patch log bytes, not image-only state.
+- Agent converged in budget using `disassemble` + `ngb-patch` only.
+- Two-patch chain validated with audit preconditions.
+- ELF baseline solved the same goal with fewer steps on identical byte offsets (image 120/127).
 
-## Next investment
+## What failed the product claim
 
-1. Run Task A and Task B evals; fill metrics table.
-2. Optional `nanograph-adversary` on eval PRs.
-3. Third canonical program only after agent converges on Task A without golden leakage.
+- Iteration count and wall time favored raw ELF hex edit on Task A.
+- Extra `.ngb` structure did not reduce agent effort on this task class.
 
-## Pivot triggers
+## Pivot plan
 
-- Task A live eval needs >5 iterations in majority of runs.
-- ELF baseline wins on both tasks with lower tool-call count.
-- New invariant class appears that scripts do not catch.
+1. **Do not** add a fourth canonical program yet.
+2. Run Task B (print_42 → `43\n`) ngb vs ELF before revisiting this ADR.
+3. Improve author surface: expose image-relative patch offsets from `nano-probe disassemble` (or JSON) so agents skip offset arithmetic.
+4. Optional `nanograph-adversary` on eval PRs only.
 
-## Kill triggers
+## Kill triggers (unchanged)
 
-- Agents cannot use invariant JSON without reading fixture source.
+- Task B shows same ELF advantage with no audit upside.
+- Agents require fixture sources despite invariant JSON.
 - Patch surface grows faster than proof coverage.
+
+## Continue triggers (re-open)
+
+- Task B ngb path wins on iterations or success where ELF rodata edit fails.
+- Multi-patch audit catches an invalid chain that ELF editing would ship silently.

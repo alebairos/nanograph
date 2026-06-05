@@ -1,1 +1,6 @@
-{"ts":"2026-06-05T04:40:41Z","task":"task-a","mode":"dry-run","success":null,"iterations":0,"note":"skeleton"}
+{"iter": 1, "task": "task-a", "tool_calls": 1, "note": "nano-probe disassemble fixtures/add_two.ngb", "ts": "2026-06-05T04:50:26Z"}
+{"iter": 2, "task": "task-a", "tool_calls": 2, "note": "ngb-patch patch1 off=127 pair=01:02", "ts": "2026-06-05T04:50:26Z"}
+{"iter": 3, "task": "task-a", "tool_calls": 3, "note": "ngb-patch patch2 off=121 pair=01:02 on p1", "ts": "2026-06-05T04:50:26Z"}
+{"iter": 4, "task": "task-a", "tool_calls": 4, "note": "nano-probe audit-log chain", "ts": "2026-06-05T04:50:26Z"}
+{"task": "task-a", "success": true, "iterations": 4, "tool_calls": 4, "wall_ms": 434, "exit_code": 4, "patch_count": 2, "method": "disassemble+ngb-patch chain", "ts": "2026-06-05T04:50:26Z"}
+{"ts":"2026-06-05T04:50:38Z","task":"task-a","mode":"dry-run","success":null,"iterations":0,"note":"skeleton"}
