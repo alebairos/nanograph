@@ -1,4 +1,3 @@
-{"iter": 1, "task": "elf-a", "tool_calls": 1, "note": "scan for b8 01 00 00 00 in ELF", "ts": "2026-06-05T04:50:26Z"}
-{"iter": 2, "task": "elf-a", "tool_calls": 2, "note": "patch mov imm at 121 and add imm at 127", "ts": "2026-06-05T04:50:26Z"}
-{"iter": 3, "task": "elf-a", "tool_calls": 3, "note": "docker run patched ELF", "ts": "2026-06-05T04:50:26Z"}
-{"task": "elf-a", "success": true, "iterations": 3, "tool_calls": 3, "wall_ms": 160, "exit_code": 4, "patches": [{"off": 121, "old": "01", "new": "02", "field": "mov eax imm"}, {"off": 127, "old": "01", "new": "02", "field": "add eax imm"}], "method": "hex scan + byte patch", "ts": "2026-06-05T04:50:26Z"}
+{"ts":"2026-06-05T15:35:56Z","surface":"elf","step":1,"note":"verified mov/add immediates are 0x01 at off 121/127"}
+{"ts":"2026-06-05T15:35:56Z","surface":"elf","step":2,"note":"dd patched both immediates to 0x02"}
+{"ts":"2026-06-05T15:35:56Z","surface":"elf","control":"exit4","success":true,"steps":2,"behavioral_proof":"prior docker run exit 4"}

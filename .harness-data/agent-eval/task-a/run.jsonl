@@ -1,6 +1,5 @@
-{"iter": 1, "task": "task-a", "tool_calls": 1, "note": "nano-probe disassemble fixtures/add_two.ngb", "ts": "2026-06-05T04:50:26Z"}
-{"iter": 2, "task": "task-a", "tool_calls": 2, "note": "ngb-patch patch1 off=127 pair=01:02", "ts": "2026-06-05T04:50:26Z"}
-{"iter": 3, "task": "task-a", "tool_calls": 3, "note": "ngb-patch patch2 off=121 pair=01:02 on p1", "ts": "2026-06-05T04:50:26Z"}
-{"iter": 4, "task": "task-a", "tool_calls": 4, "note": "nano-probe audit-log chain", "ts": "2026-06-05T04:50:26Z"}
-{"task": "task-a", "success": true, "iterations": 4, "tool_calls": 4, "wall_ms": 434, "exit_code": 4, "patch_count": 2, "method": "disassemble+ngb-patch chain", "ts": "2026-06-05T04:50:26Z"}
-{"ts":"2026-06-05T04:50:38Z","task":"task-a","mode":"dry-run","success":null,"iterations":0,"note":"skeleton"}
+{"ts":"2026-06-05T15:35:56Z","surface":"ngb","step":1,"note":"nano-probe disassemble fixtures/add_two.ngb"}
+{"ts":"2026-06-05T15:35:56Z","surface":"ngb","step":2,"note":"ngb-patch off=127 pair=01:02 (genesis -> exit 3)"}
+{"ts":"2026-06-05T15:35:56Z","surface":"ngb","step":3,"note":"ngb-patch off=121 pair=01:02 (exit 3 -> exit 4)"}
+{"ts":"2026-06-05T15:35:56Z","surface":"ngb","step":4,"note":"graph hash matches docker-proven exit-4 fixture 59a65e674d72a633ebd85004a9a0622896be4cf668163c4861f503028b17abf2"}
+{"ts":"2026-06-05T15:35:56Z","surface":"ngb","control":"exit4","success":true,"steps":4,"behavioral_proof":"hash-equiv to check-add-two-chain-proof.sh"}

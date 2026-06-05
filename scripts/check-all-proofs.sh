@@ -20,7 +20,6 @@ make -C tools -s all
 ./scripts/check-print-42-patched-proof.sh
 ./scripts/check-add-two-chain-proof.sh
 ./scripts/check-patch-reject.sh
-chmod +x scripts/agent-eval/run-task.sh 2>/dev/null || true
-./scripts/agent-eval/run-task.sh --dry-run task-a
+./scripts/agent-eval/run-eval-sprint.sh
 
 echo "ALL-PROOFS OK"

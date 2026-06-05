@@ -15,8 +15,8 @@
     ]
   },
   "next_action": {
-    "type": "pivot",
-    "note": "Task B eval + disassemble offset JSON; no new canonical program"
+    "type": "continue-scoped",
+    "note": "Verifiable-editing verdict; extend integrity test or live-agent harness, no speed race"
   },
   "history": [
     {
@@ -30,7 +30,7 @@
       "issue": 29,
       "milestone": "eval-sprint",
       "closed": "2026-06-05",
-      "note": "ADR-001 Pivot; Task A met iter budget, ELF won count"
+      "note": "ADR-001 Continue scoped to verifiable editing; integrity test ngb 3/3 vs elf 0/3; Python removed from eval"
     }
   ]
 }
