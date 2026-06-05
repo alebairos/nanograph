@@ -23,6 +23,7 @@ make -C tools -s all
 ./scripts/agent-eval/run-eval-sprint.sh
 ./scripts/check-two-agent-loop.sh
 ./scripts/check-conformance-floor.sh
+./scripts/check-microop-floor.sh
 ./scripts/check-ngb-fuzz.sh 1000 1
 
 echo "ALL-PROOFS OK"

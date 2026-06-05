@@ -4,7 +4,7 @@ ROOT := $(abspath ..)
 
 LIB_SRCS := ngb/sha256.c ngb/canonical_elf.c ngb/hello_elf.c ngb/add_two_elf.c \
             ngb/print_42_elf.c ngb/pack.c ngb/parse.c ngb/hash_root.c \
-            ngb/patch.c ngb/status.c
+            ngb/patch.c ngb/microop.c ngb/status.c
 PROBE_SRCS := probe/audit_log.c probe/diff.c probe/disassemble.c probe/trace.c
 LIB_OBJS := $(LIB_SRCS:.c=.o)
 PROBE_OBJS := $(PROBE_SRCS:.c=.o)
@@ -12,7 +12,7 @@ PROBE_OBJS := $(PROBE_SRCS:.c=.o)
 BINS := bin/ngb-pack bin/ngb-parse bin/ngb-patch bin/ngb-extract bin/hello-fixture \
         bin/add-two-fixture bin/add-two-patch-fixture bin/print-42-fixture \
         bin/print-42-patch-fixture bin/add-two-chain-fixture bin/ngb-fuzz \
-        bin/nano-probe bin/conf-eval
+        bin/nano-probe bin/conf-eval bin/ngb-microop
 
 .PHONY: all clean test
 
@@ -58,6 +58,9 @@ bin/ngb-extract: bin/ngb-extract.c
 	$(CC) $(CFLAGS) $^ -o $@
 
 bin/conf-eval: bin/conf-eval.c
+	$(CC) $(CFLAGS) $^ -o $@
+
+bin/ngb-microop: bin/ngb-microop.c $(LIB_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 bin/nano-probe: bin/nano-probe.c $(LIB_OBJS) $(PROBE_OBJS)

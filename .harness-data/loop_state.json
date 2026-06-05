@@ -1,21 +1,19 @@
 {
-  "goal_id": "G9",
-  "current_issue": 31,
-  "milestone": "G9",
-  "product_proof_step": "G9-conformance-floor",
+  "goal_id": "G10",
+  "current_issue": 32,
+  "milestone": "G10",
+  "product_proof_step": "G10-microop-floor",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/CONFORMANCE-FLOOR.md",
+    "spec_path": "docs/specs/MICROOP-FLOOR.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-002-ground-truth-conformance.md",
-    "eval_logs": [
-      ".harness-data/agent-eval/conformance/run.jsonl"
-    ]
+    "eval_logs": []
   },
   "next_action": {
-    "type": "build-conformance-floor",
-    "note": "conf-eval computes expected from spec independently; check accepts add_two (exit 2) rejects add_two_chain (exit 4) vs add(1,1)"
+    "type": "live-agent",
+    "note": "Live LLM author with stacked static micro-op + execution gates; measure retry reduction"
   },
   "history": [
     {
@@ -42,6 +40,12 @@
       "milestone": "G9",
       "closed": "2026-06-05",
       "note": "Ground-truth conformance floor; conf-eval computes expected from spec independently; accept add_two (exit 2) reject add_two_chain (exit 4) vs add(1,1); gated in check-all-proofs"
+    },
+    {
+      "issue": 32,
+      "milestone": "G10",
+      "closed": "2026-06-05",
+      "note": "RODATA_BYTE_WRITE micro-op; static accept rodata off 152, reject code off 135; gated in check-all-proofs"
     }
   ]
 }

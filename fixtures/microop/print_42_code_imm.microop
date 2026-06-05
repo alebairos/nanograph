@@ -1,0 +1,4 @@
+# negative fixture: patch inside mov edx immediate (instruction bytes)
+kind=rodata_byte_write
+image_off=135
+new=02

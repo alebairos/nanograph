@@ -1,0 +1,5 @@
+# RODATA_BYTE_WRITE: change '2' -> '3' in print_42 stdout string
+kind=rodata_byte_write
+image_off=152
+expect_old=32
+new=33
