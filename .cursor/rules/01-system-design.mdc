@@ -1,0 +1,19 @@
+---
+description: Non-negotiable system design principles for NanoGraph changes.
+alwaysApply: true
+---
+
+# System Design (non-negotiable)
+
+1. Ask the layer below: use only the public contract of the directly adjacent layer.
+2. Purest form: choose the smallest sufficient abstraction at that boundary.
+3. Kaizen + jidoka + poka-yoke: reversible steps, stop on invariant breaks, mistake-proof with types/contracts/tests.
+4. Composability is the mechanism: compose small units with explicit compatible contracts; avoid god orchestrators.
+
+**Principle 1 has two moves.** Adjacency is default: use the public contract of the directly adjacent layer; do not skip layers or reach through. Depth is optional: when the problem is systems-shaped (concurrency, IO, resources, lifetimes, scheduling, binary layout, mmap), ask whether the adjacent lower layer is runtime, OS, or stdlib before inventing mechanism above it. Use depth for systems languages (C, Rust, Zig) and binary tooling in this repo.
+
+Before introducing mechanism code, justify why it cannot be satisfied by the adjacent lower layer.
+
+For product and format boundaries, align with [`nanograph.md`](../../nanograph.md) (v3 stance), [`docs/specs/NGB-V0.md`](../../docs/specs/NGB-V0.md), and [`docs/specs/MILESTONES.md`](../../docs/specs/MILESTONES.md) unless a written ADR in `docs/adr/` explicitly supersedes them.
+
+**NanoGraph-specific.** Parse untrusted `.ngb` bytes only in pack/parse/probe boundaries. Do not embed human-readable audit JSON in the canonical artifact (v2 is rejected).

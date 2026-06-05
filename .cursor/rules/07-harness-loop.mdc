@@ -1,0 +1,16 @@
+---
+description: NanoGraph loop harness — session start, loop_state, loop driver.
+alwaysApply: true
+---
+
+# Loop harness (NanoGraph)
+
+For non-trivial work in this repo:
+
+1. Run `./scripts/harness-session-start.sh` before planning or implementing.
+2. Read `.harness-data/loop_state.json` and `.harness-data/memory/summary.md`.
+3. Invoke **`nanograph-loop-driver`** before substantial work (unless user waives).
+4. Apply state updates by editing `loop_state.json` via the patch contract in `harness-quickstart` (no external agency daemon).
+5. Do not change `NGB-V0.md` or `tools/**` for substantial work without `artifacts.spec_path` set in loop state.
+
+See `docs/specs/AGENT-HARNESS.md`.

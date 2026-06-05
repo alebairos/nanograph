@@ -1,0 +1,5 @@
+# Contract memory items (append-only milestones / decisions)
+- type: outcome
+  milestone: M0
+  summary: Agent harness wired (rules, skills, loop_state, session script)
+  date: "2026-06-04"

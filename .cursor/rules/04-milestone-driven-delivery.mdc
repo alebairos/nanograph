@@ -1,0 +1,33 @@
+---
+description: Milestone-first delivery for NanoGraph specialist work.
+alwaysApply: true
+---
+
+# Milestone-driven delivery
+
+Use this for all work in **nanograph**.
+
+## Canonical docs (no drift)
+
+- Concept → [`nanograph.md`](../../nanograph.md)
+- Byte layout → [`docs/specs/NGB-V0.md`](../../docs/specs/NGB-V0.md)
+- Milestones → [`docs/specs/MILESTONES.md`](../../docs/specs/MILESTONES.md)
+- Implementation map → [`docs/specs/ARCHITECTURE.md`](../../docs/specs/ARCHITECTURE.md)
+- See [`docs/CANONICAL.md`](../../docs/CANONICAL.md)
+
+Do not add a second full concept doc under `docs/`. Do not embed v2 JSON audit manifests in `.ngb`.
+
+## Required gates
+
+1. **Milestone bind.** State **Bound milestone: M*n*** from `docs/specs/MILESTONES.md` before edits.
+2. **Issue bind.** State **Bound issue: #n** for substantial work. Create or attach via `08-issue-first-execution.mdc` and `issue-intake` skill.
+3. **Plan before edits.** Per `05-planning-gate.mdc`.
+4. **Design declaration.** Per `06-design-declaration.mdc` before mechanism code.
+5. **Verify before done.** Per `milestone-gate` skill.
+6. **Format change.** Edit `NGB-V0.md` and fixtures before changing pack/parse/probe.
+7. **Issue sync.** Per `10-issue-sync.mdc` at milestones and before close.
+
+## Scope notes
+
+- M0–M1 may be docs-only; still run drift check and keep the bound issue updated.
+- Emergency typo fix may skip new issue creation if covered by an open umbrella issue.

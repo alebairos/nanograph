@@ -1,0 +1,16 @@
+---
+description: Link issues, commits, and pull requests for NanoGraph.
+alwaysApply: true
+---
+
+# Issue-PR linkage
+
+Every feature PR must reference its issue.
+
+Required behavior:
+
+- PR description includes `Fixes #<id>` or `Refs #<id>`.
+- Commit messages include `Refs #<id>` when applicable.
+- Do not close issues without linked implementation evidence and completed acceptance checklist.
+
+Use `issue-ship` skill when opening or finishing PRs.

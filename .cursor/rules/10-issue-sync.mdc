@@ -1,0 +1,17 @@
+---
+description: Keep GitHub issue state synchronized with NanoGraph execution.
+alwaysApply: true
+---
+
+# Issue sync
+
+Update issue state at meaningful milestones.
+
+Required behavior:
+
+- Check off acceptance items as tasks complete.
+- Post concise comments when scope, blockers, or plan changes.
+- Before completion, post verification summary (scripts run, risks).
+- Close only when checklist is complete and PR is merged (or docs-only proof stated).
+
+Use `gh issue edit` and `gh issue comment`. Sync `loop_state.json` `phase` with issue progress when the bound issue changes.

@@ -1,0 +1,21 @@
+---
+description: Require explicit governing-rules and boundary declaration before coding.
+alwaysApply: true
+---
+
+# Design Declaration
+
+Before implementation, declare the design intent in one compact block:
+
+- Governing rules used (at minimum `01-system-design`, `02-quality-gates`, `03-goal-loop`, `04-milestone-driven-delivery`, `08-issue-first` when substantial).
+- Bound issue #n and milestone M*n* when applicable.
+- Target layer and adjacent contract (see `docs/specs/ARCHITECTURE.md`).
+- Why the adjacent lower layer is insufficient (if adding mechanism code).
+- Smallest sufficient abstraction chosen.
+
+Verification hook:
+
+- After implementation, confirm the change still respects the declared boundary.
+- If the boundary moved, explain why and update the declaration.
+
+For `.ngb` work, cite invariant ids (I1–I6) the change preserves or tightens.

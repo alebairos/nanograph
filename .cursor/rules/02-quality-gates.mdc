@@ -1,0 +1,26 @@
+---
+description: Quality gates for NanoGraph implementation and verification.
+alwaysApply: true
+---
+
+# Quality Gates
+
+No task is complete until verification is run for touched scope.
+
+Required behavior:
+
+- Run focused checks first, then broaden only if needed.
+- Report what was run, what passed, and any remaining risk.
+- If checks fail, fix failures before expanding scope.
+
+Default commands (by change scope):
+
+| Scope | Command |
+| --- | --- |
+| Harness / docs | `./scripts/check-canonical-drift.sh` |
+| Milestone close | See `.cursor/skills/milestone-gate/SKILL.md` |
+| `.ngb` tools (M2+) | `./scripts/check-ngb-roundtrip.sh` when present |
+| Probe (M3+) | `./scripts/check-probe-audit-log.sh` when present |
+| C tools | `make -C tools test` or project README when added |
+
+If no automated harness exists for the milestone yet, state manual verification and add the script in the same milestone when possible.

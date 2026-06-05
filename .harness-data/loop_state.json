@@ -1,0 +1,14 @@
+{
+  "goal_id": "m0-harness",
+  "milestone": "M0",
+  "phase": "idle",
+  "iteration": 0,
+  "artifacts": {
+    "spec_path": "docs/specs/AGENT-HARNESS.md"
+  },
+  "next_action": {
+    "type": "human",
+    "note": "Harness wired; bind M1 for NGB-V0 fixtures"
+  },
+  "history": []
+}

@@ -1,0 +1,5 @@
+.harness-data/logs/
+*.o
+*.a
+/tools/**/target/
+.DS_Store

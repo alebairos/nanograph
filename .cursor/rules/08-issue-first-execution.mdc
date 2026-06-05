@@ -1,0 +1,17 @@
+---
+description: Require GitHub issue before substantial NanoGraph work.
+alwaysApply: true
+---
+
+# Issue-first execution
+
+For substantial work, require an active GitHub issue before implementation.
+
+Required behavior:
+
+- If no issue exists, create one with `issue-intake` skill or `gh issue create`.
+- Body includes acceptance checklist and **Bound milestone: M*n***.
+- Apply labels per [`docs/specs/ISSUE-LABELS.md`](../../docs/specs/ISSUE-LABELS.md).
+- Set `current_issue` in `.harness-data/loop_state.json` and state **Bound issue: #n** in chat.
+
+Trivial typos or harness-only comment fixes may proceed without a new issue if an umbrella issue already covers the work.

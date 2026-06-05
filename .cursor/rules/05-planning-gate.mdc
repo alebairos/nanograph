@@ -1,0 +1,21 @@
+---
+description: Require explicit planning checklist before implementation edits.
+alwaysApply: true
+---
+
+# Planning Gate
+
+Before editing code or format specs for non-trivial work, produce a short plan that is explicit and checkable.
+
+Required pre-edit checklist:
+
+- Requirements and success criteria restated (milestone + spec section).
+- Files expected to change are listed.
+- Boundary and invariants listed (NGB I1–I6 when touching format/tools).
+- Verification plan listed (scripts from milestone-gate).
+- Rollback note for format version bumps.
+
+Execution rule:
+
+- Do not edit until the checklist is present in the chat update.
+- If scope changes materially, refresh the checklist before continuing.

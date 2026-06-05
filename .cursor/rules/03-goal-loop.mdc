@@ -1,0 +1,19 @@
+---
+description: Enforce bounded goal-oriented execution loops.
+alwaysApply: true
+---
+
+# Goal Loop
+
+Work in explicit loops:
+
+1. State the current goal (milestone + artifact).
+2. Execute one next step.
+3. Verify the step outcome.
+4. Decide next step (continue, pivot, or stop).
+
+Constraints:
+
+- Default max 3 loops on the same blocker before escalation.
+- If blocked twice on the same invariant (e.g. hash mismatch), report blocker and options.
+- Do not run unbounded retries on pack/parse/probe.
