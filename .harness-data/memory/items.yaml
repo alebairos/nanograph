@@ -3,3 +3,8 @@
   milestone: M0
   summary: Agent harness wired (rules, skills, loop_state, session script)
   date: "2026-06-04"
+- type: outcome
+  milestone: M0
+  issue: 1
+  summary: GitHub issue persistence wired; repo https://github.com/alebairos/nanograph
+  date: "2026-06-04"

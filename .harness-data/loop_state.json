@@ -1,14 +1,21 @@
 {
-  "goal_id": "m0-harness",
+  "goal_id": "#1",
+  "current_issue": 1,
   "milestone": "M0",
-  "phase": "idle",
-  "iteration": 0,
+  "phase": "verifying",
+  "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/AGENT-HARNESS.md"
+    "spec_path": "docs/specs/AGENT-HARNESS.md",
+    "umbrella_issue": "https://github.com/alebairos/nanograph/issues/1"
   },
   "next_action": {
     "type": "human",
-    "note": "Harness wired; bind M1 for NGB-V0 fixtures"
+    "note": "Close #1 after review; bind M1 issue for NGB-V0 fixtures"
   },
-  "history": []
+  "history": [
+    {
+      "at": "2026-06-04",
+      "note": "Issue harness wired; repo pushed; umbrella #1 dogfood complete"
+    }
+  ]
 }

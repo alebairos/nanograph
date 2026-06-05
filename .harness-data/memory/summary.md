@@ -1,9 +1,11 @@
 # NanoGraph contract memory
 
-**Direction:** v3 specialist repo — raw `.ngb`, post-hoc NanoProbe, no v2 JSON-in-binary.
+**Direction:** v3 specialist repo — raw `.ngb`, post-hoc NanoProbe, GitHub issues for work persistence.
 
-**Current milestone:** M0 (harness + canonical map).
+**Current milestone:** M0 (harness + issues).
 
-**Next:** M1 freeze `NGB-V0.md` and fixture README; M2 pack/parse; M3 `audit-log` probe.
+**Bound issue:** #1 umbrella (GitHub issue persistence).
 
-**Non-negotiables:** System design rules in `.cursor/rules/01-system-design.mdc`; parse at boundary only.
+**Next:** Close #1; open M1 issue for `NGB-V0` fixtures and hex dump.
+
+**Non-negotiables:** Dual bind milestone + issue; system design at `.cursor/rules/01-system-design.mdc`.
