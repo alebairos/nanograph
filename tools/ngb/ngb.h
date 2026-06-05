@@ -65,8 +65,13 @@ const char *ngb_status_str(NgbStatus s);
 size_t ngb_canonical_elf_build(const uint8_t *code, size_t code_len, uint8_t *out,
                                size_t cap);
 
+size_t ngb_canonical_elf_build_segment(const uint8_t *code, size_t code_len,
+                                       const uint8_t *data, size_t data_len,
+                                       uint8_t *out, size_t cap);
+
 size_t ngb_hello_elf_build(uint8_t *out, size_t cap);
 size_t ngb_add_two_elf_build(uint8_t *out, size_t cap);
+size_t ngb_print_42_elf_build(uint8_t *out, size_t cap);
 
 NgbStatus ngb_pack_elf_nodes(const uint8_t *elf, size_t elf_len, uint16_t arch_id,
                              const NgbNodeSpec *specs, uint32_t node_count,

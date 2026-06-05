@@ -23,5 +23,7 @@ jobs:
         run: ./scripts/check-probe-diff.sh
       - name: probe disassemble
         run: ./scripts/check-probe-disassemble.sh
+      - name: print_42 proof P1-P4
+        run: ./scripts/check-print-42-proof.sh
       - name: Canonical drift
         run: ./scripts/check-canonical-drift.sh

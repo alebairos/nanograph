@@ -25,5 +25,6 @@ check_one() {
 check_one fixtures/hello.ngb fixtures/hello.disassemble.golden
 check_one fixtures/add_two.ngb fixtures/add_two.disassemble.golden
 check_one fixtures/add_two_patched.ngb fixtures/add_two_patched.disassemble.golden
+check_one fixtures/print_42.ngb fixtures/print_42.disassemble.golden
 
 echo "PROBE-DISASSEMBLE OK"

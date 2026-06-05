@@ -47,6 +47,18 @@ static size_t disasm_one(const uint8_t *p, size_t avail, FILE *out) {
     fprintf(out, "  mov eax, %u\n", u32le(p + 1));
     return 5;
   }
+  if (p[0] == 0xBF && avail >= 5) {
+    fprintf(out, "  mov edi, %u\n", u32le(p + 1));
+    return 5;
+  }
+  if (p[0] == 0xBE && avail >= 5) {
+    fprintf(out, "  mov esi, %u\n", u32le(p + 1));
+    return 5;
+  }
+  if (p[0] == 0xBA && avail >= 5) {
+    fprintf(out, "  mov edx, %u\n", u32le(p + 1));
+    return 5;
+  }
   if (p[0] == 0x83 && avail >= 3 && p[1] == 0xC0) {
     fprintf(out, "  add eax, %u\n", (unsigned)p[2]);
     return 3;
@@ -58,6 +70,10 @@ static size_t disasm_one(const uint8_t *p, size_t avail, FILE *out) {
   if (p[0] == 0x48 && avail >= 3 && p[1] == 0x31 && p[2] == 0xFF) {
     fputs("  xor rdi, rdi\n", out);
     return 3;
+  }
+  if (p[0] == 0x31 && avail >= 2 && p[1] == 0xFF) {
+    fputs("  xor edi, edi\n", out);
+    return 2;
   }
   if (p[0] == 0x0F && avail >= 2 && p[1] == 0x05) {
     fputs("  syscall\n", out);

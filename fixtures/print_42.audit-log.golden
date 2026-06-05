@@ -1,0 +1,10 @@
+format=nano-probe-audit-log-v0
+graph_root_hash=2429c3ed702dbfa62e4ab9eb2547b509f188b63f14742befa49dcee71f8cf016
+arch_id=1
+image_len=154
+node_count=4
+patch_count=0
+node id=1 offset=0 length=15 content_hash=209bad794eb121e5ffe2d925f6c805e4e6bd54ebb60b326b0db94d85b062d7eb
+node id=2 offset=15 length=7 content_hash=6b0ca5a245ebe3a30f4ab25fe2a11aab380b30cb7c7657bf327db3219b041b98
+node id=3 offset=22 length=9 content_hash=997b6d03436b815300222a9590b03a34b1da5b6f2aef094fe5b084b1aad02970
+node id=4 offset=31 length=3 content_hash=8257c1dcf2dd679475a8b10db22f40210535e58cfc311aa3866e624414b009b0
