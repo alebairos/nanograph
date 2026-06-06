@@ -1,8 +1,8 @@
 {
-  "goal_id": "G19",
-  "current_issue": 39,
-  "milestone": "G19",
-  "product_proof_step": "G19-ca-rules-50-110",
+  "goal_id": "G20",
+  "current_issue": 40,
+  "milestone": "G20",
+  "product_proof_step": "G20-honest-ledger-rule110-scale",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G19 done: rules 50 and 110 specimens; ca_eca.c + mint-ca-fixtures; oracle golden + conformance gates for 30/50/110."
+    "note": "G20 done: dropped overclaims (rule 50 periodic, rule 110 universal-class oracle-stress); conf-eval init=right; ca_eca.c parameterized; rule110 re-minted width 96/gens 96/init=right (9.3 KB golden); gates rule-agnostic, all-proofs green."
   },
   "history": [
     {
@@ -102,6 +102,12 @@
       "milestone": "G19",
       "closed": "2026-06-06",
       "note": "CA rules 50 and 110; ca_eca.c shared source; golden oracle + conformance for 30/50/110 in check-all-proofs"
+    },
+    {
+      "issue": 40,
+      "milestone": "G20",
+      "closed": "2026-06-06",
+      "note": "Honest CA ledger (dropped periodic/universal-class overclaims); conf-eval init=right; ca_eca.c parameterized; rule110 re-minted width 96/gens 96/init=right (9.3 KB golden, fills grid); gates unchanged, all-proofs green"
     }
   ]
 }
