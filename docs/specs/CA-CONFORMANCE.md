@@ -18,7 +18,7 @@ The scalar floor (G9) accepts on a one-byte exit code. That hides two questions.
 | `rule` | 0–255 | the local transition rule |
 | `width` | 1–512 | cells per row |
 | `gens` | 1–512 | rows to render, generation 0 first |
-| `init` | `center` | single 1 at `width/2`, rest 0 |
+| `init` | `center`, `right` | single 1 at `width/2` (`center`) or `width-1` (`right`), rest 0 |
 | `yield` | `stdout` | the observable is the rendered grid |
 
 Boundary is fixed-zero. Cells past the edges are 0. Generation 0 is the seed row. New cell value is `rule >> (left<<2 | center<<1 | right) & 1`.

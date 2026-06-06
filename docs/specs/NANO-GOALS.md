@@ -17,7 +17,8 @@ What the program has settled versus what still needs a goal.
 | Static gate rejects operational errors pre-execution | **Proven** | Operational-error matrix: 4/4 bad classes rejected at 0 executions (`--expect-off` + `--expect-new`); gated in `check-all-proofs.sh` |
 | Conformance generalizes to emergent output, behavioral-not-structural | **Proven** | G17 CA: `conf-eval op=eca` renders the grid; two Route B variants accept on one spec with distinct `graph_root_hash`, wrong-rule specimen rejects; Rule 90 popcount invariant guards the oracle |
 | CA patch-level miscompilation caught by conformance floor | **Proven** | G18 `ca_rule30_patched.ngb` one-byte rule flip; still runs; stdout diverges; rejected in `check-ca-conformance.sh` |
-| CA conformance on multiple rule classes (periodic + universal-class) | **Proven** | G19 rules 50 and 110; golden oracle + two-variant accept + wrong-rule reject; same `op=eca` machinery |
+| CA conformance generalizes across rule bytes | **Proven** | G19 rules 50 (regular/nested) and 110; golden oracle + two-variant accept + wrong-rule reject; same `op=eca` machinery |
+| Conformance holds on a richer observable at scale | **Proven** | G20 re-mints rule 110 at width 96 / gens 96 / `init=right` so the grid fills with glider structure (9.3 KB stdout, beyond eyeball check); `init=right` added to `conf-eval`, `ca_eca.c` parameterized; not an oracle-ceiling claim, the oracle stays cheap |
 | Stacked gates reduce live-agent retries | **Not the claim** | G14 blind A/B was inconclusive (answer leaked across ~18 repo files, no tool-call trace); reframed to pre-execution rejection above |
 | Live eval generalizes beyond print_42 | **Parked** | Single program only; no reason to expand until a workload needs it |
 | Human-auditable verdict trail | **Parked** | `probe_bundle` is text concatenation; revisit if an external auditor needs it |
@@ -52,6 +53,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G17 | Cellular-automata conformance (emergent stdout, behavioral-not-structural) | #37 | Done |
 | G18 | CA hardening (patch negative, live harness, runner guard) | #38 | Done |
 | G19 | CA rules 50 and 110 specimens | #39 | Done |
+| G20 | Honest CA ledger + rule 110 at scale (`init=right`) | #40 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -69,14 +71,16 @@ G18 spec: extends G17. `ca-rule30-patch-fixture` mints `ca_rule30_patched.ngb` (
 
 G19 spec: extends G17/G18. Shared `fixtures/ca/ca_eca.c` compiled with `-DRULE=n`. Rules 50 and 110 added to `mint-ca-fixtures.sh`, `check-ca-oracle.sh` (golden diff), `check-ca-conformance.sh` (two-variant accept + wrong-rule reject). No new floor machinery.
 
+G20 spec: extends G19. `conf-eval op=eca` gains `init=right` (seed at `width-1`); `ca_eca.c` parameterized with `-DWIDTH`/`-DGENS`/`-DINIT_RIGHT`. `rule110.spec` re-minted at width 96 / gens 96 / `init=right` so the left-propagating pattern fills the grid (9.3 KB golden, no eyeball check). Rule 50's "periodic" and rule 110's "universal-class oracle-stress" labels were dropped as overclaims; the gates and ledger now state only what specimens show. No new floor machinery.
+
 ## Ruliad rule exploration
 
 | Rule | Character | What it tests | Status |
 | --- | --- | --- | --- |
 | 90 | Sierpinski / fractal | Closed-form oracle witness (`2^popcount(k)` per row) | **Done** (G17 phase 1 invariant) |
 | 30 | Chaotic | Rich stdout; golden + patch negative | **Done** (G17/G18 primary specimen) |
-| 50 | Periodic class | Second rule specimen; golden-only oracle; behavioral-not-structural | **Done** (G19) |
-| 110 | Universal-class | Oracle-trust stress; golden-only; no closed-form witness | **Done** (G19) |
+| 50 | Regular / nested | Second rule byte; golden-only oracle; behavioral-not-structural | **Done** (G19) |
+| 110 | Left-propagating; glider structure at scale | Richer observable (9.3 KB, `init=right` fills grid); golden-only, no closed-form witness; not an oracle-ceiling claim | **Done** (G19 toy, G20 scaled) |
 | 184 | Particle-like | Longer runs; byte-for-byte diff scale | Parked |
 | 73 | Replicator | Miscompilation locality in grid output | Parked |
 | 126 | Complex transient | `gens` parameter stress | Parked |
@@ -128,3 +132,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #37 | G17 cellular-automata conformance |
 | #38 | G18 CA hardening |
 | #39 | G19 CA rules 50 and 110 |
+| #40 | G20 honest CA ledger + rule 110 at scale |

@@ -1,6 +1,6 @@
 op=eca
 rule=110
-width=31
-gens=16
-init=center
+width=96
+gens=96
+init=right
 yield=stdout

@@ -1,12 +1,23 @@
-/* Route B specimen for G17/G19. Freestanding x86_64 Linux ELF, no libc.
- * Realizes op=eca (compile with -DRULE=n) width=31 gens=16 init=center yield=stdout.
- * The bytes are compiler output, minted once in a pinned container; CI runs
- * the committed image and never recompiles. See docs/specs/CA-CONFORMANCE.md. */
+/* Route B specimen for G17/G19/G20. Freestanding x86_64 Linux ELF, no libc.
+ * Realizes op=eca. Compile params: -DRULE=n -DWIDTH=w -DGENS=g and -DINIT_RIGHT
+ * to seed the right edge instead of the center. The bytes are compiler output,
+ * minted once in a pinned container; CI runs the committed image and never
+ * recompiles. See docs/specs/CA-CONFORMANCE.md. */
 
+#ifndef WIDTH
 #define WIDTH 31
+#endif
+#ifndef GENS
 #define GENS 16
+#endif
 #ifndef RULE
 #define RULE 30
+#endif
+
+#ifdef INIT_RIGHT
+#define SEED (WIDTH - 1)
+#else
+#define SEED (WIDTH / 2)
 #endif
 
 static long sys_write(long fd, const void *buf, long n) {
@@ -29,7 +40,7 @@ void _start(void) {
 
   for (int i = 0; i < WIDTH; i++)
     cur[i] = 0;
-  cur[WIDTH / 2] = 1;
+  cur[SEED] = 1;
 
   for (int g = 0; g < GENS; g++) {
     for (int i = 0; i < WIDTH; i++)

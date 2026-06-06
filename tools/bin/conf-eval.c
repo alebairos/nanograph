@@ -11,10 +11,12 @@ enum { OP_NONE, OP_ADD, OP_SUB, OP_MUL, OP_ECA };
 
 #define ECA_MAX 512
 
-static int render_eca(int rule, int width, int gens) {
+enum { INIT_CENTER, INIT_RIGHT };
+
+static int render_eca(int rule, int width, int gens, int init) {
   unsigned char cur[ECA_MAX], nxt[ECA_MAX];
   memset(cur, 0, sizeof cur);
-  cur[width / 2] = 1;
+  cur[init == INIT_RIGHT ? width - 1 : width / 2] = 1;
 
   for (int g = 0; g < gens; g++) {
     for (int i = 0; i < width; i++)
@@ -47,6 +49,7 @@ int main(int argc, char **argv) {
   int op = OP_NONE;
   long a = 0, b = 0;
   long rule = -1, width = -1, gens = -1;
+  int init = INIT_CENTER;
   int have_a = 0, have_b = 0, have_yield = 0, have_init = 0;
   char line[256];
 
@@ -86,8 +89,12 @@ int main(int argc, char **argv) {
     } else if (strcmp(key, "gens") == 0) {
       gens = strtol(val, NULL, 10);
     } else if (strcmp(key, "init") == 0) {
-      if (strcmp(val, "center") != 0) {
-        fprintf(stderr, "conf-eval: unsupported init %s (v0: center)\n", val);
+      if (strcmp(val, "center") == 0)
+        init = INIT_CENTER;
+      else if (strcmp(val, "right") == 0)
+        init = INIT_RIGHT;
+      else {
+        fprintf(stderr, "conf-eval: unsupported init %s (v0: center, right)\n", val);
         fclose(f);
         return 3;
       }
@@ -106,10 +113,10 @@ int main(int argc, char **argv) {
   if (op == OP_ECA) {
     if (rule < 0 || rule > 255 || width < 1 || width > ECA_MAX ||
         gens < 1 || gens > ECA_MAX || !have_init || !have_yield) {
-      fprintf(stderr, "conf-eval: eca spec needs rule 0-255, width/gens 1-%d, init=center, yield\n", ECA_MAX);
+      fprintf(stderr, "conf-eval: eca spec needs rule 0-255, width/gens 1-%d, init=center|right, yield\n", ECA_MAX);
       return 3;
     }
-    return render_eca((int)rule, (int)width, (int)gens);
+    return render_eca((int)rule, (int)width, (int)gens, init);
   }
 
   if (op == OP_NONE || !have_a || !have_b || !have_yield) {
