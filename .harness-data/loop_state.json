@@ -1,22 +1,21 @@
 {
-  "goal_id": "G18",
-  "current_issue": 38,
-  "milestone": "G18",
-  "product_proof_step": "G18-ca-hardening",
+  "goal_id": "G19",
+  "current_issue": 39,
+  "milestone": "G19",
+  "product_proof_step": "G19-ca-rules-50-110",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/CA-CONFORMANCE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-004-ca-conformance.md",
-    "live_ca_log": ".harness-data/agent-eval/live-ca/run.jsonl",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G18 done: ca_rule30_patched patch negative; check-linux-runner guard; CA live sandbox + scripted loop gated; ruliad rule ledger in NANO-GOALS."
+    "note": "G19 done: rules 50 and 110 specimens; ca_eca.c + mint-ca-fixtures; oracle golden + conformance gates for 30/50/110."
   },
   "history": [
     {
@@ -72,7 +71,7 @@
       "issue": 35,
       "milestone": "G14",
       "closed": "2026-06-05",
-      "note": "Blind falsification; skill leak removed but answer still in ~18 repo files and no tool-call trace, so inconclusive; retry-count framing dropped as wrong claim"
+      "note": "Blind live falsification; skill leak removed but answer still in ~18 repo files and no tool-call trace, so inconclusive; retry-count framing dropped as wrong claim"
     },
     {
       "issue": 35,
@@ -90,13 +89,19 @@
       "issue": 37,
       "milestone": "G17",
       "closed": "2026-06-06",
-      "note": "CA conformance; conf-eval op=eca renders grid to stdout; phase1 popcount invariant + rule30 golden; phase2 two Route B variants accept (distinct graph_root_hash) + wrong-rule reject; both gated in check-all-proofs"
+      "note": "CA conformance; conf-eval op=eca; phase1 popcount invariant + rule30 golden; phase2 two Route B variants accept + wrong-rule reject; gated in check-all-proofs"
     },
     {
       "issue": 38,
       "milestone": "G18",
       "closed": "2026-06-06",
-      "note": "CA hardening; ca_rule30_patched one-byte negative; check-linux-runner; CA author sandbox + scripted loop gated; run-live-ca-agent-loop opt-in; ruliad exploration ledger"
+      "note": "CA hardening; ca_rule30_patched one-byte negative; check-linux-runner; CA author sandbox + scripted loop gated; ruliad exploration ledger"
+    },
+    {
+      "issue": 39,
+      "milestone": "G19",
+      "closed": "2026-06-06",
+      "note": "CA rules 50 and 110; ca_eca.c shared source; golden oracle + conformance for 30/50/110 in check-all-proofs"
     }
   ]
 }

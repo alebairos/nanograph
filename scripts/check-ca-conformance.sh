@@ -5,7 +5,7 @@ cd "$ROOT"
 
 fail() { echo "CA-CONFORMANCE FAIL: $1" >&2; exit 1; }
 
-echo "== ca conformance (G17 phase 2) =="
+echo "== ca conformance (G17/G19) =="
 if ! ./scripts/check-linux-runner.sh --quiet; then
   echo "CA-CONFORMANCE SKIP (no Linux runner: need Linux, qemu-x86_64, or docker)"
   exit 0
@@ -13,58 +13,69 @@ fi
 
 make -C tools -s bin/conf-eval bin/ngb-extract bin/ngb-parse bin/ca-rule30-patch-fixture >/dev/null
 
-SPEC="fixtures/ca/rule30.spec"
-V1="fixtures/ca/ca_rule30_v1.ngb"
-V2="fixtures/ca/ca_rule30_v2.ngb"
-WRONG="fixtures/ca/ca_rule30_wrongrule.ngb"
-PATCHED="fixtures/ca/ca_rule30_patched.ngb"
-for f in "$SPEC" "$V1" "$V2" "$WRONG" "$PATCHED"; do
-  [[ -f "$f" ]] || fail "missing $f (run scripts/mint-ca-fixtures.sh && make -C tools bin/ca-rule30-patch-fixture)"
-done
-
-hash_of() { tools/bin/ngb-parse "$1" | sed -n 's/.*graph_root_hash=//p'; }
-
-BUILT_PATCHED_HASH="$(NANOGRAPH_ROOT="$ROOT" tools/bin/ca-rule30-patch-fixture --no-write --print-hash)"
-FILE_PATCHED_HASH="$(hash_of "$PATCHED")"
-[[ "$BUILT_PATCHED_HASH" == "$FILE_PATCHED_HASH" ]] || fail "ca_rule30_patched.ngb drift (rebuild fixture)"
-
-expected="$(tools/bin/conf-eval "$SPEC")"
-
 LOG_DIR=".harness-data/agent-eval/conformance"
 mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/run.jsonl"
 
-# verdict reads only (spec, observed stdout); it never reads graph_root_hash.
-verdict() {
-  local ngb="$1" observed ts
-  observed="$(./scripts/run-linux-elf-capture.sh "$ngb" 2>/dev/null)" || true
-  ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  if [[ "$observed" == "$expected" ]]; then
-    printf '{"ts":"%s","msg_type":"verdict","spec":"%s","ngb":"%s","yield":"stdout","decision":"accept"}\n' \
-      "$ts" "$SPEC" "$ngb" >>"$LOG"
-    echo accept
-  else
-    printf '{"ts":"%s","msg_type":"verdict","spec":"%s","ngb":"%s","yield":"stdout","decision":"reject"}\n' \
-      "$ts" "$SPEC" "$ngb" >>"$LOG"
-    echo reject
+hash_of() { tools/bin/ngb-parse "$1" | sed -n 's/.*graph_root_hash=//p'; }
+
+check_ca_rule() {
+  local label="$1" spec="$2" v1="$3" v2="$4" wrong="$5" patched="${6:-}"
+  for f in "$spec" "$v1" "$v2" "$wrong"; do
+    [[ -f "$f" ]] || fail "missing $f (run scripts/mint-ca-fixtures.sh)"
+  done
+  if [[ -n "$patched" ]]; then
+    [[ -f "$patched" ]] || fail "missing $patched"
+    local built patched_hash
+    built="$(NANOGRAPH_ROOT="$ROOT" tools/bin/ca-rule30-patch-fixture --no-write --print-hash)"
+    patched_hash="$(hash_of "$patched")"
+    [[ "$built" == "$patched_hash" ]] || fail "$patched drift (rebuild fixture)"
   fi
+
+  local expected h1 h2
+  expected="$(tools/bin/conf-eval "$spec")"
+  h1="$(hash_of "$v1")"
+  h2="$(hash_of "$v2")"
+  [[ "$h1" != "$h2" ]] || fail "rule $label variants share graph_root_hash"
+
+  verdict() {
+    local ngb="$1" observed ts
+    observed="$(./scripts/run-linux-elf-capture.sh "$ngb" 2>/dev/null)" || true
+    ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    if [[ "$observed" == "$expected" ]]; then
+      printf '{"ts":"%s","msg_type":"verdict","spec":"%s","ngb":"%s","yield":"stdout","decision":"accept"}\n' \
+        "$ts" "$spec" "$ngb" >>"$LOG"
+      echo accept
+    else
+      printf '{"ts":"%s","msg_type":"verdict","spec":"%s","ngb":"%s","yield":"stdout","decision":"reject"}\n' \
+        "$ts" "$spec" "$ngb" >>"$LOG"
+      echo reject
+    fi
+  }
+
+  echo "-- rule $label: accept variant 1 (O0) --"
+  [[ "$(verdict "$v1")" == "accept" ]] || fail "rule $label v1 should accept"
+  echo "-- rule $label: accept variant 2 (O2), distinct bytes --"
+  [[ "$(verdict "$v2")" == "accept" ]] || fail "rule $label v2 should accept"
+  echo "-- rule $label: reject wrong-rule specimen --"
+  [[ "$(verdict "$wrong")" == "reject" ]] || fail "rule $label wrong-rule should reject"
+  if [[ -n "$patched" ]]; then
+    echo "-- rule $label: reject one-byte patch (add_two_patched shape) --"
+    [[ "$(verdict "$patched")" == "reject" ]] || fail "rule $label patched should reject"
+  fi
+  echo "rule $label OK v1=${h1:0:12} v2=${h2:0:12}"
 }
 
-h1="$(hash_of "$V1")"
-h2="$(hash_of "$V2")"
-[[ "$h1" != "$h2" ]] || fail "variants share graph_root_hash; not structurally distinct"
+check_ca_rule 30 fixtures/ca/rule30.spec \
+  fixtures/ca/ca_rule30_v1.ngb fixtures/ca/ca_rule30_v2.ngb \
+  fixtures/ca/ca_rule30_wrongrule.ngb fixtures/ca/ca_rule30_patched.ngb
 
-echo "-- accept: variant 1 (O0) realizes rule30 stdout --"
-[[ "$(verdict "$V1")" == "accept" ]] || fail "variant 1 should accept"
+check_ca_rule 50 fixtures/ca/rule50.spec \
+  fixtures/ca/ca_rule50_v1.ngb fixtures/ca/ca_rule50_v2.ngb \
+  fixtures/ca/ca_rule50_wrongrule.ngb
 
-echo "-- accept: variant 2 (O2) distinct bytes, same stdout --"
-[[ "$(verdict "$V2")" == "accept" ]] || fail "variant 2 should accept"
+check_ca_rule 110 fixtures/ca/rule110.spec \
+  fixtures/ca/ca_rule110_v1.ngb fixtures/ca/ca_rule110_v2.ngb \
+  fixtures/ca/ca_rule110_wrongrule.ngb
 
-echo "-- reject: wrong-rule specimen claims rule30, computes a different grid --"
-[[ "$(verdict "$WRONG")" == "reject" ]] || fail "wrong-rule specimen should reject"
-
-echo "-- reject: one-byte patch flips rule immediate 0x1e->0x5a (add_two_patched shape) --"
-[[ "$(verdict "$PATCHED")" == "reject" ]] || fail "ca_rule30_patched should reject"
-
-echo "behavioral-not-structural: v1=${h1:0:12} v2=${h2:0:12} accept on same spec; wrong-rule + patched reject"
-echo "CA-CONFORMANCE OK (two-variant accept, wrong-rule reject, patch-level reject)"
+echo "CA-CONFORMANCE OK (rules 30/50/110 two-variant accept + wrong-rule reject; rule30 patch reject)"

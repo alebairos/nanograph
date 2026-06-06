@@ -17,6 +17,7 @@ What the program has settled versus what still needs a goal.
 | Static gate rejects operational errors pre-execution | **Proven** | Operational-error matrix: 4/4 bad classes rejected at 0 executions (`--expect-off` + `--expect-new`); gated in `check-all-proofs.sh` |
 | Conformance generalizes to emergent output, behavioral-not-structural | **Proven** | G17 CA: `conf-eval op=eca` renders the grid; two Route B variants accept on one spec with distinct `graph_root_hash`, wrong-rule specimen rejects; Rule 90 popcount invariant guards the oracle |
 | CA patch-level miscompilation caught by conformance floor | **Proven** | G18 `ca_rule30_patched.ngb` one-byte rule flip; still runs; stdout diverges; rejected in `check-ca-conformance.sh` |
+| CA conformance on multiple rule classes (periodic + universal-class) | **Proven** | G19 rules 50 and 110; golden oracle + two-variant accept + wrong-rule reject; same `op=eca` machinery |
 | Stacked gates reduce live-agent retries | **Not the claim** | G14 blind A/B was inconclusive (answer leaked across ~18 repo files, no tool-call trace); reframed to pre-execution rejection above |
 | Live eval generalizes beyond print_42 | **Parked** | Single program only; no reason to expand until a workload needs it |
 | Human-auditable verdict trail | **Parked** | `probe_bundle` is text concatenation; revisit if an external auditor needs it |
@@ -50,6 +51,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G16 | Isolated author sandbox for live-agent eval | #36 | Done |
 | G17 | Cellular-automata conformance (emergent stdout, behavioral-not-structural) | #37 | Done |
 | G18 | CA hardening (patch negative, live harness, runner guard) | #38 | Done |
+| G19 | CA rules 50 and 110 specimens | #39 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -65,21 +67,21 @@ G17 spec: [`CA-CONFORMANCE.md`](CA-CONFORMANCE.md), decision [`../adr/ADR-004-ca
 
 G18 spec: extends G17. `ca-rule30-patch-fixture` mints `ca_rule30_patched.ngb` (one-byte rule flip, `add_two_patched` shape). `check-linux-runner.sh` guards phase-2 conformance. CA live harness: `prepare-author-sandbox-ca.sh`, `run-live-ca-agent-loop.sh` (opt-in), deterministic `check-ca-author-sandbox.sh` + `check-ca-live-scripted-loop.sh` in `check-all-proofs.sh`.
 
-## Ruliad rule exploration (parked)
+G19 spec: extends G17/G18. Shared `fixtures/ca/ca_eca.c` compiled with `-DRULE=n`. Rules 50 and 110 added to `mint-ca-fixtures.sh`, `check-ca-oracle.sh` (golden diff), `check-ca-conformance.sh` (two-variant accept + wrong-rule reject). No new floor machinery.
 
-Each row is a candidate specimen. Revive when it would prove a **new** claim, not duplicate G17/G18.
+## Ruliad rule exploration
 
-| Rule | Character | What it would test | Status |
+| Rule | Character | What it tests | Status |
 | --- | --- | --- | --- |
 | 90 | Sierpinski / fractal | Closed-form oracle witness (`2^popcount(k)` per row) | **Done** (G17 phase 1 invariant) |
-| 30 | Chaotic | Rich stdout with no closed form; golden + patch negative | **Done** (G17/G18 primary specimen) |
-| 110 | Turing-complete | Whether conformance holds when output complexity approaches practical oracle limits | Parked |
-| 184 | Particle-like | Multiple stable structures; stresses byte-for-byte diff on longer runs | Parked |
-| 73 | Replicator | Self-copying patterns; tests whether miscompilation negatives stay local | Parked |
-| 50 | Period-7 | Short periodic output; cheap second specimen for behavioral-not-structural without new machinery | Parked |
-| 126 | Complex transient | Long transient before steady state; stresses `gens` parameter in spec | Parked |
+| 30 | Chaotic | Rich stdout; golden + patch negative | **Done** (G17/G18 primary specimen) |
+| 50 | Periodic class | Second rule specimen; golden-only oracle; behavioral-not-structural | **Done** (G19) |
+| 110 | Universal-class | Oracle-trust stress; golden-only; no closed-form witness | **Done** (G19) |
+| 184 | Particle-like | Longer runs; byte-for-byte diff scale | Parked |
+| 73 | Replicator | Miscompilation locality in grid output | Parked |
+| 126 | Complex transient | `gens` parameter stress | Parked |
 
-Shared machinery already exists (`op=eca`, `conf-eval`, Route B mint, conformance check). Adding a rule is a new `.spec` + mint + negatives, not a new floor.
+Shared machinery (`op=eca`, `conf-eval`, `ca_eca.c`, `mint-ca-fixtures.sh`, conformance gates). A new rule is a `.spec` + golden + mint, not a new floor.
 
 ## Next goals
 
@@ -125,3 +127,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #36 | G16 isolated author sandbox |
 | #37 | G17 cellular-automata conformance |
 | #38 | G18 CA hardening |
+| #39 | G19 CA rules 50 and 110 |

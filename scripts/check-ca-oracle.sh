@@ -5,15 +5,11 @@ cd "$ROOT"
 
 fail() { echo "CA-ORACLE FAIL: $1" >&2; exit 1; }
 
-echo "== ca oracle (G17 phase 1) =="
+echo "== ca oracle (G17/G19) =="
 make -C tools -s bin/conf-eval >/dev/null
 
 RULE90="fixtures/ca/rule90.spec"
-RULE30="fixtures/ca/rule30.spec"
-GOLDEN="fixtures/ca/rule30.golden"
 [[ -f "$RULE90" ]] || fail "missing $RULE90"
-[[ -f "$RULE30" ]] || fail "missing $RULE30"
-[[ -f "$GOLDEN" ]] || fail "missing $GOLDEN"
 
 echo "-- rule 90: row k population == 2^popcount(k) (closed form, independent of conf-eval) --"
 inv="$(tools/bin/conf-eval "$RULE90" | awk '
@@ -25,8 +21,14 @@ inv="$(tools/bin/conf-eval "$RULE90" | awk '
 ')" || fail "rule 90 popcount invariant violated: $inv"
 echo "rule90 popcount invariant holds for all rendered rows"
 
-echo "-- rule 30: conf-eval reproduces independently minted golden byte-for-byte --"
-diff <(tools/bin/conf-eval "$RULE30") "$GOLDEN" >/dev/null || fail "rule 30 render diverges from golden"
-echo "rule30 matches golden"
+for rule in 30 50 110; do
+  spec="fixtures/ca/rule${rule}.spec"
+  golden="fixtures/ca/rule${rule}.golden"
+  [[ -f "$spec" ]] || fail "missing $spec"
+  [[ -f "$golden" ]] || fail "missing $golden"
+  echo "-- rule $rule: conf-eval reproduces independently minted golden byte-for-byte --"
+  diff <(tools/bin/conf-eval "$spec") "$golden" >/dev/null || fail "rule $rule render diverges from golden"
+  echo "rule${rule} matches golden"
+done
 
-echo "CA-ORACLE OK (rule90 invariant + rule30 golden)"
+echo "CA-ORACLE OK (rule90 invariant + rule30/50/110 golden)"

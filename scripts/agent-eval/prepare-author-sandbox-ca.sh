@@ -35,7 +35,7 @@ if find "$SANDBOX" -type l | grep -q .; then
   fail "sandbox must not contain symlinks"
 fi
 
-FORBIDDEN_RE='patch_off=4424|5a:1e|1e:5a|ca_rule30_v1|rule30\.golden|e88882d594e9|NANO-GOALS|CA-CONFORMANCE'
+FORBIDDEN_RE='patch_off=4424|5a:1e|1e:5a|ca_rule30_v1|rule30\.golden|d2b660292d2b|NANO-GOALS|CA-CONFORMANCE'
 if grep -rE "$FORBIDDEN_RE" "$SANDBOX" >/dev/null 2>&1; then
   fail "sandbox contains forbidden oracle leakage"
 fi

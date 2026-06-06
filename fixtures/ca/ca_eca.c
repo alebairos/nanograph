@@ -1,5 +1,5 @@
-/* Route B specimen for G17. Freestanding x86_64 Linux ELF, no libc.
- * Realizes op=eca rule=30 width=31 gens=16 init=center yield=stdout.
+/* Route B specimen for G17/G19. Freestanding x86_64 Linux ELF, no libc.
+ * Realizes op=eca (compile with -DRULE=n) width=31 gens=16 init=center yield=stdout.
  * The bytes are compiler output, minted once in a pinned container; CI runs
  * the committed image and never recompiles. See docs/specs/CA-CONFORMANCE.md. */
 
