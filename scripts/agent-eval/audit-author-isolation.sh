@@ -32,6 +32,22 @@ path_under_sandbox() {
 
 LEAK_RE='fixtures/|docs/|\.cursor/|harness-data/|print_42_patched|patch-fixture|check-all-proofs|NANO-GOALS|MICROOP-FLOOR'
 
+audit_absolute_paths_in_line() {
+  local line="$1"
+  local p
+  while IFS= read -r p; do
+    [[ -z "$p" ]] && continue
+    case "$p" in
+    "$SANDBOX"/* | "$SANDBOX") ;;
+    /Users/* | /home/* | /var/* | /tmp/*)
+      if [[ "$p" != "$SANDBOX"* ]]; then
+        note_violation "absolute path outside sandbox: $p"
+      fi
+      ;;
+    esac
+  done < <(printf '%s' "$line" | grep -Eo '/[^ "]+' || true)
+}
+
 if command -v jq >/dev/null 2>&1; then
   while IFS= read -r path; do
     [[ -z "$path" ]] && continue
@@ -53,18 +69,7 @@ while IFS= read -r line; do
   if printf '%s' "$line" | grep -qE "$LEAK_RE"; then
     note_violation "stream mentions forbidden token: $(printf '%.120s' "$line")"
   fi
-  if printf '%s' "$line" | grep -Eo '/[^ "]+' | while read -r p; do
-    case "$p" in
-    "$SANDBOX"/* | "$SANDBOX") ;;
-    /Users/* | /home/* | /var/* | /tmp/*)
-      if [[ "$p" != "$SANDBOX"* ]]; then
-        note_violation "absolute path outside sandbox: $p"
-      fi
-      ;;
-    esac
-  done; then
-    :
-  fi
+  audit_absolute_paths_in_line "$line"
 done <"$STREAM"
 
 [[ "$violations" -eq 0 ]] || fail "$violations isolation violation(s); see stderr"

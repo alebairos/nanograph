@@ -43,4 +43,12 @@ leak_code=$?
 set -e
 [[ "$leak_code" -ne 0 ]] || fail "audit should reject forbidden path read"
 
+ABS_LEAK_STREAM="$WORK/abs-leak.jsonl"
+printf '%s\n' '{"note":"/Users/example/Projects/nanograph/README.md"}' >"$ABS_LEAK_STREAM"
+set +e
+./scripts/agent-eval/audit-author-isolation.sh "$SANDBOX" "$ABS_LEAK_STREAM" >/dev/null 2>&1
+abs_leak_code=$?
+set -e
+[[ "$abs_leak_code" -ne 0 ]] || fail "audit should reject absolute path outside sandbox"
+
 echo "CHECK-AUTHOR-SANDBOX OK"
