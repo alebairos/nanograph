@@ -3,7 +3,7 @@
   "current_issue": 37,
   "milestone": "G17",
   "product_proof_step": "G17-ca-conformance",
-  "phase": "in-progress",
+  "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/CA-CONFORMANCE.md",
@@ -14,8 +14,8 @@
     ]
   },
   "next_action": {
-    "type": "implement",
-    "note": "G17: conf-eval op=eca renders CA evolution to stdout; Phase 1 oracle (popcount invariant + golden), Phase 2 Route B ELF stdout conformance with two variants."
+    "type": "none",
+    "note": "G17 done: conf-eval op=eca; check-ca-oracle (popcount invariant + golden) and check-ca-conformance (two-variant accept + wrong-rule reject) gated in check-all-proofs."
   },
   "history": [
     {
@@ -84,6 +84,12 @@
       "milestone": "G16",
       "closed": "2026-06-05",
       "note": "Isolated author sandbox; prepare-author-sandbox + audit-author-isolation; live loop --workspace SANDBOX; check-author-sandbox in check-all-proofs"
+    },
+    {
+      "issue": 37,
+      "milestone": "G17",
+      "closed": "2026-06-06",
+      "note": "CA conformance; conf-eval op=eca renders grid to stdout; phase1 popcount invariant + rule30 golden; phase2 two Route B variants accept (distinct graph_root_hash) + wrong-rule reject; both gated in check-all-proofs"
     }
   ]
 }

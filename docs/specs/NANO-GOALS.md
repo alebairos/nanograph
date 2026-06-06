@@ -15,6 +15,7 @@ What the program has settled versus what still needs a goal.
 | Miscompilation caught by conformance floor | **Proven** | G9 `add_two_patched` negative (exit 3 vs spec 2) |
 | Live Cursor CLI author completes the loop | **Proven** | G13 first run, 1 round, `composer-2.5` |
 | Static gate rejects operational errors pre-execution | **Proven** | Operational-error matrix: 4/4 bad classes rejected at 0 executions (`--expect-off` + `--expect-new`); gated in `check-all-proofs.sh` |
+| Conformance generalizes to emergent output, behavioral-not-structural | **Proven** | G17 CA: `conf-eval op=eca` renders the grid; two Route B variants accept on one spec with distinct `graph_root_hash`, wrong-rule specimen rejects; Rule 90 popcount invariant guards the oracle |
 | Stacked gates reduce live-agent retries | **Not the claim** | G14 blind A/B was inconclusive (answer leaked across ~18 repo files, no tool-call trace); reframed to pre-execution rejection above |
 | Live eval generalizes beyond print_42 | **Parked** | Single program only; no reason to expand until a workload needs it |
 | Human-auditable verdict trail | **Parked** | `probe_bundle` is text concatenation; revisit if an external auditor needs it |
@@ -46,6 +47,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G14 | Blind live falsification of retry-reduction claim | #35 | Done (inconclusive; claim reframed) |
 | G15 | Operational-error matrix (deterministic gate coverage) | #35 | Done (4/4 pre-exec) |
 | G16 | Isolated author sandbox for live-agent eval | #36 | Done |
+| G17 | Cellular-automata conformance (emergent stdout, behavioral-not-structural) | #37 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -56,6 +58,8 @@ G10 spec: [`MICROOP-FLOOR.md`](MICROOP-FLOOR.md). Harness `tools/bin/ngb-microop
 G13/G14 spec: [`LIVE-AGENT-EVAL.md`](LIVE-AGENT-EVAL.md). Harness `scripts/agent-eval/run-live-agent-loop.sh`, opt-in. Skill `.cursor/skills/live-ngb-author/SKILL.md`. G13 leaked the answer in the skill; G14 removed the leak and ran blind A/B. Both arms 1 round / 1 exec, retry-reduction trigger not met. Logs: `.harness-data/agent-eval/live-agent/run-g14-{stacked,auditor-only}.jsonl`.
 
 G16 spec: [`AUTHOR-SANDBOX.md`](AUTHOR-SANDBOX.md), decision [`../adr/ADR-003-author-sandbox.md`](../adr/ADR-003-author-sandbox.md). Harness `prepare-author-sandbox.sh`, `audit-author-isolation.sh`, gated by `scripts/check-author-sandbox.sh`. Live loop uses `--workspace $SANDBOX` only; streams persisted under `.harness-data/agent-eval/live-agent/`.
+
+G17 spec: [`CA-CONFORMANCE.md`](CA-CONFORMANCE.md), decision [`../adr/ADR-004-ca-conformance.md`](../adr/ADR-004-ca-conformance.md). `conf-eval op=eca` renders an elementary cellular automaton to stdout. Phase 1 `scripts/check-ca-oracle.sh` (Rule 90 popcount invariant + Rule 30 golden, no toolchain). Phase 2 `scripts/check-ca-conformance.sh` (two Route B variants accept on the same spec with distinct `graph_root_hash`, wrong-rule specimen rejects). Specimens minted by `scripts/mint-ca-fixtures.sh` (pinned `gcc:13`, committed `.ngb`, no recompile in CI). Both gated in `check-all-proofs.sh`.
 
 ## Next goals
 
@@ -99,3 +103,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #34 | G12 value-bound micro-op |
 | #35 | G13 live harness, G14 blind falsification, G15 operational-error matrix |
 | #36 | G16 isolated author sandbox |
+| #37 | G17 cellular-automata conformance |

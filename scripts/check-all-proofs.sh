@@ -24,6 +24,7 @@ make -C tools -s all
 ./scripts/check-two-agent-loop.sh
 ./scripts/check-conformance-floor.sh
 ./scripts/check-ca-oracle.sh
+./scripts/check-ca-conformance.sh
 ./scripts/check-microop-floor.sh
 ./scripts/agent-eval/operational-error-matrix.sh
 ./scripts/check-author-sandbox.sh
