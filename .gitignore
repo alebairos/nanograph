@@ -1,12 +1,8 @@
 .harness-data/logs/
 *.o
 *.a
-/tools/bin/ngb-pack
-/tools/bin/ngb-parse
-/tools/bin/ngb-extract
-/tools/bin/hello-fixture
-/tools/bin/add-two-fixture
-/tools/bin/nano-probe
+/tools/bin/*
+!/tools/bin/*.c
 /tools/**/target/
 .DS_Store
 __pycache__/
