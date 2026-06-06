@@ -1,21 +1,21 @@
 {
-  "goal_id": "G16",
-  "current_issue": 36,
-  "milestone": "G16",
-  "product_proof_step": "G16-author-sandbox",
-  "phase": "complete",
+  "goal_id": "G17",
+  "current_issue": 37,
+  "milestone": "G17",
+  "product_proof_step": "G17-ca-conformance",
+  "phase": "in-progress",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/AUTHOR-SANDBOX.md",
+    "spec_path": "docs/specs/CA-CONFORMANCE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-003-author-sandbox.md",
+    "verdict_adr": "docs/adr/ADR-004-ca-conformance.md",
     "eval_logs": [
-      ".harness-data/agent-eval/live-agent/run.jsonl"
+      ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
-    "type": "none",
-    "note": "G16 done: isolated author sandbox; prepare + audit + check-author-sandbox gated in check-all-proofs; live loop uses --workspace SANDBOX only."
+    "type": "implement",
+    "note": "G17: conf-eval op=eca renders CA evolution to stdout; Phase 1 oracle (popcount invariant + golden), Phase 2 Route B ELF stdout conformance with two variants."
   },
   "history": [
     {

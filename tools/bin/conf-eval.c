@@ -2,12 +2,36 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Reference evaluator for the conformance floor (G9).
+/* Reference evaluator for the conformance floor (G9, G17).
  * Computes the expected consequence from a ConfSpec.
  * Reads only the spec, never the .ngb or ELF. That independence is the point:
  * the expected value is computed from intent, not looked up from the bytes. */
 
-enum { OP_NONE, OP_ADD, OP_SUB, OP_MUL };
+enum { OP_NONE, OP_ADD, OP_SUB, OP_MUL, OP_ECA };
+
+#define ECA_MAX 512
+
+static int render_eca(int rule, int width, int gens) {
+  unsigned char cur[ECA_MAX], nxt[ECA_MAX];
+  memset(cur, 0, sizeof cur);
+  cur[width / 2] = 1;
+
+  for (int g = 0; g < gens; g++) {
+    for (int i = 0; i < width; i++)
+      putchar(cur[i] ? '#' : '.');
+    putchar('\n');
+
+    for (int i = 0; i < width; i++) {
+      int l = i > 0 ? cur[i - 1] : 0;
+      int c = cur[i];
+      int r = i < width - 1 ? cur[i + 1] : 0;
+      int idx = (l << 2) | (c << 1) | r;
+      nxt[i] = (rule >> idx) & 1;
+    }
+    memcpy(cur, nxt, (size_t)width);
+  }
+  return 0;
+}
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -22,7 +46,8 @@ int main(int argc, char **argv) {
 
   int op = OP_NONE;
   long a = 0, b = 0;
-  int have_a = 0, have_b = 0, have_yield = 0;
+  long rule = -1, width = -1, gens = -1;
+  int have_a = 0, have_b = 0, have_yield = 0, have_init = 0;
   char line[256];
 
   while (fgets(line, sizeof line, f)) {
@@ -41,6 +66,8 @@ int main(int argc, char **argv) {
         op = OP_SUB;
       else if (strcmp(val, "mul") == 0)
         op = OP_MUL;
+      else if (strcmp(val, "eca") == 0)
+        op = OP_ECA;
       else {
         fprintf(stderr, "conf-eval: unknown op %s\n", val);
         fclose(f);
@@ -52,6 +79,19 @@ int main(int argc, char **argv) {
     } else if (strcmp(key, "b") == 0) {
       b = strtol(val, NULL, 10);
       have_b = 1;
+    } else if (strcmp(key, "rule") == 0) {
+      rule = strtol(val, NULL, 10);
+    } else if (strcmp(key, "width") == 0) {
+      width = strtol(val, NULL, 10);
+    } else if (strcmp(key, "gens") == 0) {
+      gens = strtol(val, NULL, 10);
+    } else if (strcmp(key, "init") == 0) {
+      if (strcmp(val, "center") != 0) {
+        fprintf(stderr, "conf-eval: unsupported init %s (v0: center)\n", val);
+        fclose(f);
+        return 3;
+      }
+      have_init = 1;
     } else if (strcmp(key, "yield") == 0) {
       if (strcmp(val, "exit") != 0 && strcmp(val, "stdout") != 0) {
         fprintf(stderr, "conf-eval: unsupported yield %s (v0: exit, stdout)\n", val);
@@ -62,6 +102,15 @@ int main(int argc, char **argv) {
     }
   }
   fclose(f);
+
+  if (op == OP_ECA) {
+    if (rule < 0 || rule > 255 || width < 1 || width > ECA_MAX ||
+        gens < 1 || gens > ECA_MAX || !have_init || !have_yield) {
+      fprintf(stderr, "conf-eval: eca spec needs rule 0-255, width/gens 1-%d, init=center, yield\n", ECA_MAX);
+      return 3;
+    }
+    return render_eca((int)rule, (int)width, (int)gens);
+  }
 
   if (op == OP_NONE || !have_a || !have_b || !have_yield) {
     fprintf(stderr, "conf-eval: spec missing op/a/b/yield\n");
