@@ -17,7 +17,6 @@ PATCH_TS=1700000000
 PATCHED_HASH=2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1
 LOG_DIR=".harness-data/agent-eval/live-agent"
 LOG="$LOG_DIR/run.jsonl"
-SKILL=".cursor/skills/live-ngb-author/SKILL.md"
 
 usage() {
   echo "usage: run-live-agent-loop.sh [--with-static-gate|--no-static-gate] [--model NAME]" >&2
@@ -42,6 +41,9 @@ mkdir -p "$LOG_DIR"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
+SANDBOX="$WORK/author-sandbox"
+./scripts/agent-eval/prepare-author-sandbox.sh "$SANDBOX"
+
 make -C tools -s all >/dev/null
 
 now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
@@ -62,7 +64,7 @@ expect_new="$(printf '%02x' "'$digit")"
 cp "$GENESIS" "$WORK/genesis.ngb"
 
 SECONDS=0
-emit "{\"ts\":\"$(now)\",\"event\":\"loop_start\",\"genesis\":\"$GENESIS\",\"with_static_gate\":$WITH_STATIC,\"model\":\"$MODEL\"}"
+emit "{\"ts\":\"$(now)\",\"event\":\"loop_start\",\"genesis\":\"$GENESIS\",\"sandbox\":\"$SANDBOX\",\"with_static_gate\":$WITH_STATIC,\"model\":\"$MODEL\"}"
 
 accepted=0
 round=0
@@ -93,21 +95,22 @@ invoke_author() {
   local round_n="$1"
   local prompt="$WORK/author_prompt_r${round_n}.txt"
   local stream="$WORK/author_stream_r${round_n}.jsonl"
+  local stream_log="$LOG_DIR/stream_r${round_n}.jsonl"
   local stderr="$WORK/author_stderr_r${round_n}.txt"
   local final="$WORK/author_final_r${round_n}.txt"
 
   {
-    echo "Follow the live-ngb-author skill at $SKILL"
+    echo "Follow author/SKILL.md in this workspace."
     echo
     cat "$prompt"
   } >"$WORK/author_invoke_r${round_n}.txt"
 
   local ph
   ph="$(bundle_hash "$WORK/author_invoke_r${round_n}.txt")"
-  emit "{\"ts\":\"$(now)\",\"round\":$round_n,\"role\":\"harness\",\"msg_type\":\"author_invoke\",\"model\":\"$MODEL\",\"with_static_gate\":$WITH_STATIC,\"prompt_sha256\":\"$ph\"}"
+  emit "{\"ts\":\"$(now)\",\"round\":$round_n,\"role\":\"harness\",\"msg_type\":\"author_invoke\",\"model\":\"$MODEL\",\"with_static_gate\":$WITH_STATIC,\"sandbox\":\"$SANDBOX\",\"prompt_sha256\":\"$ph\"}"
 
   set +e
-  agent -p --trust --workspace "$ROOT" \
+  agent -p --trust --workspace "$SANDBOX" --sandbox enabled \
     --output-format stream-json --stream-partial-output \
     --model "$MODEL" \
     "$(cat "$WORK/author_invoke_r${round_n}.txt")" \
@@ -115,6 +118,12 @@ invoke_author() {
   agent_code=$?
   set -e
   [[ "$agent_code" -eq 0 ]] || fail "round $round_n: agent exit $agent_code ($(cat "$stderr"))"
+
+  cp "$stream" "$stream_log"
+  emit "{\"ts\":\"$(now)\",\"round\":$round_n,\"role\":\"harness\",\"msg_type\":\"author_stream\",\"path\":\"$stream_log\"}"
+
+  ./scripts/agent-eval/audit-author-isolation.sh "$SANDBOX" "$stream"
+  emit "{\"ts\":\"$(now)\",\"round\":$round_n,\"role\":\"harness\",\"msg_type\":\"isolation_audit\",\"decision\":\"pass\"}"
 
   if command -v jq >/dev/null 2>&1; then
     jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="text") | .text' "$stream" 2>/dev/null \
@@ -124,6 +133,13 @@ invoke_author() {
     grep '"type":"assistant"' "$stream" 2>/dev/null | sed 's/.*"text":"\([^"]*\)".*/\1/' >"$final" || true
   fi
   [[ -s "$final" ]] || cp "$stream" "$final"
+}
+
+copy_feedback_to_sandbox() {
+  local bundle="$1"
+  local verdict="$2"
+  cp "$bundle" "$SANDBOX/feedback/probe_bundle.txt"
+  printf '%s\n' "$verdict" >"$SANDBOX/feedback/verdict.txt"
 }
 
 apply_patch() {
@@ -214,20 +230,21 @@ auditor_round() {
   emit "{\"ts\":\"$(now)\",\"round\":$round_n,\"role\":\"auditor\",\"msg_type\":\"verdict\",\"decision\":\"reject\",\"invariant\":\"$inv\",\"detail\":\"$detail\",\"line\":\"$vline\"}"
   prior_bundle="$bundle"
   prior_verdict="$vline"
+  copy_feedback_to_sandbox "$bundle" "$vline"
   return 1
 }
 
-echo "-- live-agent loop: print_42 -> computed stdout (static=$WITH_STATIC) --"
+echo "-- live-agent loop: isolated sandbox, print_42 -> computed stdout (static=$WITH_STATIC) --"
 
 for round in $(seq 1 "$MAX_ROUNDS"); do
   prompt="$WORK/author_prompt_r${round}.txt"
   {
     echo "Round $round of $MAX_ROUNDS."
-    echo "Genesis copy: $WORK/genesis.ngb"
-    echo "Conf spec: $ORACLE_SPEC"
+    echo "Genesis: genesis.ngb (read-only in this workspace)."
+    echo "Intent: intent.spec (operands and yield kind only)."
     if [[ -n "$prior_verdict" ]]; then
-      echo "Prior verdict: $prior_verdict"
-      echo "Prior probe_bundle: $prior_bundle"
+      echo "Prior verdict is in feedback/verdict.txt"
+      echo "Prior probe bundle is in feedback/probe_bundle.txt"
     fi
     echo "Emit patch_off= and patch_pairs= when done."
   } >"$prompt"
@@ -241,6 +258,8 @@ for round in $(seq 1 "$MAX_ROUNDS"); do
   if [[ "$WITH_STATIC" -eq 1 ]]; then
     if ! static_gate "$round" "$patch_off" "$patch_pairs"; then
       echo "round $round: static gate rejected patch"
+      printf '%s\n' "verdict=reject static_gate" >"$SANDBOX/feedback/verdict.txt"
+      : >"$SANDBOX/feedback/probe_bundle.txt"
       continue
     fi
   fi

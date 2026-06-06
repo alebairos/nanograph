@@ -1,21 +1,21 @@
 {
-  "goal_id": "G15",
-  "current_issue": 35,
-  "milestone": "G15",
-  "product_proof_step": "G15-operational-error-matrix",
+  "goal_id": "G16",
+  "current_issue": 36,
+  "milestone": "G16",
+  "product_proof_step": "G16-author-sandbox",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/MICROOP-FLOOR.md",
+    "spec_path": "docs/specs/AUTHOR-SANDBOX.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-001-product-verdict.md",
+    "verdict_adr": "docs/adr/ADR-003-author-sandbox.md",
     "eval_logs": [
-      ".harness-data/agent-eval/operational-errors/run.jsonl"
+      ".harness-data/agent-eval/live-agent/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G15 done: deterministic operational-error matrix; static gate rejects 3/4 bad classes pre-execution, 1 documented blind spot (correct value wrong position). Claim reframed to pre-execution rejection. Gated in check-all-proofs."
+    "note": "G16 done: isolated author sandbox; prepare + audit + check-author-sandbox gated in check-all-proofs; live loop uses --workspace SANDBOX only."
   },
   "history": [
     {
@@ -77,7 +77,13 @@
       "issue": 35,
       "milestone": "G15",
       "closed": "2026-06-05",
-      "note": "Operational-error matrix; deterministic; static gate rejects value_mismatch/not_rodata/bounds pre-execution (0 exec), misses correct-value-wrong-position (blind spot); gated in check-all-proofs; claim = pre-execution rejection"
+      "note": "Operational-error matrix; deterministic; static gate rejects 4/4 bad classes pre-execution with --expect-off + --expect-new; gated in check-all-proofs"
+    },
+    {
+      "issue": 36,
+      "milestone": "G16",
+      "closed": "2026-06-05",
+      "note": "Isolated author sandbox; prepare-author-sandbox + audit-author-isolation; live loop --workspace SANDBOX; check-author-sandbox in check-all-proofs"
     }
   ]
 }

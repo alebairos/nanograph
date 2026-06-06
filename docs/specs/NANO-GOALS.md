@@ -45,6 +45,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G13 | Live-agent harness + first run (Cursor CLI author) | #35 | Done |
 | G14 | Blind live falsification of retry-reduction claim | #35 | Done (inconclusive; claim reframed) |
 | G15 | Operational-error matrix (deterministic gate coverage) | #35 | Done (4/4 pre-exec) |
+| G16 | Isolated author sandbox for live-agent eval | #36 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -54,9 +55,11 @@ G10 spec: [`MICROOP-FLOOR.md`](MICROOP-FLOOR.md). Harness `tools/bin/ngb-microop
 
 G13/G14 spec: [`LIVE-AGENT-EVAL.md`](LIVE-AGENT-EVAL.md). Harness `scripts/agent-eval/run-live-agent-loop.sh`, opt-in. Skill `.cursor/skills/live-ngb-author/SKILL.md`. G13 leaked the answer in the skill; G14 removed the leak and ran blind A/B. Both arms 1 round / 1 exec, retry-reduction trigger not met. Logs: `.harness-data/agent-eval/live-agent/run-g14-{stacked,auditor-only}.jsonl`.
 
+G16 spec: [`AUTHOR-SANDBOX.md`](AUTHOR-SANDBOX.md), decision [`../adr/ADR-003-author-sandbox.md`](../adr/ADR-003-author-sandbox.md). Harness `prepare-author-sandbox.sh`, `audit-author-isolation.sh`, gated by `scripts/check-author-sandbox.sh`. Live loop uses `--workspace $SANDBOX` only; streams persisted under `.harness-data/agent-eval/live-agent/`.
+
 ## Next goals
 
-The retry-reduction line is closed (G14). No new goals are committed. The proven claim is integrity plus execution-grounded conformance, and it stands on the deterministic suite without a live-agent number.
+The retry-reduction line is closed (G14). G16 closes the repo-leakage gap for live eval. No further goals are committed. The proven claim is integrity plus execution-grounded conformance, and it stands on the deterministic suite without a live-agent number.
 
 Parked ideas, each needing a concrete reason before it earns a slot. Do not build speculatively.
 
@@ -95,3 +98,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #33 | G11 computed oracle |
 | #34 | G12 value-bound micro-op |
 | #35 | G13 live harness, G14 blind falsification, G15 operational-error matrix |
+| #36 | G16 isolated author sandbox |

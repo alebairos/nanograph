@@ -195,7 +195,7 @@ Add `scripts/check-live-agent-prereqs.sh` to verify `agent` exists and auth is c
 
 | Risk | Mitigation |
 | --- | --- |
-| Oracle leakage (author reads `print_42_patched`) | Isolated `$WORK`, explicit forbid list, eval in worktree |
+| Oracle leakage (author reads repo) | G16 `AuthorSandbox` with `--workspace $SANDBOX`; `audit-author-isolation.sh` on persisted stream-json |
 | Unparseable agent output | Prompt requires `patch_off`/`patch_pairs` lines; harness retries parse failure as round |
 | Nondeterminism | Fixed model, log full `stream-json`, run A/B same session |
 | Cost / API key | Opt-in only; document `CURSOR_API_KEY` setup |
@@ -206,7 +206,8 @@ Add `scripts/check-live-agent-prereqs.sh` to verify `agent` exists and auth is c
 - G8 `TWO-AGENT-PROBE-PROTOCOL.md`
 - G11 computed oracle (`conf-eval yield=stdout`)
 - G12 value-bound micro-op (`--expect-new`)
-- `.cursor/skills/live-ngb-author/SKILL.md`
+- G16 [`AUTHOR-SANDBOX.md`](AUTHOR-SANDBOX.md) (live eval uses sandbox skill, not repo skill)
+- `.cursor/skills/live-ngb-author/SKILL.md` (editor only)
 - Cursor CLI `agent` ([headless docs](https://cursor.com/docs/cli/headless))
 
 ## Demonstration (first run, 2026-06-05)

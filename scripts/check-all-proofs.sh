@@ -25,6 +25,7 @@ make -C tools -s all
 ./scripts/check-conformance-floor.sh
 ./scripts/check-microop-floor.sh
 ./scripts/agent-eval/operational-error-matrix.sh
+./scripts/check-author-sandbox.sh
 ./scripts/check-ngb-fuzz.sh 1000 1
 
 echo "ALL-PROOFS OK"
