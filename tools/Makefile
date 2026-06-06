@@ -12,6 +12,7 @@ PROBE_OBJS := $(PROBE_SRCS:.c=.o)
 BINS := bin/ngb-pack bin/ngb-parse bin/ngb-patch bin/ngb-extract bin/hello-fixture \
         bin/add-two-fixture bin/add-two-patch-fixture bin/print-42-fixture \
         bin/print-42-patch-fixture bin/add-two-chain-fixture bin/ngb-fuzz \
+        bin/ca-rule30-fixture bin/ca-rule30-patch-fixture \
         bin/nano-probe bin/conf-eval bin/ngb-microop
 
 .PHONY: all clean test
@@ -49,6 +50,12 @@ bin/print-42-patch-fixture: bin/print-42-patch-fixture.c $(LIB_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 bin/add-two-chain-fixture: bin/add-two-chain-fixture.c $(LIB_OBJS)
+	$(CC) $(CFLAGS) $^ -o $@
+
+bin/ca-rule30-fixture: bin/ca-rule30-fixture.c $(LIB_OBJS)
+	$(CC) $(CFLAGS) $^ -o $@
+
+bin/ca-rule30-patch-fixture: bin/ca-rule30-patch-fixture.c $(LIB_OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
 bin/ngb-fuzz: bin/ngb-fuzz.c $(LIB_OBJS)

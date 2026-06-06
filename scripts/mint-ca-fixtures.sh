@@ -19,10 +19,11 @@ docker run --rm --platform linux/amd64 -v "$ROOT/$CA:/w" -w /w "$IMG" sh -c "
   gcc -O0 $FLAGS -DRULE=90 -o ca_rule30_wrongrule.elf ca_rule30.c
 "
 
-make -C tools -s bin/ngb-pack bin/ngb-parse >/dev/null
-tools/bin/ngb-pack "$CA/ca_rule30_v1.elf" "$CA/ca_rule30_v1.ngb"
-tools/bin/ngb-pack "$CA/ca_rule30_v2.elf" "$CA/ca_rule30_v2.ngb"
+make -C tools -s bin/ngb-pack bin/ngb-parse bin/ca-rule30-fixture bin/ca-rule30-patch-fixture >/dev/null
+tools/bin/ca-rule30-fixture "$CA/ca_rule30_v1.elf" "$CA/ca_rule30_v1.ngb"
+tools/bin/ca-rule30-fixture "$CA/ca_rule30_v2.elf" "$CA/ca_rule30_v2.ngb"
 tools/bin/ngb-pack "$CA/ca_rule30_wrongrule.elf" "$CA/ca_rule30_wrongrule.ngb"
+NANOGRAPH_ROOT="$ROOT" tools/bin/ca-rule30-patch-fixture
 
 h1="$(tools/bin/ngb-parse "$CA/ca_rule30_v1.ngb" | sed -n 's/.*graph_root_hash=//p')"
 h2="$(tools/bin/ngb-parse "$CA/ca_rule30_v2.ngb" | sed -n 's/.*graph_root_hash=//p')"

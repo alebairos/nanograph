@@ -1,21 +1,22 @@
 {
-  "goal_id": "G17",
-  "current_issue": 37,
-  "milestone": "G17",
-  "product_proof_step": "G17-ca-conformance",
+  "goal_id": "G18",
+  "current_issue": 38,
+  "milestone": "G18",
+  "product_proof_step": "G18-ca-hardening",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/CA-CONFORMANCE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-004-ca-conformance.md",
+    "live_ca_log": ".harness-data/agent-eval/live-ca/run.jsonl",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G17 done: conf-eval op=eca; check-ca-oracle (popcount invariant + golden) and check-ca-conformance (two-variant accept + wrong-rule reject) gated in check-all-proofs."
+    "note": "G18 done: ca_rule30_patched patch negative; check-linux-runner guard; CA live sandbox + scripted loop gated; ruliad rule ledger in NANO-GOALS."
   },
   "history": [
     {
@@ -90,6 +91,12 @@
       "milestone": "G17",
       "closed": "2026-06-06",
       "note": "CA conformance; conf-eval op=eca renders grid to stdout; phase1 popcount invariant + rule30 golden; phase2 two Route B variants accept (distinct graph_root_hash) + wrong-rule reject; both gated in check-all-proofs"
+    },
+    {
+      "issue": 38,
+      "milestone": "G18",
+      "closed": "2026-06-06",
+      "note": "CA hardening; ca_rule30_patched one-byte negative; check-linux-runner; CA author sandbox + scripted loop gated; run-live-ca-agent-loop opt-in; ruliad exploration ledger"
     }
   ]
 }

@@ -38,7 +38,10 @@ A grid does not fit in one exit byte, so CA conformance compares the full captur
 | `fixtures/ca/rule30.golden` | Independently minted Rule 30 grid. |
 | `fixtures/ca/*.ngb` | Route B compiled-C specimens (two variants). |
 | `scripts/check-ca-oracle.sh` | Phase 1 gate: popcount invariant + golden diff. No toolchain. |
-| `scripts/check-ca-conformance.sh` | Phase 2 gate: ELF stdout vs oracle, two-variant accept, mutation reject. |
+| `scripts/check-ca-conformance.sh` | Phase 2 gate: ELF stdout vs oracle, two-variant accept, wrong-rule + patch-level reject. |
+| `tools/bin/ca-rule30-patch-fixture` | One-byte rule flip on v1 (`0x1e`→`0x5a`); `ca_rule30_patched.ngb`. |
+| `scripts/check-linux-runner.sh` | Prereq for phase 2; skips gracefully without docker/qemu/native Linux. |
+| `scripts/agent-eval/run-live-ca-agent-loop.sh` | Opt-in live CA author (sandbox + `op=eca` intent). |
 
 Log: `.harness-data/agent-eval/conformance/run.jsonl`.
 
