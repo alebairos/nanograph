@@ -1,5 +1,8 @@
 # gcd test vectors: a b expected
+# Near-miss (while->if) is right only when b divides a, so (100,25) and (30,5)
+# accept while the rest reject. The split is what proves multi-case sampling.
 12 18 6
 21 14 7
 100 25 25
 48 18 6
+30 5 5

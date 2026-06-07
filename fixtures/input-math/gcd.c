@@ -54,9 +54,21 @@ static void print_long(long n) {
   sys_write(1, buf, i);
 }
 
-#ifdef WRONG_GCD
+#ifdef NEARMISS_GCD
+/* Euclid's loop miscompiled to a single conditional: one step, not to
+ * fixpoint. Correct exactly when b divides a, wrong otherwise. The near-miss
+ * that only multi-case sampling distinguishes from the real gcd. */
 static long gcd(long a, long b) {
-  return a + b;
+  if (a < 0)
+    a = -a;
+  if (b < 0)
+    b = -b;
+  if (b != 0) {
+    long t = b;
+    b = a % b;
+    a = t;
+  }
+  return a;
 }
 #else
 static long gcd(long a, long b) {

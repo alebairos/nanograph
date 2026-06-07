@@ -1,8 +1,8 @@
 {
-  "goal_id": "G21",
-  "current_issue": 41,
-  "milestone": "G21",
-  "product_proof_step": "G21-input-bound-math",
+  "goal_id": "G22",
+  "current_issue": 42,
+  "milestone": "G22",
+  "product_proof_step": "G22-near-miss-negative",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G21 complete: input-bound math conformance (op=gcd input=argv); conf-eval runtime operands; gcd specimen + oracle/conformance gates; all-proofs green."
+    "note": "G22 complete: replaced a+b far-miss with near-miss (Euclid loop -> single if); gate asserts near-miss accepts >=1 and rejects >=1; proves multi-case sampling separates near-misses; all-proofs green."
   },
   "history": [
     {
@@ -114,6 +114,12 @@
       "milestone": "G21",
       "closed": "2026-06-07",
       "note": "Input-bound math conformance; conf-eval op=gcd input=argv; gcd.c freestanding argv specimen; oracle + conformance gates; v1/v2 accept all cases, wrong rejects; check-all-proofs green"
+    },
+    {
+      "issue": 42,
+      "milestone": "G22",
+      "closed": "2026-06-07",
+      "note": "Near-miss negative; a+b far-miss replaced by Euclid-loop-to-if (right only when b divides a); gate asserts near-miss accepts >=1 and rejects >=1; proves multi-case sampling has teeth; all-proofs green"
     }
   ]
 }

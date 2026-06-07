@@ -19,7 +19,8 @@ What the program has settled versus what still needs a goal.
 | CA patch-level miscompilation caught by conformance floor | **Proven** | G18 `ca_rule30_patched.ngb` one-byte rule flip; still runs; stdout diverges; rejected in `check-ca-conformance.sh` |
 | CA conformance generalizes across rule bytes | **Proven** | G19 rules 50 (regular/nested) and 110; golden oracle + two-variant accept + wrong-rule reject; same `op=eca` machinery |
 | Conformance holds on a richer observable at scale | **Proven** | G20 re-mints rule 110 at width 96 / gens 96 / `init=right` so the grid fills with glider structure (9.3 KB stdout, beyond eyeball check); `init=right` added to `conf-eval`, `ca_eca.c` parameterized; not an oracle-ceiling claim, the oracle stays cheap |
-| Input-bound conformance (runtime argv operands) | **Proven** | G21 `op=gcd input=argv`: `conf-eval` takes runtime `(a,b)`; four-case oracle; two Route B variants accept on all vectors with distinct `graph_root_hash`; wrong-algorithm specimen rejects |
+| Input-bound conformance (runtime argv operands) | **Proven** | G21 `op=gcd input=argv`: `conf-eval` takes runtime `(a,b)`; five-case oracle; two Route B variants accept on all vectors with distinct `graph_root_hash` |
+| Multi-case sampling catches near-misses | **Proven** | G22 near-miss `gcd_nearmiss.ngb` (Euclid loop degraded to one `if`, right only when `b` divides `a`); gate asserts it accepts >=1 case and rejects >=1; a single sample would not separate it |
 | Stacked gates reduce live-agent retries | **Not the claim** | G14 blind A/B was inconclusive (answer leaked across ~18 repo files, no tool-call trace); reframed to pre-execution rejection above |
 | Live eval generalizes beyond print_42 | **Parked** | Single program only; no reason to expand until a workload needs it |
 | Human-auditable verdict trail | **Parked** | `probe_bundle` is text concatenation; revisit if an external auditor needs it |
@@ -56,6 +57,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G19 | CA rules 50 and 110 specimens | #39 | Done |
 | G20 | Honest CA ledger + rule 110 at scale (`init=right`) | #40 | Done |
 | G21 | Input-bound math conformance (`op=gcd input=argv`) | #41 | Done |
+| G22 | Near-miss negative for input-bound conformance | #42 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -75,7 +77,9 @@ G19 spec: extends G17/G18. Shared `fixtures/ca/ca_eca.c` compiled with `-DRULE=n
 
 G20 spec: extends G19. `conf-eval op=eca` gains `init=right` (seed at `width-1`); `ca_eca.c` parameterized with `-DWIDTH`/`-DGENS`/`-DINIT_RIGHT`. `rule110.spec` re-minted at width 96 / gens 96 / `init=right` so the left-propagating pattern fills the grid (9.3 KB golden, no eyeball check). Rule 50's "periodic" and rule 110's "universal-class oracle-stress" labels were dropped as overclaims; the gates and ledger now state only what specimens show. No new floor machinery.
 
-G21 spec: [`INPUT-MATH-CONFORMANCE.md`](INPUT-MATH-CONFORMANCE.md), decision [`../adr/ADR-005-input-math-conformance.md`](../adr/ADR-005-input-math-conformance.md). `conf-eval op=gcd input=argv` takes runtime operands via CLI args; freestanding `fixtures/input-math/gcd.c` reads argv at `_start`. Phase 1 `scripts/check-input-math-oracle.sh` (cases file vs conf-eval). Phase 2 `scripts/check-input-math-conformance.sh` (v1/v2 accept all cases, wrong rejects, distinct hash). Specimens minted by `scripts/mint-input-math-fixtures.sh` (pinned `gcc:13`, committed `.ngb`). `run-linux-elf-capture.sh` forwards extra args to the ELF. Both gated in `check-all-proofs.sh`.
+G21 spec: [`INPUT-MATH-CONFORMANCE.md`](INPUT-MATH-CONFORMANCE.md), decision [`../adr/ADR-005-input-math-conformance.md`](../adr/ADR-005-input-math-conformance.md). `conf-eval op=gcd input=argv` takes runtime operands via CLI args; freestanding `fixtures/input-math/gcd.c` reads argv at `_start`. Phase 1 `scripts/check-input-math-oracle.sh` (cases file vs conf-eval). Phase 2 `scripts/check-input-math-conformance.sh` (v1/v2 accept all cases, distinct hash). Specimens minted by `scripts/mint-input-math-fixtures.sh` (pinned `gcc:13`, committed `.ngb`). `run-linux-elf-capture.sh` forwards extra args to the ELF. Both gated in `check-all-proofs.sh`.
+
+G22 spec: extends G21. The `a+b` far-miss is replaced by `gcd_nearmiss.ngb`, Euclid's loop degraded to a single `if` (right only when `b` divides `a`). `check-input-math-conformance.sh` asserts the near-miss accepts >=1 case and rejects >=1, so the suite proves multi-case sampling separates a near-miss a single sample would pass. With committed cases it accepts `(100,25)` and `(30,5)`, rejects the rest. No new floor machinery.
 
 ## Ruliad rule exploration
 
@@ -137,3 +141,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #39 | G19 CA rules 50 and 110 |
 | #40 | G20 honest CA ledger + rule 110 at scale |
 | #41 | G21 input-bound math conformance |
+| #42 | G22 near-miss negative for input-bound conformance |

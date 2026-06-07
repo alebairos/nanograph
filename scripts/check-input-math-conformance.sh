@@ -17,12 +17,12 @@ SPEC="fixtures/input-math/gcd.spec"
 CASES="fixtures/input-math/gcd.cases"
 V1="fixtures/input-math/gcd_v1.ngb"
 V2="fixtures/input-math/gcd_v2.ngb"
-WRONG="fixtures/input-math/gcd_wrong.ngb"
+NEARMISS="fixtures/input-math/gcd_nearmiss.ngb"
 LOG_DIR=".harness-data/agent-eval/conformance"
 mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/run.jsonl"
 
-for f in "$SPEC" "$CASES" "$V1" "$V2" "$WRONG"; do
+for f in "$SPEC" "$CASES" "$V1" "$V2" "$NEARMISS"; do
   [[ -f "$f" ]] || fail "missing $f (run scripts/mint-input-math-fixtures.sh)"
 done
 
@@ -47,7 +47,8 @@ verdict() {
   fi
 }
 
-wrong_rejected=0
+nearmiss_accepts=0
+nearmiss_rejects=0
 while IFS= read -r line || [[ -n "$line" ]]; do
   line="${line%%#*}"
   line="${line#"${line%%[![:space:]]*}"}"
@@ -61,12 +62,17 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   echo "-- gcd($a,$b): accept v2 (O2) --"
   [[ "$(verdict "$V2" "$a" "$b" "$expected")" == "accept" ]] || fail "v2 reject on ($a,$b)"
 
-  if [[ "$(verdict "$WRONG" "$a" "$b" "$expected")" == "reject" ]]; then
-    wrong_rejected=1
+  if [[ "$(verdict "$NEARMISS" "$a" "$b" "$expected")" == "accept" ]]; then
+    nearmiss_accepts=$((nearmiss_accepts + 1))
+    echo "-- gcd($a,$b): near-miss accepts (b divides a) --"
+  else
+    nearmiss_rejects=$((nearmiss_rejects + 1))
+    echo "-- gcd($a,$b): near-miss rejects --"
   fi
 done <"$CASES"
 
-[[ "$wrong_rejected" -eq 1 ]] || fail "wrong specimen should reject on at least one case"
+[[ "$nearmiss_accepts" -ge 1 ]] || fail "near-miss accepts 0 cases: it is a far-miss, single-case sampling would catch it"
+[[ "$nearmiss_rejects" -ge 1 ]] || fail "near-miss rejects 0 cases: it is not wrong"
 
-echo "gcd OK v1=${h1:0:12} v2=${h2:0:12}"
+echo "gcd OK v1=${h1:0:12} v2=${h2:0:12} near-miss accept=$nearmiss_accepts reject=$nearmiss_rejects"
 echo "INPUT-MATH-CONFORMANCE OK"

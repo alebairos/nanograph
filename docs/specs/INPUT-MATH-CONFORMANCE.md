@@ -32,6 +32,10 @@ Comments (`#` prefix) and blank lines are ignored. The oracle gate checks `conf-
 
 Verdict is a function of `(spec, runtime inputs, observed stdout)`. `graph_root_hash` is not an input.
 
+## Why a near-miss negative (G22)
+
+A negative that diverges on every input proves nothing about input-binding, because one case would catch it. The negative here is a near-miss. Euclid's `while` is miscompiled to a single `if`, so the binary runs one reduction step instead of looping to fixpoint. It returns the correct gcd exactly when `b` divides `a`, and a wrong value otherwise. The conformance gate asserts the near-miss accepts on at least one case and rejects on at least one. That split is the executable form of the claim that multi-case sampling catches bugs a single sample would miss. With the committed cases it accepts on `(100,25)` and `(30,5)` and rejects on the other three.
+
 ## Components
 
 | Path | Role |
@@ -41,7 +45,7 @@ Verdict is a function of `(spec, runtime inputs, observed stdout)`. `graph_root_
 | `fixtures/input-math/gcd.cases` | Independent test vectors |
 | `fixtures/input-math/gcd.c` | Freestanding Route B specimen source |
 | `fixtures/input-math/gcd_v1.ngb`, `gcd_v2.ngb` | Two optimization variants (behavioral-not-structural) |
-| `fixtures/input-math/gcd_wrong.ngb` | Wrong-algorithm negative |
+| `fixtures/input-math/gcd_nearmiss.ngb` | Near-miss negative: Euclid's loop degraded to one `if`, right only when `b` divides `a` |
 | `scripts/mint-input-math-fixtures.sh` | Mint specimens (pinned `gcc:13`, committed `.ngb`) |
 | `scripts/run-linux-elf-capture.sh` | Forwards extra args to the extracted ELF |
 | `scripts/check-input-math-oracle.sh` | Phase 1: conf-eval matches cases |

@@ -10,7 +10,11 @@ Every conformance specimen through G20 bakes operands into the spec. `add(1,1)`,
 
 ## Decision
 
-Add `input=argv` to `ConfSpec` and `op=gcd` to `conf-eval`. Runtime operands are passed as extra CLI args to both `conf-eval` and the ELF runner. Verify conformance across a cases file of `(a, b, expected)` vectors. Ship two Route B optimization variants plus a wrong-algorithm negative.
+Add `input=argv` to `ConfSpec` and `op=gcd` to `conf-eval`. Runtime operands are passed as extra CLI args to both `conf-eval` and the ELF runner. Verify conformance across a cases file of `(a, b, expected)` vectors. Ship two Route B optimization variants plus a near-miss negative.
+
+## Negative quality (G22)
+
+The first negative returned `a+b` and diverged on every case, so it never exercised the multi-case dimension and was not a believable gcd miscompilation. It is replaced by a near-miss: Euclid's loop degraded to a single `if`, correct only when `b` divides `a`. The conformance gate asserts the near-miss accepts at least one case and rejects at least one, encoding the claim that input-binding catches bugs single-sample verification misses.
 
 ## Why the adjacent lower layer is insufficient
 
