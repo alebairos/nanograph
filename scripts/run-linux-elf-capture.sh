@@ -3,24 +3,43 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-NGb="${1:-fixtures/hello.ngb}"
+NGb="${1:?usage: run-linux-elf-capture.sh <file.ngb> [args...]}"
+shift
+ELF_ARGS=("$@")
 ELF="/tmp/nanograph-elf-capture-$$"
 
 make -C tools -s bin/ngb-extract
 tools/bin/ngb-extract "$NGb" "$ELF"
 chmod +x "$ELF"
 
+run_elf() {
+  if ((${#ELF_ARGS[@]})); then
+    "$ELF" "${ELF_ARGS[@]}"
+  else
+    "$ELF"
+  fi
+}
+
 run_native() {
-  "$ELF"
+  run_elf
 }
 
 run_qemu() {
-  qemu-x86_64 "$ELF"
+  if ((${#ELF_ARGS[@]})); then
+    qemu-x86_64 "$ELF" "${ELF_ARGS[@]}"
+  else
+    qemu-x86_64 "$ELF"
+  fi
 }
 
 run_docker() {
-  docker run --rm --platform linux/amd64 -i "ubuntu:24.04" \
-    sh -c 'cat > /tmp/e && chmod +x /tmp/e && /tmp/e' < "$ELF"
+  if ((${#ELF_ARGS[@]})); then
+    docker run --rm --platform linux/amd64 -i "ubuntu:24.04" \
+      sh -c 'cat > /tmp/e && chmod +x /tmp/e && exec /tmp/e "$@"' _ "${ELF_ARGS[@]}" < "$ELF"
+  else
+    docker run --rm --platform linux/amd64 -i "ubuntu:24.04" \
+      sh -c 'cat > /tmp/e && chmod +x /tmp/e && exec /tmp/e' < "$ELF"
+  fi
 }
 
 if [[ "$(uname -s)" == "Linux" ]]; then

@@ -62,5 +62,5 @@ This is the bottom tier of the layered verifier in [`ADR-002`](../adr/ADR-002-gr
 
 ## Future work
 
-- `yield=stdout` for programs whose consequence is output, not exit code.
-- A reference evaluator with operands fed at runtime, so the binary is a real function of inputs rather than a constant.
+- `yield=stdout` for programs whose consequence is output, not exit code. Done in G11/G17.
+- Runtime operands via `input=argv`. Done in G21 (`op=gcd`). See [`INPUT-MATH-CONFORMANCE.md`](INPUT-MATH-CONFORMANCE.md).

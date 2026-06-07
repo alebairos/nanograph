@@ -1,0 +1,5 @@
+# gcd test vectors: a b expected
+12 18 6
+21 14 7
+100 25 25
+48 18 6

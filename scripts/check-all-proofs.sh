@@ -25,6 +25,8 @@ make -C tools -s all
 ./scripts/check-conformance-floor.sh
 ./scripts/check-ca-oracle.sh
 ./scripts/check-ca-conformance.sh
+./scripts/check-input-math-oracle.sh
+./scripts/check-input-math-conformance.sh
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

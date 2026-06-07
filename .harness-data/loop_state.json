@@ -1,21 +1,21 @@
 {
-  "goal_id": "G20",
-  "current_issue": 40,
-  "milestone": "G20",
-  "product_proof_step": "G20-honest-ledger-rule110-scale",
+  "goal_id": "G21",
+  "current_issue": 41,
+  "milestone": "G21",
+  "product_proof_step": "G21-input-bound-math",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/CA-CONFORMANCE.md",
+    "spec_path": "docs/specs/INPUT-MATH-CONFORMANCE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-004-ca-conformance.md",
+    "verdict_adr": "docs/adr/ADR-005-input-math-conformance.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G20 done: dropped overclaims (rule 50 periodic, rule 110 universal-class oracle-stress); conf-eval init=right; ca_eca.c parameterized; rule110 re-minted width 96/gens 96/init=right (9.3 KB golden); gates rule-agnostic, all-proofs green."
+    "note": "G21 complete: input-bound math conformance (op=gcd input=argv); conf-eval runtime operands; gcd specimen + oracle/conformance gates; all-proofs green."
   },
   "history": [
     {
@@ -108,6 +108,12 @@
       "milestone": "G20",
       "closed": "2026-06-06",
       "note": "Honest CA ledger (dropped periodic/universal-class overclaims); conf-eval init=right; ca_eca.c parameterized; rule110 re-minted width 96/gens 96/init=right (9.3 KB golden, fills grid); gates unchanged, all-proofs green"
+    },
+    {
+      "issue": 41,
+      "milestone": "G21",
+      "closed": "2026-06-07",
+      "note": "Input-bound math conformance; conf-eval op=gcd input=argv; gcd.c freestanding argv specimen; oracle + conformance gates; v1/v2 accept all cases, wrong rejects; check-all-proofs green"
     }
   ]
 }
