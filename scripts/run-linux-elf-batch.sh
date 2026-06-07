@@ -17,21 +17,29 @@ make -C tools -s bin/ngb-extract >/dev/null
 tools/bin/ngb-extract "$NGb" "$ELF"
 chmod +x "$ELF"
 
+# A corrupted candidate may crash or loop. Disable the slow qemu core dump and
+# bound every probe.
+TLIMIT="${ELF_TIMEOUT:-10}"
+ulimit -c 0 2>/dev/null || true
 PAIRS="$(cat)"
 
+host_to() {
+  if command -v timeout >/dev/null 2>&1; then timeout -s KILL "$TLIMIT" "$@"
+  elif command -v gtimeout >/dev/null 2>&1; then gtimeout -s KILL "$TLIMIT" "$@"
+  else "$@"; fi
+}
+
 run_local() {
-  local runner="$1" a b out
+  local a b out
   printf '%s\n' "$PAIRS" | while read -r a b; do
     [[ -z "${a:-}" ]] && continue
-    out="$($runner "$ELF" "$a" "$b" 2>/dev/null)" || out=""
+    out="$(host_to "$@" "$ELF" "$a" "$b" 2>/dev/null)" || out=""
     printf '%s %s %s\n' "$a" "$b" "$out"
   done
 }
 
-native() { shift; "$ELF" "$@"; }
-
 if [[ "$(uname -s)" == "Linux" ]]; then
-  run_local native
+  run_local
   exit 0
 fi
 
@@ -42,8 +50,8 @@ fi
 
 if command -v docker >/dev/null 2>&1; then
   docker run --rm --platform linux/amd64 -i "ubuntu:24.04" \
-    sh -c 'cat > /tmp/e; chmod +x /tmp/e; printf "%s\n" "$1" | while read -r a b; do [ -z "$a" ] && continue; out=$(/tmp/e "$a" "$b" 2>/dev/null) || out=""; printf "%s %s %s\n" "$a" "$b" "$out"; done' \
-    _ "$PAIRS" < "$ELF"
+    sh -c 'ulimit -c 0; cat > /tmp/e; chmod +x /tmp/e; printf "%s\n" "$2" | while read -r a b; do [ -z "$a" ] && continue; out=$(timeout -s KILL "$1" /tmp/e "$a" "$b" 2>/dev/null) || out=""; printf "%s %s %s\n" "$a" "$b" "$out"; done' \
+    _ "$TLIMIT" "$PAIRS" < "$ELF"
   exit 0
 fi
 
