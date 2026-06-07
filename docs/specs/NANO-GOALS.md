@@ -21,6 +21,7 @@ What the program has settled versus what still needs a goal.
 | Conformance holds on a richer observable at scale | **Proven** | G20 re-mints rule 110 at width 96 / gens 96 / `init=right` so the grid fills with glider structure (9.3 KB stdout, beyond eyeball check); `init=right` added to `conf-eval`, `ca_eca.c` parameterized; not an oracle-ceiling claim, the oracle stays cheap |
 | Input-bound conformance (runtime argv operands) | **Proven** | G21 `op=gcd input=argv`: `conf-eval` takes runtime `(a,b)`; five-case oracle; two Route B variants accept on all vectors with distinct `graph_root_hash` |
 | Multi-case sampling catches near-misses | **Proven** | G22 near-miss `gcd_nearmiss.ngb` (Euclid loop degraded to one `if`, right only when `b` divides `a`); gate asserts it accepts >=1 case and rejects >=1; a single sample would not separate it |
+| Active search beats a fixed case list, refereed by an independent oracle | **Proven** | G23 competition: organizer owns `gcd.spec` + `conf-eval`; `gcd_evil` (equal operands return 1) passes the G21/G22 static suite but the searcher finds witness `(2,2)` and rejects; honest v1/v2 accept; witnesses confirmed by isolated re-run |
 | Stacked gates reduce live-agent retries | **Not the claim** | G14 blind A/B was inconclusive (answer leaked across ~18 repo files, no tool-call trace); reframed to pre-execution rejection above |
 | Live eval generalizes beyond print_42 | **Parked** | Single program only; no reason to expand until a workload needs it |
 | Human-auditable verdict trail | **Parked** | `probe_bundle` is text concatenation; revisit if an external auditor needs it |
@@ -58,6 +59,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G20 | Honest CA ledger + rule 110 at scale (`init=right`) | #40 | Done |
 | G21 | Input-bound math conformance (`op=gcd input=argv`) | #41 | Done |
 | G22 | Near-miss negative for input-bound conformance | #42 | Done |
+| G23 | Adversarial verifier vs static sampling (competition oracle) | #43 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -80,6 +82,8 @@ G20 spec: extends G19. `conf-eval op=eca` gains `init=right` (seed at `width-1`)
 G21 spec: [`INPUT-MATH-CONFORMANCE.md`](INPUT-MATH-CONFORMANCE.md), decision [`../adr/ADR-005-input-math-conformance.md`](../adr/ADR-005-input-math-conformance.md). `conf-eval op=gcd input=argv` takes runtime operands via CLI args; freestanding `fixtures/input-math/gcd.c` reads argv at `_start`. Phase 1 `scripts/check-input-math-oracle.sh` (cases file vs conf-eval). Phase 2 `scripts/check-input-math-conformance.sh` (v1/v2 accept all cases, distinct hash). Specimens minted by `scripts/mint-input-math-fixtures.sh` (pinned `gcc:13`, committed `.ngb`). `run-linux-elf-capture.sh` forwards extra args to the ELF. Both gated in `check-all-proofs.sh`.
 
 G22 spec: extends G21. The `a+b` far-miss is replaced by `gcd_nearmiss.ngb`, Euclid's loop degraded to a single `if` (right only when `b` divides `a`). `check-input-math-conformance.sh` asserts the near-miss accepts >=1 case and rejects >=1, so the suite proves multi-case sampling separates a near-miss a single sample would pass. With committed cases it accepts `(100,25)` and `(30,5)`, rejects the rest. No new floor machinery.
+
+G23 spec: [`ADVERSARIAL-VERIFIER.md`](ADVERSARIAL-VERIFIER.md), decision [`../adr/ADR-006-adversarial-verifier.md`](../adr/ADR-006-adversarial-verifier.md). Competition with an independent oracle: organizer owns `gcd.spec` + `conf-eval`, authors submit `.ngb`, a deterministic searcher (`scripts/agent-eval/adversarial-verify.sh`) enumerates inputs by increasing sum, runs the submission via `scripts/run-linux-elf-batch.sh` (extract once, one backend session, crash-safe per probe), referees per probe, and confirms any witness with an isolated re-run. `gcd_evil` (`-DEVIL_GCD`, equal operands return 1) passes the G21/G22 static suite but the searcher rejects it with witness `(2,2)`; v1/v2 accept. Gated by `scripts/check-adversarial-verifier.sh` in `check-all-proofs.sh`. No new floor machinery.
 
 ## Ruliad rule exploration
 
@@ -142,3 +146,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #40 | G20 honest CA ledger + rule 110 at scale |
 | #41 | G21 input-bound math conformance |
 | #42 | G22 near-miss negative for input-bound conformance |
+| #43 | G23 adversarial verifier vs static sampling |

@@ -1,21 +1,21 @@
 {
-  "goal_id": "G22",
-  "current_issue": 42,
-  "milestone": "G22",
-  "product_proof_step": "G22-near-miss-negative",
+  "goal_id": "G23",
+  "current_issue": 43,
+  "milestone": "G23",
+  "product_proof_step": "G23-adversarial-verifier",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/INPUT-MATH-CONFORMANCE.md",
+    "spec_path": "docs/specs/ADVERSARIAL-VERIFIER.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-005-input-math-conformance.md",
+    "verdict_adr": "docs/adr/ADR-006-adversarial-verifier.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G22 complete: replaced a+b far-miss with near-miss (Euclid loop -> single if); gate asserts near-miss accepts >=1 and rejects >=1; proves multi-case sampling separates near-misses; all-proofs green."
+    "note": "G23 complete: competition with independent oracle; gcd_evil (equal operands -> 1) passes G21/G22 static suite, adversarial searcher rejects with witness (2,2), v1/v2 accept; witnesses confirmed by isolated re-run; gated in check-all-proofs."
   },
   "history": [
     {
@@ -120,6 +120,12 @@
       "milestone": "G22",
       "closed": "2026-06-07",
       "note": "Near-miss negative; a+b far-miss replaced by Euclid-loop-to-if (right only when b divides a); gate asserts near-miss accepts >=1 and rejects >=1; proves multi-case sampling has teeth; all-proofs green"
+    },
+    {
+      "issue": 43,
+      "milestone": "G23",
+      "closed": "2026-06-07",
+      "note": "Adversarial verifier vs static sampling; competition with independent oracle (conf-eval referee); gcd_evil (equal operands -> 1) passes G21/G22 static suite, searcher rejects with witness (2,2), v1/v2 accept; batched runner + isolated-rerun witness confirm; gated in check-all-proofs"
     }
   ]
 }
