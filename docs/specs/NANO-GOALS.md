@@ -71,6 +71,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G28 | UTF-8 demo script + the emerging ICP | #48 | Done |
 | G29 | Case-fit rubric as a runnable target score | #49 | Done |
 | G30 | Backtest harness on controlled history (promote the spike) | #50 | Done |
+| G31 | Second backtest case (LEB128 varint) + generalize backtest scripts | #51 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -101,6 +102,8 @@ G24 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../
 G25 spec: extends G24 in [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-008-floor-handoff.md`](../adr/ADR-008-floor-handoff.md). Closes the involution ceiling by demonstration. `conf-eval` gains `op=bswap` (single argv operand, u32 decimal); `fixtures/metamorphic/bswap32.spec` + `bswap32.cases` hand table feed the value oracle. `scripts/check-bswap-value-oracle.sh` runs both floors on the same `bswap32_imposter`: the involution relation accepts (the G24 ceiling), the value oracle rejects with witness `x=256` (`got=256 want=65536`). Cheap-then-expensive handoff: the relation needs no spec and rejects non-involutions for free, the value oracle costs a computed expected value and separates the imposter. Gated in `check-all-proofs.sh`. No new floor machinery, no `.ngb` format change.
 
 G26 spec: extends G24/G25 in [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-009-real-vendored-code.md`](../adr/ADR-009-real-vendored-code.md). De-toys the line: both floors run on real, vendored, attributed upstream code. `fixtures/metamorphic/reverse32.c` ships the public-domain "Reverse bits in parallel" routine (Bit Twiddling Hacks) verbatim behind a trusted `_start`/parse/print driver. `conf-eval` gains `op=bitrev` (independent loop reference). `scripts/check-reverse32-real.sh` asserts the attribution, the involution relation accepts the real bit reversal and rejects an `EVIL_REVERSE` mask typo (non-involution) with witness `x=1`, the value oracle accepts the real bytes, and the handoff shows `bswap32` is an involution the relation accepts but the value oracle rejects as bit reversal with witness `x=1`. The driver calls the function via the C ABI; instruction-level isolation stays parked. Gated in `check-all-proofs.sh`. No `.ngb` format change.
+
+G31: a second worked backtest case proves the G30 driver generalizes. `fixtures/metamorphic/leb128.c` is an unsigned LEB128 varint codec whose non-minimal-acceptance bug (`NONMINIMAL_OK`) is caught by the unchanged `round_trip` relation (`80 00` decodes to 0, re-encodes to `00`, witness hex `8000`); the only new verifier code is `gen_leb128`. With two cases, the G30 mint and gate were generalized to `scripts/mint-backtest.sh` and `scripts/check-backtest.sh` (parameterized by source, guard macro, manifest, reject hex), the utf8-specific scripts deleted, and `check-all-proofs.sh` calls the one gate twice (utf8 C080, leb128 8000). `docs/BACKTEST.md` adds the second case and a formal-mining plan for real upstream histories. No floor or format change.
 
 G30: promotes the throwaway backtest spike into a committed harness. [`../BACKTEST.md`](../BACKTEST.md) explains replaying a function's revisions and flagging the buggy window. `scripts/mint-backtest-utf8.sh` derives three revisions of the UTF-8 codec (honest, overlong bug, fix) from `fixtures/metamorphic/utf8.c` and mints committed `.ngb` via the factored `scripts/mint-one-elf.sh`. `scripts/backtest-relation.sh` is a relation-agnostic driver that replays a `timeline.manifest` (ordered committed `.ngb` plus expected verdict) and asserts the sequence. `scripts/check-backtest-utf8.sh` asserts the timeline reads accept, reject with witness C0 80, accept, and that the fix returns to revision one's hash; runner-guarded, gated in `check-all-proofs.sh`. The driver is reused by the future real-git-history backtest. No floor or format change.
 
@@ -179,3 +182,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #48 | G28 UTF-8 demo script + ICP |
 | #49 | G29 case-fit rubric (target score) |
 | #50 | G30 backtest harness (controlled history) |
+| #51 | G31 second backtest case (LEB128) + generic scripts |

@@ -1,10 +1,10 @@
-{"ts":"2026-06-08T22:38:25Z","event":"loop_start","genesis":"fixtures/print_42.ngb","goal":"stdout 43\\n exit 0"}
-{"ts":"2026-06-08T22:38:25Z","round":1,"role":"author","msg_type":"patch_request","precondition_hash":"2429c3ed702dbfa62e4ab9eb2547b509f188b63f14742befa49dcee71f8cf016","delta_off":152,"delta_pairs":"32:34"}
-{"ts":"2026-06-08T22:38:25Z","round":1,"role":"author","msg_type":"patched_ngb","graph_root_hash":"f0234a8346b072c194b93ea314e3b18b5fa63aec29bb7934c83443dd86bd2f2c"}
-{"ts":"2026-06-08T22:38:26Z","round":1,"role":"auditor","msg_type":"probe_bundle","bundle_sha256":"8a718cec37525f3327bf77d4888c4a08ac66d8cadf6c663c084c786cbe890f05"}
-{"ts":"2026-06-08T22:38:26Z","round":1,"role":"auditor","msg_type":"verdict","decision":"reject","invariant":"stdout","detail":"got 34340a","line":"verdict=reject invariant=stdout detail=got 34340a"}
-{"ts":"2026-06-08T22:38:26Z","round":2,"role":"author","msg_type":"patch_request","precondition_hash":"2429c3ed702dbfa62e4ab9eb2547b509f188b63f14742befa49dcee71f8cf016","delta_off":152,"delta_pairs":"32:33"}
-{"ts":"2026-06-08T22:38:26Z","round":2,"role":"author","msg_type":"patched_ngb","graph_root_hash":"2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1"}
-{"ts":"2026-06-08T22:38:26Z","round":2,"role":"auditor","msg_type":"probe_bundle","bundle_sha256":"bf54e6d14e88c2669ac6cbce24807456ee2e6a18ec1bfb532e1936489aab2fe3"}
-{"ts":"2026-06-08T22:38:26Z","round":2,"role":"auditor","msg_type":"verdict","decision":"accept","graph_root_hash":"2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1","line":"verdict=accept graph_root_hash=2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1"}
-{"ts":"2026-06-08T22:38:26Z","event":"loop_end","success":true,"rounds":2,"wall_ms":1000,"final_graph_root_hash":"2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1"}
+{"ts":"2026-06-08T23:05:41Z","event":"loop_start","genesis":"fixtures/print_42.ngb","goal":"stdout 43\\n exit 0"}
+{"ts":"2026-06-08T23:05:41Z","round":1,"role":"author","msg_type":"patch_request","precondition_hash":"2429c3ed702dbfa62e4ab9eb2547b509f188b63f14742befa49dcee71f8cf016","delta_off":152,"delta_pairs":"32:34"}
+{"ts":"2026-06-08T23:05:41Z","round":1,"role":"author","msg_type":"patched_ngb","graph_root_hash":"f0234a8346b072c194b93ea314e3b18b5fa63aec29bb7934c83443dd86bd2f2c"}
+{"ts":"2026-06-08T23:05:41Z","round":1,"role":"auditor","msg_type":"probe_bundle","bundle_sha256":"8a718cec37525f3327bf77d4888c4a08ac66d8cadf6c663c084c786cbe890f05"}
+{"ts":"2026-06-08T23:05:41Z","round":1,"role":"auditor","msg_type":"verdict","decision":"reject","invariant":"stdout","detail":"got 34340a","line":"verdict=reject invariant=stdout detail=got 34340a"}
+{"ts":"2026-06-08T23:05:41Z","round":2,"role":"author","msg_type":"patch_request","precondition_hash":"2429c3ed702dbfa62e4ab9eb2547b509f188b63f14742befa49dcee71f8cf016","delta_off":152,"delta_pairs":"32:33"}
+{"ts":"2026-06-08T23:05:41Z","round":2,"role":"author","msg_type":"patched_ngb","graph_root_hash":"2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1"}
+{"ts":"2026-06-08T23:05:41Z","round":2,"role":"auditor","msg_type":"probe_bundle","bundle_sha256":"bf54e6d14e88c2669ac6cbce24807456ee2e6a18ec1bfb532e1936489aab2fe3"}
+{"ts":"2026-06-08T23:05:41Z","round":2,"role":"auditor","msg_type":"verdict","decision":"accept","graph_root_hash":"2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1","line":"verdict=accept graph_root_hash=2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1"}
+{"ts":"2026-06-08T23:05:41Z","event":"loop_end","success":true,"rounds":2,"wall_ms":0,"final_graph_root_hash":"2a8f5f4e1a9e8a3d294253229bea6526cb80e5cc21165e422d563563956dd9c1"}

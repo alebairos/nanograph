@@ -41,10 +41,15 @@ gen_utf8() {
     114816 115135 31490176 32350336 8398078080
 }
 
+gen_leb128() {
+  printf '%s\n' 256 257 383 98305 109570 98304 98560
+}
+
 gen_probes() {
   case "$DOMAIN" in
     u32) gen_u32 ;;
     utf8) gen_utf8 ;;
+    leb128) gen_leb128 ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }

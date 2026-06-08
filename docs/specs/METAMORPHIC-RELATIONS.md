@@ -29,7 +29,7 @@ eq=exact
 | Relation | Property | Status |
 | --- | --- | --- |
 | `involution` | `f(f(x)) == x` | **Done** (G24) |
-| `round_trip` | `decode(encode(x)) == x` | Named, unimplemented |
+| `round_trip` | `encode(decode(b)) == b` over accepted byte sequences | Implemented (G27 utf8, G31 leb128) |
 | `idempotent` | `f(f(x)) == f(x)` | Named, unimplemented |
 | `commutative` | `f(a,b) == f(b,a)` | Named, unimplemented |
 
@@ -101,6 +101,10 @@ The demo is the contrast. `scripts/check-utf8-roundtrip.sh` (in `check-all-proof
 - The relation rejects the overlong codec with witness `bytes=114816 hex=C080 decode=0 reencode=256`: the overlong NUL `C0 80` decodes to U+0000 and re-encodes to the canonical `00`.
 
 The unit test stays green. NanoGraph rejects with a witness that names the offending bytes. The two directions are the point: the easy direction (`decode(encode(cp))`) is the test a developer writes; the hard direction (`encode(decode(b))` over a byte domain including malformed input) is the one that catches the bug.
+
+## Round-trip on a second codec (G31, LEB128)
+
+The same `round_trip` relation, unchanged, catches a second codec's bug. `fixtures/metamorphic/leb128.c` is an unsigned LEB128 varint `enc`/`dec` codec with the same `0x01 ++ bytes` packing, capped to four varint bytes. The honest decoder rejects non-minimal encodings. `NONMINIMAL_OK` drops the minimality check, the classic varint hole where `80 00` decodes to zero. `leb128.req` declares `domain=leb128`, the only new code is `gen_leb128` in the verifier. The relation rejects the buggy revision with witness `hex=8000`: `80 00` decodes to 0 and re-encodes to the canonical `00`. This is the proof that the relation and the backtest driver generalize across codecs, not just utf8. See [`../BACKTEST.md`](../BACKTEST.md).
 
 ## Specimens
 

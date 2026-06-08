@@ -1,6 +1,6 @@
-{"ts":"2026-06-08T22:38:58Z","class":"correct","kind":"good","off":152,"new":"33","static":"accept","static_exec":1,"auditor_only":"auditor accept","auditor_exec":1}
-{"ts":"2026-06-08T22:38:58Z","class":"wrong_value","kind":"bad","off":152,"new":"34","static":"reject value_mismatch","static_exec":0,"auditor_only":"auditor reject stdout","auditor_exec":1}
-{"ts":"2026-06-08T22:38:58Z","class":"wrong_target_instruction","kind":"bad","off":135,"new":"33","static":"reject not_rodata","static_exec":0,"auditor_only":"auditor reject behavior","auditor_exec":1}
-{"ts":"2026-06-08T22:38:58Z","class":"out_of_bounds","kind":"bad","off":999999,"new":"33","static":"reject bounds","static_exec":0,"auditor_only":"ngb-patch reject","auditor_exec":0}
-{"ts":"2026-06-08T22:38:58Z","class":"correct_value_wrong_position","kind":"bad","off":151,"new":"33","static":"reject position_mismatch","static_exec":0,"auditor_only":"auditor reject stdout","auditor_exec":1}
-{"ts":"2026-06-08T22:38:58Z","event":"summary","bad_classes":4,"caught_pre_exec":4,"gate_misses":0}
+{"ts":"2026-06-08T23:06:15Z","class":"correct","kind":"good","off":152,"new":"33","static":"accept","static_exec":1,"auditor_only":"auditor accept","auditor_exec":1}
+{"ts":"2026-06-08T23:06:16Z","class":"wrong_value","kind":"bad","off":152,"new":"34","static":"reject value_mismatch","static_exec":0,"auditor_only":"auditor reject stdout","auditor_exec":1}
+{"ts":"2026-06-08T23:06:16Z","class":"wrong_target_instruction","kind":"bad","off":135,"new":"33","static":"reject not_rodata","static_exec":0,"auditor_only":"auditor reject behavior","auditor_exec":1}
+{"ts":"2026-06-08T23:06:16Z","class":"out_of_bounds","kind":"bad","off":999999,"new":"33","static":"reject bounds","static_exec":0,"auditor_only":"ngb-patch reject","auditor_exec":0}
+{"ts":"2026-06-08T23:06:16Z","class":"correct_value_wrong_position","kind":"bad","off":151,"new":"33","static":"reject position_mismatch","static_exec":0,"auditor_only":"auditor reject stdout","auditor_exec":1}
+{"ts":"2026-06-08T23:06:16Z","event":"summary","bad_classes":4,"caught_pre_exec":4,"gate_misses":0}

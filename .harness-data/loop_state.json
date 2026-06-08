@@ -1,8 +1,8 @@
 {
-  "goal_id": "G30",
-  "current_issue": 50,
-  "milestone": "G30",
-  "product_proof_step": "G30-backtest-controlled-history",
+  "goal_id": "G31",
+  "current_issue": 51,
+  "milestone": "G31",
+  "product_proof_step": "G31-backtest-leb128-generalize",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G30 complete: promoted the backtest spike into a committed harness. scripts/mint-backtest-utf8.sh derives three UTF-8 codec revisions (honest, overlong bug, fix) from fixtures/metamorphic/utf8.c and mints committed .ngb via scripts/mint-one-elf.sh; scripts/backtest-relation.sh is a relation-agnostic driver replaying a timeline.manifest (ordered committed .ngb + expected verdict); scripts/check-backtest-utf8.sh asserts accept -> reject (witness C0 80) -> accept and that the fix returns to rev1 hash; runner-guarded, gated in check-all-proofs. docs/BACKTEST.md documents the method and how phase 2 (real git history) reuses the driver. Next: pick the first real target function (small dependency-light codec with a real historical overlong/non-minimal/length bug) or mine a fit-scored shortlist."
+    "note": "G31 complete: second worked backtest case (LEB128 varint) proves the G30 driver generalizes. fixtures/metamorphic/leb128.c codec with NONMINIMAL_OK guard; the unchanged round_trip relation catches the non-minimal bug (80 00 -> 0, witness hex 8000); only new verifier code is gen_leb128. G30 mint/gate generalized to scripts/mint-backtest.sh and scripts/check-backtest.sh (parameterized by source/guard/manifest/reject-hex), utf8-specific scripts deleted, check-all-proofs calls the one gate twice (utf8 C080, leb128 8000). docs/BACKTEST.md adds the second case + a formal-mining plan. Next: formal mining of real upstream codec histories per docs/BACKTEST.md (scored shortlist via CASE-FIT-RUBRIC, then one vendored real-history backtest); open decision is the lead source (standalone permissive repo vs named project like protobuf/DWARF)."
   },
   "history": [
     {
@@ -168,6 +168,12 @@
       "milestone": "G30",
       "closed": "2026-06-08",
       "note": "Promoted the backtest spike into a committed harness; scripts/mint-one-elf.sh factors per-file docker build+pack; scripts/mint-backtest-utf8.sh derives three UTF-8 codec revisions (honest/overlong-bug/fix) and mints committed .ngb; scripts/backtest-relation.sh is a relation-agnostic driver over a timeline.manifest; scripts/check-backtest-utf8.sh asserts accept -> reject (witness C0 80) -> accept and fix-returns-to-rev1-hash; runner-guarded, gated in check-all-proofs; docs/BACKTEST.md documents method + phase-2 reuse; no floor or format change"
+    },
+    {
+      "issue": 51,
+      "milestone": "G31",
+      "closed": "2026-06-08",
+      "note": "Second worked backtest case (LEB128 varint) proves the driver generalizes; fixtures/metamorphic/leb128.c + leb128.req, gen_leb128 the only new verifier code, unchanged round_trip catches non-minimal acceptance (80 00 -> 0, witness 8000); generalized G30 mint/gate to scripts/mint-backtest.sh + scripts/check-backtest.sh (deleted utf8-specific), check-all-proofs runs both (utf8 C080, leb128 8000); docs/BACKTEST.md adds the case + formal-mining plan; METAMORPHIC-RELATIONS round_trip marked implemented; no floor or format change"
     }
   ]
 }
