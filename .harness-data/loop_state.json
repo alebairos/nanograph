@@ -1,21 +1,21 @@
 {
-  "goal_id": "G23",
-  "current_issue": 43,
-  "milestone": "G23",
-  "product_proof_step": "G23-adversarial-verifier",
+  "goal_id": "G24",
+  "current_issue": 44,
+  "milestone": "G24",
+  "product_proof_step": "G24-metamorphic-involution",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/ADVERSARIAL-VERIFIER.md",
+    "spec_path": "docs/specs/METAMORPHIC-RELATIONS.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-006-adversarial-verifier.md",
+    "verdict_adr": "docs/adr/ADR-007-metamorphic-relations.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G23 complete: competition with independent oracle; gcd_evil (equal operands -> 1) passes G21/G22 static suite, adversarial searcher rejects with witness (2,2), v1/v2 accept; witnesses confirmed by isolated re-run; gated in check-all-proofs."
+    "note": "G24 complete: metamorphic involution verification, oracle-free. bswap32.req declares relation=involution; metamorphic-verify composes f(f(x)) over a u32 sweep with no expected value; honest bswap32 accepts, rotl8 rejects with witness x=1, involution-but-wrong imposter accepts (the asserted ceiling); gated in check-all-proofs."
   },
   "history": [
     {
@@ -126,6 +126,12 @@
       "milestone": "G23",
       "closed": "2026-06-07",
       "note": "Adversarial verifier vs static sampling; competition with independent oracle (conf-eval referee); gcd_evil (equal operands -> 1) passes G21/G22 static suite, searcher rejects with witness (2,2), v1/v2 accept; batched runner + isolated-rerun witness confirm; gated in check-all-proofs"
+    },
+    {
+      "issue": 44,
+      "milestone": "G24",
+      "closed": "2026-06-08",
+      "note": "Metamorphic involution verification, oracle-free; VerificationRequest seam (bswap32.req relation=involution entry=argv domain=u32 eq=exact); metamorphic-verify composes f(f(x)) over a u32 sweep in two batched passes, no expected value; honest bswap32 accepts, rotl8 rejects with witness x=1, involution-but-wrong outer-swap imposter accepts (asserted ceiling); complements value-oracle floor; gated in check-all-proofs"
     }
   ]
 }

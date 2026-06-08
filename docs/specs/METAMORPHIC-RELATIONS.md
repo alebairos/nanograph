@@ -1,0 +1,71 @@
+# Metamorphic relations (G24)
+
+Verify a compiled function against a property that holds with no expected value named. The relation is the oracle. This is the complement to the value-oracle floor (G9-G23): use it where a relation is cheap to state but a value oracle is as hard to build as the function.
+
+Decision: [`../adr/ADR-007-metamorphic-relations.md`](../adr/ADR-007-metamorphic-relations.md).
+
+## VerificationRequest
+
+A language-neutral kv file (`.req`) declares the task. It is the seam between a future language-aware layer that identifies candidates and NanoGraph's language-blind, execution-grounded check.
+
+| Key | Meaning | G24 value |
+| --- | --- | --- |
+| `relation` | property over runs | `involution` |
+| `entry` | how operands reach the binary | `argv` |
+| `domain` | input generator | `u32` |
+| `eq` | output comparison | `exact` |
+
+`fixtures/metamorphic/bswap32.req`:
+
+```
+relation=involution
+entry=argv
+domain=u32
+eq=exact
+```
+
+## Relations
+
+| Relation | Property | Status |
+| --- | --- | --- |
+| `involution` | `f(f(x)) == x` | **Done** (G24) |
+| `round_trip` | `decode(encode(x)) == x` | Named, unimplemented |
+| `idempotent` | `f(f(x)) == f(x)` | Named, unimplemented |
+| `commutative` | `f(a,b) == f(b,a)` | Named, unimplemented |
+
+Each is a branch in the verifier's dispatch. Adding one is a `.req` plus a branch, not a new floor.
+
+## Mechanism
+
+`scripts/agent-eval/metamorphic-verify.sh <candidate.ngb> <request.req>`:
+
+1. Parse the request. Generate the domain sweep (u32: powers of two, `0`, edge bytes, mixed constants).
+2. Pass 1, batch `x -> f(x)`. Pass 2, batch `f(x) -> f(f(x))`. Two backend sessions for the whole sweep.
+3. Compare `f(f(x))` to `x`. On a violation, confirm with an isolated clean re-run, then print `verdict=reject ... witness x=.. fx=.. ffx=..`.
+4. No violation, `verdict=accept ... separator=none`.
+
+The two-pass batched composition reuses `run-linux-elf-batch.sh` (crash-safe per probe) and `run-linux-elf-capture.sh` (isolated confirm) unchanged from G23.
+
+## Gate
+
+`scripts/check-metamorphic-involution.sh` (in `check-all-proofs.sh`, skips with no Linux runner):
+
+- Honest `bswap32` accepts. The relation verifies it with no oracle.
+- `bswap32_evil` (rotl8) rejects with witness `x=1` (`f(f(1))=65536 != 1`).
+- `bswap32_imposter` (outer-byte swap) accepts. It is an involution but not a byte swap.
+
+## The ceiling
+
+The imposter arm is the bound, asserted as a tested fact. Involution is necessary, not sufficient: a function can satisfy the relation and still be wrong. Separating the imposter from the real `bswap32` needs a value oracle, which is the G9-G23 floor. The two floors are complementary.
+
+Power, not count, is the metric. Rewarding the number of relations invites tautology-stuffing (Goodhart). What G24 measures is whether the relation rejects a wrong program (rotl8) and where that power ends (the imposter).
+
+## Specimens
+
+`fixtures/metamorphic/bswap32.c`, freestanding x86_64, reads `argv[1]` as u32, prints the result. Three builds: default (real), `-DEVIL_BSWAP` (rotl8), `-DIMPOSTER_BSWAP` (outer-swap). Minted by `scripts/mint-metamorphic-fixtures.sh` (pinned `gcc:13`, committed `.ngb`, distinct `graph_root_hash`).
+
+## Not in scope
+
+- No `.ngb` format change. I1-I6 hold.
+- No language front end. The request is hand-authored; candidate identification is parked.
+- No correctness proof. The sweep is a bounded adversarial sample; the ceiling is the deeper limit.

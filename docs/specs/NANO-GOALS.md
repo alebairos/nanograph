@@ -22,6 +22,7 @@ What the program has settled versus what still needs a goal.
 | Input-bound conformance (runtime argv operands) | **Proven** | G21 `op=gcd input=argv`: `conf-eval` takes runtime `(a,b)`; five-case oracle; two Route B variants accept on all vectors with distinct `graph_root_hash` |
 | Multi-case sampling catches near-misses | **Proven** | G22 near-miss `gcd_nearmiss.ngb` (Euclid loop degraded to one `if`, right only when `b` divides `a`); gate asserts it accepts >=1 case and rejects >=1; a single sample would not separate it |
 | Active search beats a fixed case list, refereed by an independent oracle | **Proven** | G23 competition: organizer owns `gcd.spec` + `conf-eval`; `gcd_evil` (equal operands return 1) passes the G21/G22 static suite but the searcher finds witness `(2,2)` and rejects; honest v1/v2 accept; witnesses confirmed by isolated re-run |
+| A metamorphic relation verifies a binary with no external oracle, with an explicit ceiling | **Proven** | G24 involution: `bswap32.req` declares `relation=involution`; `metamorphic-verify` composes `f(f(x))` over a u32 sweep, no expected value computed; honest `bswap32` accepts, `rotl8` rejects with witness `x=1`, an involution-but-wrong outer-swap imposter accepts (the ceiling, asserted); complements the value-oracle floor |
 | Stacked gates reduce live-agent retries | **Not the claim** | G14 blind A/B was inconclusive (answer leaked across ~18 repo files, no tool-call trace); reframed to pre-execution rejection above |
 | Live eval generalizes beyond print_42 | **Parked** | Single program only; no reason to expand until a workload needs it |
 | Human-auditable verdict trail | **Parked** | `probe_bundle` is text concatenation; revisit if an external auditor needs it |
@@ -60,6 +61,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G21 | Input-bound math conformance (`op=gcd input=argv`) | #41 | Done |
 | G22 | Near-miss negative for input-bound conformance | #42 | Done |
 | G23 | Adversarial verifier vs static sampling (competition oracle) | #43 | Done |
+| G24 | Metamorphic involution verification (oracle-free relation, VerificationRequest seam) | #44 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -84,6 +86,8 @@ G21 spec: [`INPUT-MATH-CONFORMANCE.md`](INPUT-MATH-CONFORMANCE.md), decision [`.
 G22 spec: extends G21. The `a+b` far-miss is replaced by `gcd_nearmiss.ngb`, Euclid's loop degraded to a single `if` (right only when `b` divides `a`). `check-input-math-conformance.sh` asserts the near-miss accepts >=1 case and rejects >=1, so the suite proves multi-case sampling separates a near-miss a single sample would pass. With committed cases it accepts `(100,25)` and `(30,5)`, rejects the rest. No new floor machinery.
 
 G23 spec: [`ADVERSARIAL-VERIFIER.md`](ADVERSARIAL-VERIFIER.md), decision [`../adr/ADR-006-adversarial-verifier.md`](../adr/ADR-006-adversarial-verifier.md). Competition with an independent oracle: organizer owns `gcd.spec` + `conf-eval`, authors submit `.ngb`, a deterministic searcher (`scripts/agent-eval/adversarial-verify.sh`) enumerates inputs by increasing sum, runs the submission via `scripts/run-linux-elf-batch.sh` (extract once, one backend session, crash-safe per probe), referees per probe, and confirms any witness with an isolated re-run. `gcd_evil` (`-DEVIL_GCD`, equal operands return 1) passes the G21/G22 static suite but the searcher rejects it with witness `(2,2)`; v1/v2 accept. Gated by `scripts/check-adversarial-verifier.sh` in `check-all-proofs.sh`. No new floor machinery.
+
+G24 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-007-metamorphic-relations.md`](../adr/ADR-007-metamorphic-relations.md). Oracle-free verification: a metamorphic relation is the oracle, no expected value is computed. A language-neutral `VerificationRequest` (`fixtures/metamorphic/bswap32.req`: `relation entry domain eq`) is the seam; NanoGraph stays language-blind. `scripts/agent-eval/metamorphic-verify.sh` parses the request, sweeps the `u32` domain, composes `f(f(x))` in two batched passes (reusing G23's batch + capture runners), and rejects with a readable witness. Specimen `fixtures/metamorphic/bswap32.c` minted by `scripts/mint-metamorphic-fixtures.sh` (pinned `gcc:13`) into honest / `EVIL_BSWAP` (rotl8) / `IMPOSTER_BSWAP` (outer-swap). Gate `scripts/check-metamorphic-involution.sh`: honest accepts, rotl8 rejects with witness `x=1`, the involution-but-wrong imposter accepts. That third arm is the asserted ceiling: involution is necessary, not sufficient, and complements the G9-G23 value-oracle floor. No `.ngb` format change.
 
 ## Ruliad rule exploration
 
@@ -147,3 +151,4 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #41 | G21 input-bound math conformance |
 | #42 | G22 near-miss negative for input-bound conformance |
 | #43 | G23 adversarial verifier vs static sampling |
+| #44 | G24 metamorphic involution verification |

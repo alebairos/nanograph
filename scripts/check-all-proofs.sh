@@ -28,6 +28,7 @@ make -C tools -s all
 ./scripts/check-input-math-oracle.sh
 ./scripts/check-input-math-conformance.sh
 ./scripts/check-adversarial-verifier.sh
+./scripts/check-metamorphic-involution.sh
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh
