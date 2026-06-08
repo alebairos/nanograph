@@ -1,0 +1,8 @@
+name=dna-reverse-complement
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=1
+relation=involution
+note=Reverse-complement applied twice is identity.

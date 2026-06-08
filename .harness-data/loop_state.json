@@ -1,12 +1,12 @@
 {
-  "goal_id": "G28",
-  "current_issue": 48,
-  "milestone": "G28",
-  "product_proof_step": "G28-demo-and-icp",
+  "goal_id": "G29",
+  "current_issue": 49,
+  "milestone": "G29",
+  "product_proof_step": "G29-case-fit-rubric",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/METAMORPHIC-RELATIONS.md",
+    "spec_path": "docs/CASE-FIT-RUBRIC.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-010-utf8-roundtrip-demo.md",
     "eval_logs": [
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G28 complete: packaged G27 for an audience and recorded positioning. scripts/demo-utf8.sh narrates the contrast (overlong slip in source, canonical unit test green on the buggy binary, round_trip rejecting with witness C0 80, honest binary accepting), reusing committed fixtures. docs/ICP.md names the one ideal customer (codec/serializer/parser maintainers), the reasoning chain, the non-customers, evidence G24-G27, and the confirm/kill signal. Positioning only, no floor or format change. Next candidate signal: show the demo to a real codec maintainer."
+    "note": "G29 complete: case-fit rubric as a runnable target score. scripts/score-case-fit.sh reads a fixtures/fit-cases/*.fit scorecard, gates on four fit factors (oracle_hardness, property_checkable, observable, silent_survival) all nonzero at once, sums fit_score 0-8, reports priority = fit_score * criticality (criticality a separate 0-2 axis). docs/CASE-FIT-RUBRIC.md documents the 0/1/2 levels and worked examples. scripts/check-case-fit-rubric.sh asserts the examples (payment conservation FIT priority 16, robotics control loop NOT-A-FIT because observable=0) and the malformed-input poka-yoke; gated in check-all-proofs. Positioning and selection tooling, no floor or format change."
   },
   "history": [
     {
@@ -156,6 +156,12 @@
       "milestone": "G28",
       "closed": "2026-06-08",
       "note": "Packaged G27 as scripts/demo-utf8.sh (narrated contrast: overlong slip in source, canonical unit test green on the buggy binary, round_trip rejecting with witness C0 80, honest binary accepting; reuses committed fixtures) and wrote docs/ICP.md (one ICP: codec/serializer/parser maintainers; oracle problem, silent security bugs, false confidence, invariant-native; non-customers and confirm/kill signal named). Positioning only, no floor or format change"
+    },
+    {
+      "issue": 49,
+      "milestone": "G29",
+      "closed": "2026-06-08",
+      "note": "Case-fit rubric as a runnable target score; scripts/score-case-fit.sh gates a fixtures/fit-cases/*.fit scorecard on four fit factors all nonzero at once (oracle_hardness, property_checkable, observable, silent_survival), fit_score 0-8, priority = fit_score * criticality (separate axis); docs/CASE-FIT-RUBRIC.md documents levels + worked examples; check-case-fit-rubric.sh asserts payment-conservation FIT priority 16 and robotics-control-loop NOT-A-FIT (observable=0) plus malformed-input poka-yoke; gated in check-all-proofs; positioning/selection tooling, no floor or format change"
     }
   ]
 }

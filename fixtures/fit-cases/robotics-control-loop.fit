@@ -1,0 +1,8 @@
+name=robotics-control-loop
+oracle_hardness=2
+property_checkable=1
+observable=0
+silent_survival=2
+criticality=2
+relation=none
+note=Real-time continuous control, not observable via argv to stdout.

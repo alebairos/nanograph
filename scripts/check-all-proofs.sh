@@ -32,6 +32,7 @@ make -C tools -s all
 ./scripts/check-bswap-value-oracle.sh
 ./scripts/check-reverse32-real.sh
 ./scripts/check-utf8-roundtrip.sh
+./scripts/check-case-fit-rubric.sh
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

@@ -20,6 +20,10 @@ They ship a library other people's bytes flow through. They already think in rou
 
 Metamorphic relations plus an execution-grounded verdict with a byte-level witness. The agent or developer proposes the change. NanoGraph runs the real binary over an adversarial domain and either accepts or hands back the input that breaks the stated property. No source parsing, so the same machinery serves any language that compiles to a runnable artifact.
 
+## Scoring a candidate
+
+The ICP is the who. [`CASE-FIT-RUBRIC.md`](CASE-FIT-RUBRIC.md) is the test for a specific function. Score any candidate with `scripts/score-case-fit.sh` before committing a goal. A case is a fit only when oracle hardness, property checkability, observability, and silent-bug survival are all nonzero at once. Criticality is a separate axis that sets priority among fits, not membership.
+
 ## Who it is not for, and why (candor)
 
 - **App and product developers with easy oracles.** If the expected output is cheap to write, a normal test already wins. NanoGraph adds nothing.

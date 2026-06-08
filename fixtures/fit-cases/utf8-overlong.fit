@@ -1,0 +1,8 @@
+name=utf8-overlong
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=1
+relation=round_trip
+note=UTF-8 decoder overlong acceptance, the G27 specimen.

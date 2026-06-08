@@ -1,0 +1,8 @@
+name=payment-conservation
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=2
+relation=conservation
+note=Fixed-point money split, sum of parts equals total.
