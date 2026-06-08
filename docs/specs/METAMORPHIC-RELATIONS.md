@@ -84,9 +84,27 @@ The function under test is the "Reverse bits in parallel" routine from Sean Eron
 
 The driver calls the function via the C ABI; the compiler emits the call. Hand byte-extraction and instruction-level isolation stay parked. The claim is that NanoGraph verifies real upstream bytes behind a thin trusted harness.
 
+## Round-trip on a codec (G27, demo)
+
+A second relation, `round_trip`, and the first demo framed for an outsider. Decision: [`../adr/ADR-010-utf8-roundtrip-demo.md`](../adr/ADR-010-utf8-roundtrip-demo.md).
+
+For a codec with `encode` and `decode`, the property is: for every byte sequence `b` the decoder accepts, `encode(decode(b)) == b`. A correct decoder accepts only canonical encodings, so this holds. The famous failure is overlong acceptance, where a decoder accepts a non-canonical encoding of a codepoint. Then `decode(b)` succeeds on an overlong `b`, `encode` of that codepoint yields the shorter canonical form, and `encode(decode(b)) != b`. The relation is its own oracle: it never needs the expected codepoint.
+
+The specimen is `fixtures/metamorphic/utf8.c`, an `enc`/`dec` codec over a single integer. A byte sequence is packed as `0x01 ++ bytes` so a variable-length UTF-8 sequence (up to four bytes) survives as one operand for the two-pass runner. The honest decoder rejects overlong, surrogate, and out-of-range forms. `OVERLONG_OK` drops only the overlong lower-bound checks, the classic security hole where `C0 80` decodes to U+0000.
+
+`utf8.req` declares `relation=round_trip` with `encode=enc`, `decode=dec`, and a `reject` sentinel (`1114112`, one past the last codepoint). `metamorphic-verify` runs the domain through `decode` in one batched pass, drops the sequences the decoder rejects, runs the survivors through `encode`, and requires the bytes to come back. A mismatch is confirmed by an isolated decode-then-encode before the reject.
+
+The demo is the contrast. `scripts/check-utf8-roundtrip.sh` (in `check-all-proofs.sh`):
+
+- The fixed canonical unit test `decode(encode(cp))==cp` over five codepoints passes on both the honest and the overlong binary. The bug is invisible to it, because the bug only adds acceptance of non-canonical inputs.
+- The relation accepts the honest codec.
+- The relation rejects the overlong codec with witness `bytes=114816 hex=C080 decode=0 reencode=256`: the overlong NUL `C0 80` decodes to U+0000 and re-encodes to the canonical `00`.
+
+The unit test stays green. NanoGraph rejects with a witness that names the offending bytes. The two directions are the point: the easy direction (`decode(encode(cp))`) is the test a developer writes; the hard direction (`encode(decode(b))` over a byte domain including malformed input) is the one that catches the bug.
+
 ## Specimens
 
-`fixtures/metamorphic/bswap32.c`, freestanding x86_64, reads `argv[1]` as u32, prints the result. Three builds: default (real), `-DEVIL_BSWAP` (rotl8), `-DIMPOSTER_BSWAP` (outer-swap). Minted by `scripts/mint-metamorphic-fixtures.sh` (pinned `gcc:13`, committed `.ngb`, distinct `graph_root_hash`).
+`fixtures/metamorphic/bswap32.c`, freestanding x86_64, reads `argv[1]` as u32, prints the result. Three builds: default (real), `-DEVIL_BSWAP` (rotl8), `-DIMPOSTER_BSWAP` (outer-swap). `fixtures/metamorphic/utf8.c`, `enc`/`dec` modes, default honest and `-DOVERLONG_OK` buggy. Minted by `scripts/mint-metamorphic-fixtures.sh` (pinned `gcc:13`, committed `.ngb`, distinct `graph_root_hash`).
 
 ## Not in scope
 

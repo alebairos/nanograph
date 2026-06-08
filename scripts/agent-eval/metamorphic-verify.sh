@@ -3,11 +3,15 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
-# Metamorphic verifier (G24). Checks a binary against a relation that is its own
-# oracle, so no expected output is computed. The VerificationRequest (.req)
-# declares relation, entry, domain, eq. The only relation implemented is
-# involution: f(f(x)) == x. A candidate witness from the fast batched scan is
-# confirmed by an isolated clean re-run, which filters transient backend faults.
+# Metamorphic verifier (G24, G27). Checks a binary against a relation that is its
+# own oracle, so no expected output is computed. The VerificationRequest (.req)
+# declares relation, entry, domain, eq. Relations:
+#   involution  f(f(x)) == x over the domain.
+#   round_trip  for each byte sequence b the decoder accepts,
+#               encode(decode(b)) == b. A correct codec accepts only canonical
+#               encodings, so this holds; an overlong-accepting decoder fails it.
+# A candidate witness from the fast batched scan is confirmed by an isolated
+# clean re-run, which filters transient backend faults.
 
 usage() { echo "usage: metamorphic-verify.sh <candidate.ngb> <request.req>" >&2; exit 2; }
 [[ $# -ge 2 ]] || usage
@@ -29,9 +33,18 @@ gen_u32() {
   printf '%s\n' 0 305419896 3735928559 16909060 4294967295
 }
 
+# UTF-8 byte sequences packed as 0x01 ++ bytes, decimal. The canonical entries
+# round-trip; the overlong, surrogate, and out-of-range entries must be rejected
+# by a correct decoder. An overlong-accepting decoder fails round_trip on C0 80.
+gen_utf8() {
+  printf '%s\n' 321 115625 31621804 8331958400 256 \
+    114816 115135 31490176 32350336 8398078080
+}
+
 gen_probes() {
   case "$DOMAIN" in
     u32) gen_u32 ;;
+    utf8) gen_utf8 ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }
@@ -41,8 +54,69 @@ apply_once() {
     | ./scripts/run-linux-elf-batch.sh "$CAND" 2>/dev/null | awk '{print $3}'
 }
 
+run_mode() {
+  local mode="$1"
+  while read -r v; do [[ -z "$v" ]] && continue; printf '%s %s\n' "$mode" "$v"; done \
+    | ./scripts/run-linux-elf-batch.sh "$CAND" 2>/dev/null | awk '{print $3}'
+}
+
+if [[ "$RELATION" == round_trip ]]; then
+  ENCODE="$(reqval encode)"
+  DECODE="$(reqval decode)"
+  REJECT="$(reqval reject)"
+  [[ -n "$ENCODE" && -n "$DECODE" && -n "$REJECT" ]] || {
+    echo "metamorphic-verify: round_trip needs encode, decode, reject in $REQ" >&2
+    exit 2
+  }
+
+  probes=()
+  while read -r p; do probes+=("$p"); done < <(gen_probes)
+
+  decoded=()
+  while read -r d; do decoded+=("$d"); done < <(printf '%s\n' "${probes[@]}" | run_mode "$DECODE")
+
+  acc_idx=()
+  acc_cp=()
+  for i in "${!probes[@]}"; do
+    cp="${decoded[$i]:-}"
+    [[ -z "$cp" || "$cp" == "$REJECT" ]] && continue
+    acc_idx+=("$i")
+    acc_cp+=("$cp")
+  done
+
+  reencoded=()
+  if ((${#acc_cp[@]})); then
+    while read -r r; do reencoded+=("$r"); done < <(printf '%s\n' "${acc_cp[@]}" | run_mode "$ENCODE")
+  fi
+
+  accepted=0
+  for j in "${!acc_idx[@]}"; do
+    i="${acc_idx[$j]}"
+    b="${probes[$i]}"
+    b2="${reencoded[$j]:-}"
+    if [[ "$b2" != "$b" ]]; then
+      cp2="$(./scripts/run-linux-elf-capture.sh "$CAND" "$DECODE" "$b" 2>/dev/null || true)"
+      [[ -z "$cp2" || "$cp2" == "$REJECT" ]] && continue
+      b3="$(./scripts/run-linux-elf-capture.sh "$CAND" "$ENCODE" "$cp2" 2>/dev/null || true)"
+      if [[ "$b3" != "$b" ]]; then
+        hexb="$(printf '%X' "$b")"
+        echo "verdict=reject hash=${hash:0:12} relation=round_trip witness bytes=$b hex=${hexb:1} decode=$cp2 reencode=$b3"
+        exit 1
+      fi
+    fi
+    accepted=$((accepted + 1))
+  done
+
+  [[ "$accepted" -ge 1 ]] || {
+    echo "metamorphic-verify: round_trip accepted 0 inputs (domain has no canonical sample)" >&2
+    exit 2
+  }
+  echo "verdict=accept hash=${hash:0:12} relation=round_trip accepted=$accepted separator=none"
+  exit 0
+fi
+
 if [[ "$RELATION" != involution ]]; then
-  echo "metamorphic-verify: unsupported relation=$RELATION (only involution)" >&2
+  echo "metamorphic-verify: unsupported relation=$RELATION" >&2
   exit 2
 fi
 

@@ -1,21 +1,21 @@
 {
-  "goal_id": "G26",
-  "current_issue": 47,
-  "milestone": "G26",
-  "product_proof_step": "G26-real-vendored-code",
+  "goal_id": "G27",
+  "current_issue": 46,
+  "milestone": "G27",
+  "product_proof_step": "G27-utf8-roundtrip-demo",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/METAMORPHIC-RELATIONS.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-009-real-vendored-code.md",
+    "verdict_adr": "docs/adr/ADR-010-utf8-roundtrip-demo.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G26 complete: both floors verify real vendored upstream code. reverse32.c ships the public-domain Bit Twiddling Hacks bit reversal behind a trusted driver; conf-eval op=bitrev is an independent loop reference; relation accepts real bit reversal and rejects EVIL_REVERSE mask typo with witness x=1; value oracle accepts real bytes and rejects bswap32 (involution-not-bitrev) with witness x=1; gated in check-all-proofs. G27 (round_trip on LEB128, POV item 1) tracked in issue #46, planned."
+    "note": "G27 complete: round_trip relation on a UTF-8 codec, the first demo case. utf8.c enc/dec over a packed integer; honest decoder rejects overlong/surrogate/range, OVERLONG_OK accepts the classic C0 80 -> U+0000 hole. The fixed canonical unit test decode(encode(cp))==cp stays green on the buggy binary; the round_trip relation (encode(decode(b))==b over a byte domain incl overlong) rejects it with witness bytes=114816 hex=C080 decode=0 reencode=256. Gated in check-all-proofs. ADR-010 records the scope note (execution-grounded + byte-integrity, not C-only) and parks the whitepaper until a demo-grade case is judged from outside."
   },
   "history": [
     {
@@ -144,6 +144,12 @@
       "milestone": "G26",
       "closed": "2026-06-08",
       "note": "Both floors verify real vendored upstream code; reverse32.c ships public-domain Bit Twiddling Hacks bit reversal verbatim behind a trusted driver; conf-eval op=bitrev independent loop reference; relation accepts real bit reversal, rejects EVIL_REVERSE mask typo with witness x=1; value oracle accepts real bytes, rejects bswap32 (involution-not-bitrev) with witness x=1; provenance asserted; gated in check-all-proofs"
+    },
+    {
+      "issue": 46,
+      "milestone": "G27",
+      "closed": "2026-06-08",
+      "note": "round_trip relation + first demo case on a UTF-8 codec; utf8.c enc/dec packs bytes as 0x01++bytes into one operand; honest decoder rejects overlong/surrogate/range, OVERLONG_OK accepts the classic C0 80 -> U+0000 hole; fixed canonical unit test decode(encode(cp))==cp stays green on the buggy binary, round_trip (encode(decode(b))==b over a byte domain incl overlong) rejects it with witness bytes=114816 hex=C080 decode=0 reencode=256; ADR-010 adds the scope note (execution-grounded + byte-integrity, not C-only) and parks the whitepaper; gated in check-all-proofs"
     }
   ]
 }
