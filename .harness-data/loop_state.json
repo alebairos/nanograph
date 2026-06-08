@@ -1,8 +1,8 @@
 {
-  "goal_id": "G27",
-  "current_issue": 46,
-  "milestone": "G27",
-  "product_proof_step": "G27-utf8-roundtrip-demo",
+  "goal_id": "G28",
+  "current_issue": 48,
+  "milestone": "G28",
+  "product_proof_step": "G28-demo-and-icp",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G27 complete: round_trip relation on a UTF-8 codec, the first demo case. utf8.c enc/dec over a packed integer; honest decoder rejects overlong/surrogate/range, OVERLONG_OK accepts the classic C0 80 -> U+0000 hole. The fixed canonical unit test decode(encode(cp))==cp stays green on the buggy binary; the round_trip relation (encode(decode(b))==b over a byte domain incl overlong) rejects it with witness bytes=114816 hex=C080 decode=0 reencode=256. Gated in check-all-proofs. ADR-010 records the scope note (execution-grounded + byte-integrity, not C-only) and parks the whitepaper until a demo-grade case is judged from outside."
+    "note": "G28 complete: packaged G27 for an audience and recorded positioning. scripts/demo-utf8.sh narrates the contrast (overlong slip in source, canonical unit test green on the buggy binary, round_trip rejecting with witness C0 80, honest binary accepting), reusing committed fixtures. docs/ICP.md names the one ideal customer (codec/serializer/parser maintainers), the reasoning chain, the non-customers, evidence G24-G27, and the confirm/kill signal. Positioning only, no floor or format change. Next candidate signal: show the demo to a real codec maintainer."
   },
   "history": [
     {
@@ -150,6 +150,12 @@
       "milestone": "G27",
       "closed": "2026-06-08",
       "note": "round_trip relation + first demo case on a UTF-8 codec; utf8.c enc/dec packs bytes as 0x01++bytes into one operand; honest decoder rejects overlong/surrogate/range, OVERLONG_OK accepts the classic C0 80 -> U+0000 hole; fixed canonical unit test decode(encode(cp))==cp stays green on the buggy binary, round_trip (encode(decode(b))==b over a byte domain incl overlong) rejects it with witness bytes=114816 hex=C080 decode=0 reencode=256; ADR-010 adds the scope note (execution-grounded + byte-integrity, not C-only) and parks the whitepaper; gated in check-all-proofs"
+    },
+    {
+      "issue": 48,
+      "milestone": "G28",
+      "closed": "2026-06-08",
+      "note": "Packaged G27 as scripts/demo-utf8.sh (narrated contrast: overlong slip in source, canonical unit test green on the buggy binary, round_trip rejecting with witness C0 80, honest binary accepting; reuses committed fixtures) and wrote docs/ICP.md (one ICP: codec/serializer/parser maintainers; oracle problem, silent security bugs, false confidence, invariant-native; non-customers and confirm/kill signal named). Positioning only, no floor or format change"
     }
   ]
 }
