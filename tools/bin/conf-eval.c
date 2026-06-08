@@ -7,7 +7,7 @@
  * Reads only the spec, never the .ngb or ELF. That independence is the point:
  * the expected value is computed from intent, not looked up from the bytes. */
 
-enum { OP_NONE, OP_ADD, OP_SUB, OP_MUL, OP_ECA, OP_GCD };
+enum { OP_NONE, OP_ADD, OP_SUB, OP_MUL, OP_ECA, OP_GCD, OP_BSWAP };
 
 enum { INPUT_NONE, INPUT_ARGV };
 
@@ -51,8 +51,8 @@ static int render_eca(int rule, int width, int gens, int init) {
 }
 
 int main(int argc, char **argv) {
-  if (argc != 2 && argc != 4) {
-    fprintf(stderr, "usage: %s <spec> [<a> <b>]\n", argv[0]);
+  if (argc < 2 || argc > 4) {
+    fprintf(stderr, "usage: %s <spec> [<x> | <a> <b>]\n", argv[0]);
     return 2;
   }
   FILE *f = fopen(argv[1], "r");
@@ -89,6 +89,8 @@ int main(int argc, char **argv) {
         op = OP_ECA;
       else if (strcmp(val, "gcd") == 0)
         op = OP_GCD;
+      else if (strcmp(val, "bswap") == 0)
+        op = OP_BSWAP;
       else {
         fprintf(stderr, "conf-eval: unknown op %s\n", val);
         fclose(f);
@@ -145,6 +147,18 @@ int main(int argc, char **argv) {
     a = strtol(argv[2], NULL, 10);
     b = strtol(argv[3], NULL, 10);
     printf("%ld\n", euclid_gcd(a, b));
+    return 0;
+  }
+
+  if (op == OP_BSWAP) {
+    if (input_mode != INPUT_ARGV || !have_input || !have_yield || argc != 3) {
+      fprintf(stderr, "conf-eval: bswap spec needs input=argv yield=stdout and arg <x>\n");
+      return 3;
+    }
+    unsigned long x = strtoul(argv[2], NULL, 10) & 0xFFFFFFFFUL;
+    unsigned long s = ((x & 0x000000FFUL) << 24) | ((x & 0x0000FF00UL) << 8) |
+                      ((x & 0x00FF0000UL) >> 8) | ((x & 0xFF000000UL) >> 24);
+    printf("%lu\n", s);
     return 0;
   }
 

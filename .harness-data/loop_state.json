@@ -1,21 +1,21 @@
 {
-  "goal_id": "G24",
-  "current_issue": 44,
-  "milestone": "G24",
-  "product_proof_step": "G24-metamorphic-involution",
+  "goal_id": "G25",
+  "current_issue": 45,
+  "milestone": "G25",
+  "product_proof_step": "G25-floor-handoff",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/METAMORPHIC-RELATIONS.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-007-metamorphic-relations.md",
+    "verdict_adr": "docs/adr/ADR-008-floor-handoff.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G24 complete: metamorphic involution verification, oracle-free. bswap32.req declares relation=involution; metamorphic-verify composes f(f(x)) over a u32 sweep with no expected value; honest bswap32 accepts, rotl8 rejects with witness x=1, involution-but-wrong imposter accepts (the asserted ceiling); gated in check-all-proofs."
+    "note": "G25 complete: closed the involution ceiling. conf-eval op=bswap gives the value oracle an expected byte swap; on the same bswap32_imposter the involution relation accepts and the value oracle rejects with witness x=256 (got=256 want=65536); cheap-then-expensive handoff demonstrated on one artifact; gated in check-all-proofs."
   },
   "history": [
     {
@@ -132,6 +132,12 @@
       "milestone": "G24",
       "closed": "2026-06-08",
       "note": "Metamorphic involution verification, oracle-free; VerificationRequest seam (bswap32.req relation=involution entry=argv domain=u32 eq=exact); metamorphic-verify composes f(f(x)) over a u32 sweep in two batched passes, no expected value; honest bswap32 accepts, rotl8 rejects with witness x=1, involution-but-wrong outer-swap imposter accepts (asserted ceiling); complements value-oracle floor; gated in check-all-proofs"
+    },
+    {
+      "issue": 45,
+      "milestone": "G25",
+      "closed": "2026-06-08",
+      "note": "Closed the involution ceiling; conf-eval op=bswap (single argv operand, u32 decimal); bswap32.spec + bswap32.cases hand table; check-bswap-value-oracle runs both floors on the same bswap32_imposter: involution relation accepts (G24 ceiling), value oracle rejects with witness x=256 (got=256 want=65536); cheap-then-expensive handoff demonstrated on one artifact; gated in check-all-proofs"
     }
   ]
 }

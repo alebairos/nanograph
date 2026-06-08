@@ -60,6 +60,17 @@ The imposter arm is the bound, asserted as a tested fact. Involution is necessar
 
 Power, not count, is the metric. Rewarding the number of relations invites tautology-stuffing (Goodhart). What G24 measures is whether the relation rejects a wrong program (rotl8) and where that power ends (the imposter).
 
+## Closing the ceiling (G25)
+
+G24 asserts complementarity. G25 demonstrates it on one artifact. Decision: [`../adr/ADR-008-floor-handoff.md`](../adr/ADR-008-floor-handoff.md).
+
+`conf-eval` gains `op=bswap` (single argv operand, u32 decimal). `fixtures/metamorphic/bswap32.spec` plus a `bswap32.cases` hand table give the value oracle its expected output. `scripts/check-bswap-value-oracle.sh` (in `check-all-proofs.sh`) runs both floors on the same `bswap32_imposter`:
+
+- The involution relation accepts it (the ceiling, from G24).
+- The value oracle rejects it with witness `x=256` (`got=256 want=65536`).
+
+The handoff is cheap-then-expensive. The relation needs no spec and rejects non-involutions for free; the value oracle costs a computed expected value and separates the involution-but-wrong imposter. Run the relation first, fall back to the oracle only where a value answer is required. The oracle ceiling is narrowed, not removed: where the expected value is as hard to compute as the function, only the relation floor is affordable.
+
 ## Specimens
 
 `fixtures/metamorphic/bswap32.c`, freestanding x86_64, reads `argv[1]` as u32, prints the result. Three builds: default (real), `-DEVIL_BSWAP` (rotl8), `-DIMPOSTER_BSWAP` (outer-swap). Minted by `scripts/mint-metamorphic-fixtures.sh` (pinned `gcc:13`, committed `.ngb`, distinct `graph_root_hash`).
