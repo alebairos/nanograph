@@ -1,12 +1,12 @@
 {
-  "goal_id": "G29",
-  "current_issue": 49,
-  "milestone": "G29",
-  "product_proof_step": "G29-case-fit-rubric",
+  "goal_id": "G30",
+  "current_issue": 50,
+  "milestone": "G30",
+  "product_proof_step": "G30-backtest-controlled-history",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/CASE-FIT-RUBRIC.md",
+    "spec_path": "docs/BACKTEST.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-010-utf8-roundtrip-demo.md",
     "eval_logs": [
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G29 complete: case-fit rubric as a runnable target score. scripts/score-case-fit.sh reads a fixtures/fit-cases/*.fit scorecard, gates on four fit factors (oracle_hardness, property_checkable, observable, silent_survival) all nonzero at once, sums fit_score 0-8, reports priority = fit_score * criticality (criticality a separate 0-2 axis). docs/CASE-FIT-RUBRIC.md documents the 0/1/2 levels and worked examples. scripts/check-case-fit-rubric.sh asserts the examples (payment conservation FIT priority 16, robotics control loop NOT-A-FIT because observable=0) and the malformed-input poka-yoke; gated in check-all-proofs. Positioning and selection tooling, no floor or format change."
+    "note": "G30 complete: promoted the backtest spike into a committed harness. scripts/mint-backtest-utf8.sh derives three UTF-8 codec revisions (honest, overlong bug, fix) from fixtures/metamorphic/utf8.c and mints committed .ngb via scripts/mint-one-elf.sh; scripts/backtest-relation.sh is a relation-agnostic driver replaying a timeline.manifest (ordered committed .ngb + expected verdict); scripts/check-backtest-utf8.sh asserts accept -> reject (witness C0 80) -> accept and that the fix returns to rev1 hash; runner-guarded, gated in check-all-proofs. docs/BACKTEST.md documents the method and how phase 2 (real git history) reuses the driver. Next: pick the first real target function (small dependency-light codec with a real historical overlong/non-minimal/length bug) or mine a fit-scored shortlist."
   },
   "history": [
     {
@@ -162,6 +162,12 @@
       "milestone": "G29",
       "closed": "2026-06-08",
       "note": "Case-fit rubric as a runnable target score; scripts/score-case-fit.sh gates a fixtures/fit-cases/*.fit scorecard on four fit factors all nonzero at once (oracle_hardness, property_checkable, observable, silent_survival), fit_score 0-8, priority = fit_score * criticality (separate axis); docs/CASE-FIT-RUBRIC.md documents levels + worked examples; check-case-fit-rubric.sh asserts payment-conservation FIT priority 16 and robotics-control-loop NOT-A-FIT (observable=0) plus malformed-input poka-yoke; gated in check-all-proofs; positioning/selection tooling, no floor or format change"
+    },
+    {
+      "issue": 50,
+      "milestone": "G30",
+      "closed": "2026-06-08",
+      "note": "Promoted the backtest spike into a committed harness; scripts/mint-one-elf.sh factors per-file docker build+pack; scripts/mint-backtest-utf8.sh derives three UTF-8 codec revisions (honest/overlong-bug/fix) and mints committed .ngb; scripts/backtest-relation.sh is a relation-agnostic driver over a timeline.manifest; scripts/check-backtest-utf8.sh asserts accept -> reject (witness C0 80) -> accept and fix-returns-to-rev1-hash; runner-guarded, gated in check-all-proofs; docs/BACKTEST.md documents method + phase-2 reuse; no floor or format change"
     }
   ]
 }
