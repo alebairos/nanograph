@@ -30,6 +30,7 @@ make -C tools -s all
 ./scripts/check-adversarial-verifier.sh
 ./scripts/check-metamorphic-involution.sh
 ./scripts/check-bswap-value-oracle.sh
+./scripts/check-reverse32-real.sh
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

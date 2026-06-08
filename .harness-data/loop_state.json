@@ -1,21 +1,21 @@
 {
-  "goal_id": "G25",
-  "current_issue": 45,
-  "milestone": "G25",
-  "product_proof_step": "G25-floor-handoff",
+  "goal_id": "G26",
+  "current_issue": 47,
+  "milestone": "G26",
+  "product_proof_step": "G26-real-vendored-code",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/METAMORPHIC-RELATIONS.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-008-floor-handoff.md",
+    "verdict_adr": "docs/adr/ADR-009-real-vendored-code.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G25 complete: closed the involution ceiling. conf-eval op=bswap gives the value oracle an expected byte swap; on the same bswap32_imposter the involution relation accepts and the value oracle rejects with witness x=256 (got=256 want=65536); cheap-then-expensive handoff demonstrated on one artifact; gated in check-all-proofs."
+    "note": "G26 complete: both floors verify real vendored upstream code. reverse32.c ships the public-domain Bit Twiddling Hacks bit reversal behind a trusted driver; conf-eval op=bitrev is an independent loop reference; relation accepts real bit reversal and rejects EVIL_REVERSE mask typo with witness x=1; value oracle accepts real bytes and rejects bswap32 (involution-not-bitrev) with witness x=1; gated in check-all-proofs. G27 (round_trip on LEB128, POV item 1) tracked in issue #46, planned."
   },
   "history": [
     {
@@ -138,6 +138,12 @@
       "milestone": "G25",
       "closed": "2026-06-08",
       "note": "Closed the involution ceiling; conf-eval op=bswap (single argv operand, u32 decimal); bswap32.spec + bswap32.cases hand table; check-bswap-value-oracle runs both floors on the same bswap32_imposter: involution relation accepts (G24 ceiling), value oracle rejects with witness x=256 (got=256 want=65536); cheap-then-expensive handoff demonstrated on one artifact; gated in check-all-proofs"
+    },
+    {
+      "issue": 47,
+      "milestone": "G26",
+      "closed": "2026-06-08",
+      "note": "Both floors verify real vendored upstream code; reverse32.c ships public-domain Bit Twiddling Hacks bit reversal verbatim behind a trusted driver; conf-eval op=bitrev independent loop reference; relation accepts real bit reversal, rejects EVIL_REVERSE mask typo with witness x=1; value oracle accepts real bytes, rejects bswap32 (involution-not-bitrev) with witness x=1; provenance asserted; gated in check-all-proofs"
     }
   ]
 }

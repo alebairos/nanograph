@@ -71,6 +71,19 @@ G24 asserts complementarity. G25 demonstrates it on one artifact. Decision: [`..
 
 The handoff is cheap-then-expensive. The relation needs no spec and rejects non-involutions for free; the value oracle costs a computed expected value and separates the involution-but-wrong imposter. Run the relation first, fall back to the oracle only where a value answer is required. The oracle ceiling is narrowed, not removed: where the expected value is as hard to compute as the function, only the relation floor is affordable.
 
+## Real vendored code (G26)
+
+G24 and G25 verified `bswap32`, code we wrote. G26 runs both floors on real, vendored, attributed upstream code. Decision: [`../adr/ADR-009-real-vendored-code.md`](../adr/ADR-009-real-vendored-code.md).
+
+The function under test is the "Reverse bits in parallel" routine from Sean Eron Anderson's Bit Twiddling Hacks (public domain), shipped verbatim in `fixtures/metamorphic/reverse32.c` under a provenance header. The `_start`, parse, and print are our trusted driver. `conf-eval` gains `op=bitrev` (an independent loop, not the parallel form under test). `scripts/check-reverse32-real.sh` (in `check-all-proofs.sh`):
+
+- asserts the upstream attribution is present;
+- the involution relation accepts the real bit reversal, and rejects the `EVIL_REVERSE` mask typo (non-involution) with witness `x=1`;
+- the value oracle accepts the real bit reversal on a hand table;
+- the handoff on real-code's oracle: `bswap32` is an involution the relation accepts, and the value oracle rejects it as bit reversal with witness `x=1` (`got=16777216 want=2147483648`).
+
+The driver calls the function via the C ABI; the compiler emits the call. Hand byte-extraction and instruction-level isolation stay parked. The claim is that NanoGraph verifies real upstream bytes behind a thin trusted harness.
+
 ## Specimens
 
 `fixtures/metamorphic/bswap32.c`, freestanding x86_64, reads `argv[1]` as u32, prints the result. Three builds: default (real), `-DEVIL_BSWAP` (rotl8), `-DIMPOSTER_BSWAP` (outer-swap). Minted by `scripts/mint-metamorphic-fixtures.sh` (pinned `gcc:13`, committed `.ngb`, distinct `graph_root_hash`).

@@ -1,0 +1,4 @@
+relation=involution
+entry=argv
+domain=u32
+eq=exact
