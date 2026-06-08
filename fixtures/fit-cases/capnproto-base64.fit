@@ -1,0 +1,8 @@
+name=capnproto-base64
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=1
+relation=round_trip
+note=capnproto decodeBase64 (libb64-derived) silently ignored invalid and padding bytes and never failed. Fix f3e0ed2 adds hadErrors reporting. Buggy parent 9306bc0.

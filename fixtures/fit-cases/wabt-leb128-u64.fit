@@ -1,0 +1,8 @@
+name=wabt-leb128-u64
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=1
+relation=round_trip
+note=wabt ReadU64Leb128 used mask 0xf0 where the 10th byte allows only bit 0, so too-big u64 LEB128s were silently accepted and truncated. Fix f1f3d6d (#2256) changes it to 0xfe. Buggy parent 89582f5.
