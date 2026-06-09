@@ -35,6 +35,7 @@ make -C tools -s all
 ./scripts/check-case-fit-rubric.sh
 ./scripts/check-backtest.sh fixtures/backtest/utf8/timeline.manifest C080 UTF8
 ./scripts/check-backtest.sh fixtures/backtest/leb128/timeline.manifest 8000 LEB128
+./scripts/check-backtest.sh fixtures/backtest/knuth-sgb/timeline.manifest 0A KNUTH-SGB
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

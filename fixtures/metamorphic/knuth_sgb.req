@@ -1,0 +1,7 @@
+relation=round_trip
+entry=argv_mode
+encode=save
+decode=restore
+domain=knuth_sgb
+reject=4294967295
+eq=exact

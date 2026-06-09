@@ -1,8 +1,8 @@
 {
-  "goal_id": "G32",
-  "current_issue": 52,
-  "milestone": "G32",
-  "product_proof_step": "G32-mine-backtest-candidates",
+  "goal_id": "G33",
+  "current_issue": 53,
+  "milestone": "G33",
+  "product_proof_step": "G33-knuth-erratum-backtest",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G32 complete: mined a cited, anti-fabrication shortlist of 5 verified standalone-codec backtest candidates with real fix+parent SHAs; top 3 scored as fixtures/fit-cases/*.fit (wabt-leb128-u64 8/8, capnproto-base64 8/8, openssl-punycode 6/8 priority 12). G33 target recommended: wabt ReadU64Leb128, range 89582f5 -> f1f3d6d, silent too-big-u64 LEB128 acceptance caught by round_trip, chosen over higher-priority punycode (OOB write a crash catches, scored down on silent_survival). Next G33: vendor wabt ReadU64Leb128 behind the trusted driver, mint per-revision .ngb over the fix range, add per-case CASE.md provenance + root THIRD-PARTY.md attribution, run scripts/backtest-relation.sh, property pre-registered."
+    "note": "G33 relabeled (#53) as synthetic: driver models the save_graph erratum, does not run Knuth bytes; credibility-on-canon claim withdrawn. It proves the pipeline generalizes to a third round_trip domain. Real-Knuth-canon proof filed as G35 (#55): rand_len off-by-one in gb_rand.w (fd99287 buggy -> 65433e2 fixed), runs Knuth's actual gb_flip+rand_len arithmetic, needs a new range-coverage relation. Sequencing: G34 wabt (#54) next (round_trip, fits existing machinery), then G35. Pre-existing G23 gcd_evil static arm fails check-all-proofs, unrelated to this work."
   },
   "history": [
     {
@@ -179,7 +179,13 @@
       "issue": 52,
       "milestone": "G32",
       "closed": "2026-06-08",
-      "note": "Mined a cited shortlist of 5 verified standalone-codec backtest candidates (real fix+parent SHAs, no fabrication); top 3 as fixtures/fit-cases/*.fit (wabt-leb128-u64 8/8, capnproto-base64 8/8, openssl-punycode 6/8 pri 12); recommended G33 = wabt ReadU64Leb128 (89582f5 -> f1f3d6d) over higher-priority punycode because punycode is an OOB write a crash catches, not a silent relation violation; shortlist-only, no floor or format change"
+      "note": "Mined a cited shortlist of 5 verified standalone-codec backtest candidates (real fix+parent SHAs, no fabrication); top 3 as fixtures/fit-cases/*.fit (wabt-leb128-u64 8/8, capnproto-base64 8/8, openssl-punycode 6/8 pri 12); wabt deferred to G34; G33 pivoted to Knuth SGB save_graph erratum for credibility track"
+    },
+    {
+      "issue": 53,
+      "milestone": "G33",
+      "closed": "2026-06-08",
+      "note": "G33 synthetic Knuth-shaped portability backtest; driver knuth_sgb.c models the save_graph erratum (does NOT run Knuth bytes), BUGGY_TEXTMODE reconstructs a Windows-only defect; catch on probe 266 witness hex 0A; gated KNUTH-SGB in check-all-proofs. Relabeled from credibility-on-canon (claim withdrawn); proves pipeline generalizes to a third round_trip domain. Real-Knuth proof filed as G35 #55 (rand_len off-by-one)"
     }
   ]
 }

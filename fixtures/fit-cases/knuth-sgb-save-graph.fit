@@ -1,0 +1,8 @@
+name=knuth-sgb-save-graph
+oracle_hardness=2
+property_checkable=2
+observable=1
+silent_survival=2
+criticality=1
+relation=round_trip
+note=Knuth SGB save_graph opened with fopen(f,"w") so Windows text mode wrote CRLF for internal newlines; a graph saved on Windows could not restore on Linux. Erratum page 414 (Dec 2025) changes to "wb". Mirror ascherer/sgb c0943fd (2025-09-29) to 88fac2f (2025-12-28). Trusted driver simulates TEXTMODE_CRLF on the buggy rev so the Linux runner catches it.

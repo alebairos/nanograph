@@ -73,6 +73,9 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G30 | Backtest harness on controlled history (promote the spike) | #50 | Done |
 | G31 | Second backtest case (LEB128 varint) + generalize backtest scripts | #51 | Done |
 | G32 | Mine real-history backtest candidates (standalone permissive codecs) | #52 | Done |
+| G33 | Synthetic Knuth-shaped portability backtest (models save_graph erratum, no SGB bytes) | #53 | Done |
+| G34 | wabt ReadU64Leb128 real-history backtest (ICP follow-through) | #54 | Parked |
+| G35 | Real Knuth canon backtest: rand_len off-by-one (range-coverage relation) | #55 | Parked |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -104,7 +107,13 @@ G25 spec: extends G24 in [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md),
 
 G26 spec: extends G24/G25 in [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-009-real-vendored-code.md`](../adr/ADR-009-real-vendored-code.md). De-toys the line: both floors run on real, vendored, attributed upstream code. `fixtures/metamorphic/reverse32.c` ships the public-domain "Reverse bits in parallel" routine (Bit Twiddling Hacks) verbatim behind a trusted `_start`/parse/print driver. `conf-eval` gains `op=bitrev` (independent loop reference). `scripts/check-reverse32-real.sh` asserts the attribution, the involution relation accepts the real bit reversal and rejects an `EVIL_REVERSE` mask typo (non-involution) with witness `x=1`, the value oracle accepts the real bytes, and the handoff shows `bswap32` is an involution the relation accepts but the value oracle rejects as bit reversal with witness `x=1`. The driver calls the function via the C ABI; instruction-level isolation stays parked. Gated in `check-all-proofs.sh`. No `.ngb` format change.
 
-G32: executes stages 1-3 of the formal-mining plan for the standalone-codec lead source. A research pass produced a cited, anti-fabrication shortlist of five verified candidates with real fix-commit and buggy-parent SHAs, top three scored as `fixtures/fit-cases/*.fit` (`wabt-leb128-u64` 8/8, `capnproto-base64` 8/8, `openssl-punycode` 6/8 priority 12). Recommended G33 target is wabt `ReadU64Leb128` (parent `89582f5` to fix `f1f3d6d`), a silent too-big-u64 LEB128 acceptance `round_trip` catches, chosen over higher-priority punycode because punycode's bug is an out-of-bounds write a crash catches, not a silent relation violation, so the rubric scores it down on `silent_survival`. Shortlist-only, no floor or format change.
+G32: executes stages 1-3 of the formal-mining plan for the standalone-codec lead source. A research pass produced a cited, anti-fabrication shortlist of five verified candidates with real fix-commit and buggy-parent SHAs, top three scored as `fixtures/fit-cases/*.fit` (`wabt-leb128-u64` 8/8, `capnproto-base64` 8/8, `openssl-punycode` 6/8 priority 12). The wabt target is deferred to G34. Shortlist-only, no floor or format change.
+
+G33: a synthetic, Knuth-shaped portability backtest. **It does not run Knuth's bytes.** It models the `save_graph` erratum (Stanford GraphBase page 414, December 2025), where `fopen(f,"w")` let Windows text mode expand internal `\n` to `\r\n` so a graph saved on Windows could not `restore_graph` on Linux; Knuth changed it to `fopen(f,"wb")`. The trusted driver `fixtures/metamorphic/knuth_sgb.c` is code we wrote that reconstructs the erratum with a `BUGGY_TEXTMODE` macro, because the bug is Windows-only and the Linux runner cannot observe the real defect. The SGB SHAs `c0943fd` (buggy) and `88fac2f` (fix) are provenance for the story, not inputs to the proof. What G33 actually proves is that the G30/G31 backtest pipeline generalizes to a third `round_trip` domain (`knuth_sgb`) with one driver and one `gen_` line. **Catch** on probe `266` (`0x01 0x0A`), witness hex `0A`; timeline accept, reject, accept; fix hash matches rev1. `fixtures/backtest/knuth-sgb/CASE.md`, root `THIRD-PARTY.md`, gated in `check-all-proofs.sh`. No floor or format change. The credibility claim that G33 verified canon was withdrawn; the real-Knuth proof is G35.
+
+G34: parked follow-through from G32. wabt `ReadU64Leb128` (parent `89582f5` to fix `f1f3d6d`), silent too-big-u64 LEB128 acceptance `round_trip` catches. The first true real-history backtest: a real function, a real silent bug, native on the Linux runner, no simulation.
+
+G35: the real Knuth-canon backtest, parked. Target is the documented "embarrassing off-by-one" in `gb_rand.w` (`rand_len`, errata page 388, fixed 1999). Buggy `min_len+gb_unif_rand(max_len-min_len)` yields a length in `[min,max-1]` and never reaches `max`; the fix adds `+1`. Mirror `ascherer/sgb` `fd99287` (1992 initial, buggy) to `65433e2` (2002-01-30, fixed), both verified to differ only by the `+1`. Unlike G33 this runs Knuth's actual integer arithmetic with no simulation: `gb_flip` plus `rand_len` is pure computation, no libc, no platform dependency, vendorable freestanding. The bug is silent (graphs still look valid, the max length is just never drawn) and deterministic under a fixed `gb_flip` seed. The cost is a new relation: it is not `round_trip` or `involution` but a range-coverage property (the empirical maximum over a seed sweep must equal `max`). That new relation in `metamorphic-verify`, plus vendoring `gb_flip`, is why G35 is its own goal, not a relabel.
 
 G31: a second worked backtest case proves the G30 driver generalizes. `fixtures/metamorphic/leb128.c` is an unsigned LEB128 varint codec whose non-minimal-acceptance bug (`NONMINIMAL_OK`) is caught by the unchanged `round_trip` relation (`80 00` decodes to 0, re-encodes to `00`, witness hex `8000`); the only new verifier code is `gen_leb128`. With two cases, the G30 mint and gate were generalized to `scripts/mint-backtest.sh` and `scripts/check-backtest.sh` (parameterized by source, guard macro, manifest, reject hex), the utf8-specific scripts deleted, and `check-all-proofs.sh` calls the one gate twice (utf8 C080, leb128 8000). `docs/BACKTEST.md` adds the second case and a formal-mining plan for real upstream histories. No floor or format change.
 
@@ -132,12 +141,18 @@ Shared machinery (`op=eca`, `conf-eval`, `ca_eca.c`, `mint-ca-fixtures.sh`, conf
 
 ## Next goals
 
-The retry-reduction line is closed (G14). G16 closes the repo-leakage gap for live eval. No further goals are committed. The proven claim is integrity plus execution-grounded conformance, and it stands on the deterministic suite without a live-agent number.
+**G34 (parked).** wabt `ReadU64Leb128` real-history backtest. The first true real-history proof, real function plus real silent bug, native on the runner.
+
+**G35 (parked).** Real Knuth-canon backtest on the `rand_len` off-by-one. Runs Knuth's actual arithmetic, needs a new range-coverage relation.
+
+The retry-reduction line is closed (G14). G16 closes the repo-leakage gap for live eval. The proven claim is integrity plus execution-grounded conformance, and it stands on the deterministic suite without a live-agent number.
 
 Parked ideas, each needing a concrete reason before it earns a slot. Do not build speculatively.
 
 | Parked | Trigger to revive |
 | --- | --- |
+| G34 wabt ReadU64Leb128 real-history backtest | The first true real-history proof; pick up next |
+| G35 rand_len off-by-one (real Knuth canon) | A range-coverage relation earns its place, after G34 |
 | Second program live eval (`add_two` exit-code) | A real task needs a non-print_42 patch verified live |
 | Multi-op micro-op set | A real edit shape beyond single-byte rodata appears |
 | Differential conformance (one binary, two specs) | A spec-collision risk shows up in practice |
@@ -187,3 +202,6 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #50 | G30 backtest harness (controlled history) |
 | #51 | G31 second backtest case (LEB128) + generic scripts |
 | #52 | G32 mine real-history backtest candidates (shortlist) |
+| #53 | G33 synthetic Knuth-shaped portability backtest (models save_graph erratum) |
+| #54 | G34 wabt ReadU64Leb128 real-history backtest (parked) |
+| #55 | G35 real Knuth-canon backtest, rand_len off-by-one (parked) |

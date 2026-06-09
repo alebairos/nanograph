@@ -45,11 +45,16 @@ gen_leb128() {
   printf '%s\n' 256 257 383 98305 109570 98304 98560
 }
 
+gen_knuth_sgb() {
+  printf '%s\n' 257 266 321 21039682 98305
+}
+
 gen_probes() {
   case "$DOMAIN" in
     u32) gen_u32 ;;
     utf8) gen_utf8 ;;
     leb128) gen_leb128 ;;
+    knuth_sgb) gen_knuth_sgb ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }
