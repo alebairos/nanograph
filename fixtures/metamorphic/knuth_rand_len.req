@@ -1,0 +1,6 @@
+relation=range_coverage
+entry=argv_mode
+draw=draw
+domain=knuth_rand_len
+lo=1
+hi=10

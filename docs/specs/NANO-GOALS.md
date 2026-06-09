@@ -75,7 +75,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G32 | Mine real-history backtest candidates (standalone permissive codecs) | #52 | Done |
 | G33 | Synthetic Knuth-shaped portability backtest (models save_graph erratum, no SGB bytes) | #53 | Done |
 | G34 | wabt ReadU64Leb128 real-history backtest (ICP follow-through) | #54 | Done |
-| G35 | Real Knuth canon backtest: rand_len off-by-one (range-coverage relation) | #55 | Parked |
+| G35 | Real Knuth canon backtest: rand_len off-by-one (range-coverage relation) | #55 | Done |
 | G36 | Fix CI red: align ca_eca.c _start so O2 SSE stores don't fault on native | #56 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
@@ -116,7 +116,7 @@ G34: the first true real-history backtest, follow-through from G32. wabt `ReadU6
 
 G36: fixed `hello-proof` CI, red since G30 on `CA-CONFORMANCE FAIL: rule 110 v2`. `fixtures/ca/ca_eca.c` used a bare `_start`; at O2 gcc vectorized the WIDTH=96 buffer loops with `movaps` stores requiring 16-byte stack alignment. The kernel leaves rsp 16-aligned at entry, but the C-ABI prologue assumes the 8-byte skew a `call` leaves, so the stores faulted on native x86_64 (rule110 v2 only, big enough to vectorize), died with empty output, and read as reject; qemu does not enforce the alignment, which hid it off-CI. Proven by disassembly (`movaps %xmm5,-0x78(%rsp,%rax)`). Fix is the naked `_start` trampoline `leb128.c` and `wabt_leb128.c` already use; its `call real_start` restores the ABI alignment. Re-minted all CA fixtures, updated the stale rule30 v1 hash in the sandbox leak guard. CI green on native; `BACKTEST-WABT-LEB128` and `ALL-PROOFS OK` now run upstream.
 
-G35: the real Knuth-canon backtest, parked. Target is the documented "embarrassing off-by-one" in `gb_rand.w` (`rand_len`, errata page 388, fixed 1999). Buggy `min_len+gb_unif_rand(max_len-min_len)` yields a length in `[min,max-1]` and never reaches `max`; the fix adds `+1`. Mirror `ascherer/sgb` `fd99287` (1992 initial, buggy) to `65433e2` (2002-01-30, fixed), both verified to differ only by the `+1`. Unlike G33 this runs Knuth's actual integer arithmetic with no simulation: `gb_flip` plus `rand_len` is pure computation, no libc, no platform dependency, vendorable freestanding. The bug is silent (graphs still look valid, the max length is just never drawn) and deterministic under a fixed `gb_flip` seed. The cost is a new relation: it is not `round_trip` or `involution` but a range-coverage property (the empirical maximum over a seed sweep must equal `max`). That new relation in `metamorphic-verify`, plus vendoring `gb_flip`, is why G35 is its own goal, not a relabel.
+G35: the first real-Knuth-canon backtest. It runs Knuth's actual GB_FLIP generator and `rand_len` draw, native, no simulation, unlike G33 (modeled) and G34 (third-party wabt). The documented "embarrassing off-by-one" in `gb_rand.w`: buggy `min_len+gb_unif_rand(max_len-min_len)` yields `[min,max-1]` and never reaches `max`; the fix adds `+1`. Mirror `ascherer/sgb` `fd99287` (buggy) to `65433e2` (fixed). `fixtures/metamorphic/knuth_rand_len.c` vendors `gb_flip` (`gb_init_rand`, `gb_flip_cycle`, `gb_unif_rand`, `gb_next_rand`) and the `rand_len` draw, transcribed at `fd99287`, validated against Knuth's `test_flip` constants (`gb_init_rand(-314159)` then `gb_next_rand()==119318998`; later `gb_unif_rand(0x55555555)==748103812`). The `+1` is a strippable block (`#if !defined(RAND_LEN_BUG)`), naked `_start` per the G36 alignment lesson. The new relation `range_coverage` sweeps gb_flip seeds (each a `gb_init_rand`+one draw) and asserts the observed `[min,max]` equals the declared `[lo,hi]`; the driver stays a pure generator and the verifier aggregates. **Catch** over 256 seeds: honest observes `[1,10]` and accepts, buggy can never draw 10 so observes `[1,9]` and rejects, witness `hex=09`. Timeline accept/reject/accept; fix hash matches rev1; gated `KNUTH-RAND-LEN` in `check-all-proofs`. `fixtures/backtest/knuth-rand-len/CASE.md`, root `THIRD-PARTY.md`.
 
 G31: a second worked backtest case proves the G30 driver generalizes. `fixtures/metamorphic/leb128.c` is an unsigned LEB128 varint codec whose non-minimal-acceptance bug (`NONMINIMAL_OK`) is caught by the unchanged `round_trip` relation (`80 00` decodes to 0, re-encodes to `00`, witness hex `8000`); the only new verifier code is `gen_leb128`. With two cases, the G30 mint and gate were generalized to `scripts/mint-backtest.sh` and `scripts/check-backtest.sh` (parameterized by source, guard macro, manifest, reject hex), the utf8-specific scripts deleted, and `check-all-proofs.sh` calls the one gate twice (utf8 C080, leb128 8000). `docs/BACKTEST.md` adds the second case and a formal-mining plan for real upstream histories. No floor or format change.
 
@@ -144,7 +144,7 @@ Shared machinery (`op=eca`, `conf-eval`, `ca_eca.c`, `mint-ca-fixtures.sh`, conf
 
 ## Next goals
 
-**G35 (parked).** Real Knuth-canon backtest on the `rand_len` off-by-one. Runs Knuth's actual arithmetic, needs a new range-coverage relation.
+The three-track backtest arc is complete: G33 synthetic, G34 third-party real-history (wabt), G35 real Knuth canon. No backtest goal is queued next; revive a parked idea below when its trigger fires.
 
 The retry-reduction line is closed (G14). G16 closes the repo-leakage gap for live eval. The proven claim is integrity plus execution-grounded conformance, and it stands on the deterministic suite without a live-agent number.
 
@@ -152,7 +152,6 @@ Parked ideas, each needing a concrete reason before it earns a slot. Do not buil
 
 | Parked | Trigger to revive |
 | --- | --- |
-| G35 rand_len off-by-one (real Knuth canon) | A range-coverage relation earns its place; pick up next |
 | Second program live eval (`add_two` exit-code) | A real task needs a non-print_42 patch verified live |
 | Multi-op micro-op set | A real edit shape beyond single-byte rodata appears |
 | Differential conformance (one binary, two specs) | A spec-collision risk shows up in practice |
@@ -204,5 +203,5 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #52 | G32 mine real-history backtest candidates (shortlist) |
 | #53 | G33 synthetic Knuth-shaped portability backtest (models save_graph erratum) |
 | #54 | G34 wabt ReadU64Leb128 real-history backtest (parked) |
-| #55 | G35 real Knuth-canon backtest, rand_len off-by-one (parked) |
+| #55 | G35 real Knuth-canon backtest, rand_len off-by-one |
 | #56 | G36 fix CI red, ca_eca.c _start stack alignment |

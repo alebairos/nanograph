@@ -57,6 +57,14 @@ gen_wabt_leb128() {
     ffffffffffffffffff02
 }
 
+# gb_flip seeds. Each is one gb_init_rand(seed) + one rand_len draw; the sweep
+# samples the draw's range. The honest range reaches max_len, the buggy one
+# (off-by-one span) never does, so the observed maximum separates them.
+gen_knuth_rand_len() {
+  local s
+  for ((s = 1; s <= 256; s++)); do printf '%s\n' "$s"; done
+}
+
 gen_probes() {
   case "$DOMAIN" in
     u32) gen_u32 ;;
@@ -64,6 +72,7 @@ gen_probes() {
     leb128) gen_leb128 ;;
     knuth_sgb) gen_knuth_sgb ;;
     wabt_leb128) gen_wabt_leb128 ;;
+    knuth_rand_len) gen_knuth_rand_len ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }
@@ -78,6 +87,41 @@ run_mode() {
   while read -r v; do [[ -z "$v" ]] && continue; printf '%s %s\n' "$mode" "$v"; done \
     | ./scripts/run-linux-elf-batch.sh "$CAND" 2>/dev/null | awk '{print $3}'
 }
+
+if [[ "$RELATION" == range_coverage ]]; then
+  DRAW="$(reqval draw)"
+  LO="$(reqval lo)"
+  HI="$(reqval hi)"
+  [[ -n "$DRAW" && -n "$LO" && -n "$HI" ]] || {
+    echo "metamorphic-verify: range_coverage needs draw, lo, hi in $REQ" >&2
+    exit 2
+  }
+
+  probes=()
+  while read -r p; do probes+=("$p"); done < <(gen_probes)
+
+  obs_min=""
+  obs_max=""
+  samples=0
+  while read -r v; do
+    [[ "$v" =~ ^[0-9]+$ ]] || continue
+    samples=$((samples + 1))
+    [[ -z "$obs_min" || "$v" -lt "$obs_min" ]] && obs_min="$v"
+    [[ -z "$obs_max" || "$v" -gt "$obs_max" ]] && obs_max="$v"
+  done < <(printf '%s\n' "${probes[@]}" | run_mode "$DRAW")
+
+  [[ "$samples" -ge 1 ]] || {
+    echo "metamorphic-verify: range_coverage drew 0 samples" >&2
+    exit 2
+  }
+
+  if [[ "$obs_min" -ne "$LO" || "$obs_max" -ne "$HI" ]]; then
+    echo "verdict=reject hash=${hash:0:12} relation=range_coverage observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples hex=$(printf '%02x' "$obs_max")"
+    exit 1
+  fi
+  echo "verdict=accept hash=${hash:0:12} relation=range_coverage observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples"
+  exit 0
+fi
 
 if [[ "$RELATION" == round_trip ]]; then
   ENCODE="$(reqval encode)"

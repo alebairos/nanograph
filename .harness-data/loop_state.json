@@ -1,8 +1,8 @@
 {
-  "goal_id": "G36",
-  "current_issue": 56,
-  "milestone": "G36",
-  "product_proof_step": "G36-ca-eca-stack-alignment-ci-fix",
+  "goal_id": "G35",
+  "current_issue": 55,
+  "milestone": "G35",
+  "product_proof_step": "G35-knuth-rand-len-real-canon-backtest",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G36 done (#56): fixed the pre-existing CI red. ca_eca.c used a bare _start; at O2 gcc vectorized the WIDTH=96 loops with movaps stores, which fault on a 16-byte-misaligned stack. Kernel entry leaves rsp 16-aligned but the C-ABI prologue assumes the 8-byte call skew, so the stores faulted on native x86_64 (rule110 v2) and died with empty output; qemu does not enforce alignment, hiding it off-CI. Fix: naked _start trampoline (call real_start) matching leb128.c/wabt_leb128.c, restoring ABI alignment. Re-minted all CA fixtures, updated the stale rule30 v1 hash in prepare-author-sandbox-ca.sh leak guard. ALL-PROOFS OK locally; native confirmation via CI push. Next: G35 (#55) real Knuth canon rand_len off-by-one, needs a new range-coverage relation."
+    "note": "G35 done (#55): first real-Knuth-canon backtest. Runs Knuth's actual GB_FLIP + rand_len, no simulation. Erratum: rand_len span max_len-min_len gives [min,max-1], never max; fix (65433e2) adds +1 (buggy fd99287). knuth_rand_len.c vendors gb_flip (gb_init_rand/gb_flip_cycle/gb_unif_rand/gb_next_rand) + rand_len, transcribed at fd99287, validated against Knuth's test_flip constants (gb_init_rand(-314159)->gb_next_rand()==119318998; gb_unif_rand(0x55555555)==748103812). +1 is a strippable #if !defined(RAND_LEN_BUG) block; naked _start per G36. New range_coverage relation sweeps 256 gb_flip seeds (each gb_init_rand+one draw), asserts observed [min,max]==declared [lo,hi]; driver pure generator, verifier aggregates. Catch: honest [1,10] accept, buggy [1,9] reject, witness hex=09. Timeline accept/reject/accept, gated KNUTH-RAND-LEN. Three-track backtest arc complete (G33 synthetic, G34 wabt third-party, G35 Knuth canon); no backtest goal queued next."
   },
   "history": [
     {
@@ -198,6 +198,12 @@
       "milestone": "G36",
       "closed": "2026-06-08",
       "note": "Fixed pre-existing CI red (hello-proof red since G30). ca_eca.c bare _start: at O2 gcc vectorized the WIDTH=96 buffer loops with movaps stores requiring 16-byte stack alignment; kernel entry leaves rsp 16-aligned but the C-ABI prologue assumes the call's 8-byte skew, so stores faulted on native x86_64 (rule110 v2 only, big enough to vectorize), died empty, read as reject; qemu does not enforce alignment so it passed locally. Proven by disassembly (movaps %xmm5,-0x78(%rsp,%rax)). Fix: naked _start trampoline (call real_start) matching leb128.c/wabt_leb128.c. Re-minted all CA fixtures, updated stale rule30 v1 hash in prepare-author-sandbox-ca.sh leak guard. ALL-PROOFS OK locally, native confirmed on CI"
+    },
+    {
+      "issue": 55,
+      "milestone": "G35",
+      "closed": "2026-06-08",
+      "note": "First real-Knuth-canon backtest. Runs Knuth's actual GB_FLIP + rand_len, no simulation (vs G33 modeled, G34 third-party wabt). Erratum gb_rand.w: rand_len span max_len-min_len -> [min,max-1] never max; fix 65433e2 adds +1, buggy fd99287. knuth_rand_len.c vendors gb_flip + rand_len transcribed at fd99287, validated against Knuth's test_flip (gb_init_rand(-314159)->119318998; gb_unif_rand(0x55555555)->748103812). +1 strippable via #if !defined(RAND_LEN_BUG); naked _start per G36. New range_coverage relation: sweep 256 gb_flip seeds (gb_init_rand+one draw), observed [min,max] must equal declared [lo,hi]; pure-generator driver, verifier aggregates. Catch: honest [1,10] accept, buggy [1,9] reject, witness hex=09; timeline accept/reject/accept; gated KNUTH-RAND-LEN in check-all-proofs"
     }
   ]
 }
