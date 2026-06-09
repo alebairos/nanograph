@@ -19,7 +19,14 @@ Upstream: https://github.com/jart/cosmopolitan
 
 ## Pre-registered property
 
-`value_oracle` via `fixtures/metamorphic/cosmo_parseip.req`. Six probe pairs in `gen_cosmo_parseip`; witness `255.255.255.256` (`hex=3235352e3235352e3235352e323536`). Buggy rev returns `4294967040`; honest rev returns `REJECT`.
+`value_oracle` via `fixtures/metamorphic/cosmo_parseip.req`. Seven probe pairs in `gen_cosmo_parseip`. Two rejection witnesses cover different fix guards.
+
+| Witness input | hex | Guards exercised | Buggy rev | Honest rev |
+| --- | --- | --- | --- | --- |
+| `255.255.255.256` | `3235352e3235352e3235352e323536` | `nb > 255 && dotted` (timeline gate) | `4294967040` | `REJECT` |
+| `1.1.1.4294967297` | `312e312e312e34323934393637323937` | u32 wrap via unchecked `b *= 10; b += digit` | `16843009` (`1.1.1.1`) | `REJECT` |
+
+The range witness is the backtest timeline reject hex. The wrap witness (G44) closes the gap where overflow builtins are dead on the range input.
 
 ## Mint
 
