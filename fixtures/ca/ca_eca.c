@@ -29,12 +29,14 @@ static long sys_write(long fd, const void *buf, long n) {
   return ret;
 }
 
+static void sys_exit(long code) __attribute__((noreturn));
 static void sys_exit(long code) {
   __asm__ volatile("syscall" : : "a"(60L), "D"(code) : "rcx", "r11", "memory");
   __builtin_unreachable();
 }
 
-void _start(void) {
+__attribute__((noreturn))
+void real_start(void) {
   unsigned char cur[WIDTH], nxt[WIDTH];
   char line[WIDTH + 1];
 
@@ -60,4 +62,13 @@ void _start(void) {
   }
 
   sys_exit(0);
+}
+
+/* Kernel entry leaves rsp 16-byte aligned; a C-ABI prologue expects the 8-byte
+ * skew a call leaves. The call here restores that skew so O2 aligned SSE stores
+ * to the stack buffers land on a 16-byte boundary instead of faulting on native
+ * x86_64 (qemu does not enforce the alignment, which hid this off-CI). */
+__attribute__((naked))
+void _start(void) {
+  __asm__("call real_start\n");
 }

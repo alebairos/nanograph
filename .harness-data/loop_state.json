@@ -1,8 +1,8 @@
 {
-  "goal_id": "G34",
-  "current_issue": 54,
-  "milestone": "G34",
-  "product_proof_step": "G34-wabt-leb128-real-history-backtest",
+  "goal_id": "G36",
+  "current_issue": 56,
+  "milestone": "G36",
+  "product_proof_step": "G36-ca-eca-stack-alignment-ci-fix",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G34 done (#54): first true real-history backtest. wabt ReadU64Leb128 (parent 89582f5 -> fix f1f3d6d / PR #2256), the p[9] & 0xf0 -> 0xfe too-big-u64 mask bug. wabt_leb128.c transcribes wabt's decode + real mask faithfully into freestanding C behind a trusted driver (G26 standard), not a verbatim build of wabt's non-freestanding C++. Fix is a strippable block (0xf0 base, honest adds 0x0e); new wire=hex carries the 10-byte input as a hex argv token. Catch on witness ffffffffffffffffff02: buggy decodes to truncated 9223372036854775807, honest rejects, both accept u64 max. Timeline accept/reject/accept, gated WABT-LEB128. Next: G35 (#55) real Knuth canon rand_len off-by-one, needs a new range-coverage relation. Pre-existing CI red (CA-CONFORMANCE rule 110 v2) and local G23 gcd_evil static arm both predate this work and are unrelated."
+    "note": "G36 done (#56): fixed the pre-existing CI red. ca_eca.c used a bare _start; at O2 gcc vectorized the WIDTH=96 loops with movaps stores, which fault on a 16-byte-misaligned stack. Kernel entry leaves rsp 16-aligned but the C-ABI prologue assumes the 8-byte call skew, so the stores faulted on native x86_64 (rule110 v2) and died with empty output; qemu does not enforce alignment, hiding it off-CI. Fix: naked _start trampoline (call real_start) matching leb128.c/wabt_leb128.c, restoring ABI alignment. Re-minted all CA fixtures, updated the stale rule30 v1 hash in prepare-author-sandbox-ca.sh leak guard. ALL-PROOFS OK locally; native confirmation via CI push. Next: G35 (#55) real Knuth canon rand_len off-by-one, needs a new range-coverage relation."
   },
   "history": [
     {
@@ -192,6 +192,12 @@
       "milestone": "G34",
       "closed": "2026-06-08",
       "note": "First true real-history backtest. wabt ReadU64Leb128 (parent 89582f5 -> fix f1f3d6d / PR #2256): the 10th-byte overflow check p[9] & 0xf0 (copied from the u32 path) missed bits 1..3, silently accepting + truncating a 10-byte LEB128 above u64 max; fix is 0xfe. wabt_leb128.c faithfully transcribes wabt's decode + real masks into freestanding C behind a trusted driver (not a verbatim C++ build); fix is a strippable block (0xf0 base, honest adds 0x0e); new wire=hex carries the 10-byte input. Catch on witness ffffffffffffffffff02 (buggy decodes truncated 9223372036854775807, honest rejects, both accept u64 max); timeline accept/reject/accept; gated WABT-LEB128 in check-all-proofs"
+    },
+    {
+      "issue": 56,
+      "milestone": "G36",
+      "closed": "2026-06-08",
+      "note": "Fixed pre-existing CI red (hello-proof red since G30). ca_eca.c bare _start: at O2 gcc vectorized the WIDTH=96 buffer loops with movaps stores requiring 16-byte stack alignment; kernel entry leaves rsp 16-aligned but the C-ABI prologue assumes the call's 8-byte skew, so stores faulted on native x86_64 (rule110 v2 only, big enough to vectorize), died empty, read as reject; qemu does not enforce alignment so it passed locally. Proven by disassembly (movaps %xmm5,-0x78(%rsp,%rax)). Fix: naked _start trampoline (call real_start) matching leb128.c/wabt_leb128.c. Re-minted all CA fixtures, updated stale rule30 v1 hash in prepare-author-sandbox-ca.sh leak guard. ALL-PROOFS OK locally, native confirmed on CI"
     }
   ]
 }
