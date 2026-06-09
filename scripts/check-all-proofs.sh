@@ -37,7 +37,7 @@ make -C tools -s all
 ./scripts/check-backtest.sh fixtures/backtest/leb128/timeline.manifest 8000 LEB128
 ./scripts/check-backtest.sh fixtures/backtest/knuth-sgb/timeline.manifest 0A KNUTH-SGB
 ./scripts/check-backtest.sh fixtures/backtest/wabt-leb128/timeline.manifest ffffffffffffffffff02 WABT-LEB128
-./scripts/check-backtest.sh fixtures/backtest/knuth-rand-len/timeline.manifest 09 KNUTH-RAND-LEN
+./scripts/check-backtest.sh fixtures/backtest/knuth-rand-len/timeline.manifest 02 KNUTH-RAND-LEN
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

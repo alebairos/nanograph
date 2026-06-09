@@ -1,12 +1,12 @@
 {
-  "goal_id": "G35",
-  "current_issue": 55,
-  "milestone": "G35",
-  "product_proof_step": "G35-knuth-rand-len-real-canon-backtest",
+  "goal_id": "G37",
+  "current_issue": 57,
+  "milestone": "G37",
+  "product_proof_step": "G37-range-coverage-endpoint-witnesses",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/BACKTEST.md",
+    "spec_path": "docs/specs/METAMORPHIC-RELATIONS.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-010-utf8-roundtrip-demo.md",
     "eval_logs": [
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G35 done (#55): first real-Knuth-canon backtest. Runs Knuth's actual GB_FLIP + rand_len, no simulation. Erratum: rand_len span max_len-min_len gives [min,max-1], never max; fix (65433e2) adds +1 (buggy fd99287). knuth_rand_len.c vendors gb_flip (gb_init_rand/gb_flip_cycle/gb_unif_rand/gb_next_rand) + rand_len, transcribed at fd99287, validated against Knuth's test_flip constants (gb_init_rand(-314159)->gb_next_rand()==119318998; gb_unif_rand(0x55555555)==748103812). +1 is a strippable #if !defined(RAND_LEN_BUG) block; naked _start per G36. New range_coverage relation sweeps 256 gb_flip seeds (each gb_init_rand+one draw), asserts observed [min,max]==declared [lo,hi]; driver pure generator, verifier aggregates. Catch: honest [1,10] accept, buggy [1,9] reject, witness hex=09. Timeline accept/reject/accept, gated KNUTH-RAND-LEN. Three-track backtest arc complete (G33 synthetic, G34 wabt third-party, G35 Knuth canon); no backtest goal queued next."
+    "note": "G37 done (#57): strengthened range_coverage with deterministic endpoint witnesses. Optional lo_seed/hi_seed in .req; metamorphic-verify checks isolated draw(lo_seed)==lo and draw(hi_seed)==hi before the 256-seed sweep. Primary proof is endpoint reachability; sweep is robustness bound check. G35 knuth_rand_len.req sets lo_seed=22 hi_seed=2 (honest 22->1, 2->10). Catch on buggy rev: draw(22) yields 2 not 1, witness hex=02 endpoint=lo; rev2_offbyone is span-minus-one mutant. Gate KNUTH-RAND-LEN witness updated 09->02. Documented METAMORPHIC-RELATIONS.md, CASE.md, BACKTEST.md. No .ngb remint. ALL-PROOFS OK. Next parked ideas only (full random_graph API, chap_name trim, etc.)."
   },
   "history": [
     {
@@ -204,6 +204,12 @@
       "milestone": "G35",
       "closed": "2026-06-08",
       "note": "First real-Knuth-canon backtest. Runs Knuth's actual GB_FLIP + rand_len, no simulation (vs G33 modeled, G34 third-party wabt). Erratum gb_rand.w: rand_len span max_len-min_len -> [min,max-1] never max; fix 65433e2 adds +1, buggy fd99287. knuth_rand_len.c vendors gb_flip + rand_len transcribed at fd99287, validated against Knuth's test_flip (gb_init_rand(-314159)->119318998; gb_unif_rand(0x55555555)->748103812). +1 strippable via #if !defined(RAND_LEN_BUG); naked _start per G36. New range_coverage relation: sweep 256 gb_flip seeds (gb_init_rand+one draw), observed [min,max] must equal declared [lo,hi]; pure-generator driver, verifier aggregates. Catch: honest [1,10] accept, buggy [1,9] reject, witness hex=09; timeline accept/reject/accept; gated KNUTH-RAND-LEN in check-all-proofs"
+    },
+    {
+      "issue": 57,
+      "milestone": "G37",
+      "closed": "2026-06-09",
+      "note": "Strengthened range_coverage with endpoint witnesses. lo_seed/hi_seed in .req; isolated draw(lo_seed)==lo and draw(hi_seed)==hi before sweep. G35 req: lo_seed=22 hi_seed=2 (honest 22->1, 2->10). Buggy fails lo endpoint first (draw(22)=2), witness hex=02; rev2_offbyone is span-minus-one mutant. Gate witness 09->02. METAMORPHIC-RELATIONS.md, CASE.md, BACKTEST.md; no .ngb remint"
     }
   ]
 }

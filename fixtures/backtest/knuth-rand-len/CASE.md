@@ -30,7 +30,11 @@ The `+1` fix is a strippable block: the driver computes `span = max_len - min_le
 
 A new relation, `range_coverage`, in `fixtures/metamorphic/knuth_rand_len.req`. Neither `round_trip` nor `involution` fits a generator. The relation sweeps gb_flip seeds, each a `gb_init_rand(seed)` plus one `rand_len` draw, and asserts the observed `[min, max]` equals the declared `[lo, hi]`. The driver stays a pure generator; the verifier aggregates the sweep, so the relation is reusable for any bounded generator.
 
-256 seeds. The honest revision draws `max_len` (10) within the sweep, so observed is `[1,10]` and it accepts. The buggy revision can never draw 10, so observed tops out at `[1,9]` and it rejects. The witness `hex=09` is that observed maximum, one short of the declared 10. The verdict depends only on the observed extremes, which many seeds reach, so it is robust to the occasional dropped sample from the batch runner.
+**Endpoint witnesses (G37).** `knuth_rand_len.req` sets `lo_seed=22` and `hi_seed=2`. Isolated draws on the honest revision verify `draw(22)==1` and `draw(2)==10` before any sweep. That is the primary proof and is fully deterministic.
+
+**Sweep robustness.** After endpoints pass, 256 seeds are swept and the observed min/max must equal `[1,10]`. The sweep is a bound check, not the main witness.
+
+**Catch.** The buggy revision fails the `lo` endpoint first (`draw(22)` yields 2, not 1), witness `hex=02`. The backtest `rev2_offbyone` revision is the structural span-minus-one mutant from `mint-backtest.sh` (`RAND_LEN_BUG`). If endpoints were omitted, the sweep alone would still catch the bug (observed max 9), but endpoint-first semantics make the reject reason explicit and rerunnable.
 
 ## Mint
 
@@ -41,4 +45,4 @@ A new relation, `range_coverage`, in `fixtures/metamorphic/knuth_rand_len.req`. 
 
 ## Result
 
-Catch. Timeline accept, reject (`hex=09`, observed `[1,9]` vs declared `[1,10]`), accept. Fix returns to revision one's `graph_root_hash`.
+Catch. Timeline accept, reject (`hex=02`, `endpoint=lo seed=22 got=2 want=1`), accept. Fix returns to revision one's `graph_root_hash`.

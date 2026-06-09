@@ -4,3 +4,5 @@ draw=draw
 domain=knuth_rand_len
 lo=1
 hi=10
+lo_seed=22
+hi_seed=2

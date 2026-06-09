@@ -30,6 +30,7 @@ eq=exact
 | --- | --- | --- |
 | `involution` | `f(f(x)) == x` | **Done** (G24) |
 | `round_trip` | `encode(decode(b)) == b` over accepted byte sequences | Implemented (G27 utf8, G31 leb128) |
+| `range_coverage` | declared `[lo,hi]` reachable; optional named endpoint seeds plus sweep | Implemented (G35 knuth_rand_len, strengthened G37) |
 | `idempotent` | `f(f(x)) == f(x)` | Named, unimplemented |
 | `commutative` | `f(a,b) == f(b,a)` | Named, unimplemented |
 
@@ -105,6 +106,22 @@ The unit test stays green. NanoGraph rejects with a witness that names the offen
 ## Round-trip on a second codec (G31, LEB128)
 
 The same `round_trip` relation, unchanged, catches a second codec's bug. `fixtures/metamorphic/leb128.c` is an unsigned LEB128 varint `enc`/`dec` codec with the same `0x01 ++ bytes` packing, capped to four varint bytes. The honest decoder rejects non-minimal encodings. `NONMINIMAL_OK` drops the minimality check, the classic varint hole where `80 00` decodes to zero. `leb128.req` declares `domain=leb128`, the only new code is `gen_leb128` in the verifier. The relation rejects the buggy revision with witness `hex=8000`: `80 00` decodes to 0 and re-encodes to the canonical `00`. This is the proof that the relation and the backtest driver generalize across codecs, not just utf8. See [`../BACKTEST.md`](../BACKTEST.md).
+
+## Range coverage on a generator (G35, strengthened G37)
+
+A third relation for bounded generators where neither `round_trip` nor `involution` applies. The driver stays a pure generator (`draw <seed>` prints one draw). The verifier aggregates.
+
+| Key | Meaning |
+| --- | --- |
+| `draw` | argv mode for one draw |
+| `lo`, `hi` | declared inclusive range |
+| `lo_seed`, `hi_seed` | optional named seeds that must hit the endpoints (G37) |
+
+When `lo_seed` and `hi_seed` are both set, `metamorphic-verify` checks them first with isolated `run-linux-elf-capture.sh` draws. `draw(lo_seed)` must equal `lo` and `draw(hi_seed)` must equal `hi`. That is the primary proof. It is deterministic, not statistical. A reject names `endpoint=lo|hi seed=… got=… want=…` and emits `hex=` of the failing draw for the backtest gate.
+
+After the endpoint checks pass, the verifier sweeps the domain (`gen_knuth_rand_len`, 256 seeds) and requires the observed min and max over the sweep to equal `lo` and `hi`. The sweep is a robustness bound check, not the main witness.
+
+G35 case: Knuth `gb_flip` plus `rand_len`, `lo=1`, `hi=10`, `lo_seed=22`, `hi_seed=2`. Honest revision passes both endpoint checks and the sweep. The buggy revision (`RAND_LEN_BUG`, span one short) fails the `lo` endpoint first (`draw(22)` yields 2, not 1), witness `hex=02`. The backtest timeline `rev2_offbyone` is the structural span-minus-one mutant. See [`../BACKTEST.md`](../BACKTEST.md) and `fixtures/backtest/knuth-rand-len/CASE.md`.
 
 ## Specimens
 

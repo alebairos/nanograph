@@ -10,6 +10,8 @@ cd "$ROOT"
 #   round_trip  for each byte sequence b the decoder accepts,
 #               encode(decode(b)) == b. A correct codec accepts only canonical
 #               encodings, so this holds; an overlong-accepting decoder fails it.
+#   range_coverage  optional lo_seed/hi_seed endpoint draws, then sweep min/max
+#               must equal declared lo/hi (G35/G37 generators).
 # A candidate witness from the fast batched scan is confirmed by an isolated
 # clean re-run, which filters transient backend faults.
 
@@ -92,10 +94,31 @@ if [[ "$RELATION" == range_coverage ]]; then
   DRAW="$(reqval draw)"
   LO="$(reqval lo)"
   HI="$(reqval hi)"
+  LO_SEED="$(reqval lo_seed)"
+  HI_SEED="$(reqval hi_seed)"
   [[ -n "$DRAW" && -n "$LO" && -n "$HI" ]] || {
     echo "metamorphic-verify: range_coverage needs draw, lo, hi in $REQ" >&2
     exit 2
   }
+  if [[ -n "$LO_SEED" || -n "$HI_SEED" ]]; then
+    [[ -n "$LO_SEED" && -n "$HI_SEED" ]] || {
+      echo "metamorphic-verify: range_coverage needs both lo_seed and hi_seed" >&2
+      exit 2
+    }
+  fi
+
+  if [[ -n "$LO_SEED" ]]; then
+    lo_got="$(./scripts/run-linux-elf-capture.sh "$CAND" "$DRAW" "$LO_SEED" 2>/dev/null || true)"
+    if [[ "$lo_got" != "$LO" ]]; then
+      echo "verdict=reject hash=${hash:0:12} relation=range_coverage endpoint=lo seed=$LO_SEED got=${lo_got:-} want=$LO hex=$(printf '%02x' "${lo_got:-0}")"
+      exit 1
+    fi
+    hi_got="$(./scripts/run-linux-elf-capture.sh "$CAND" "$DRAW" "$HI_SEED" 2>/dev/null || true)"
+    if [[ "$hi_got" != "$HI" ]]; then
+      echo "verdict=reject hash=${hash:0:12} relation=range_coverage endpoint=hi seed=$HI_SEED got=${hi_got:-} want=$HI hex=$(printf '%02x' "${hi_got:-0}")"
+      exit 1
+    fi
+  fi
 
   probes=()
   while read -r p; do probes+=("$p"); done < <(gen_probes)
@@ -119,7 +142,9 @@ if [[ "$RELATION" == range_coverage ]]; then
     echo "verdict=reject hash=${hash:0:12} relation=range_coverage observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples hex=$(printf '%02x' "$obs_max")"
     exit 1
   fi
-  echo "verdict=accept hash=${hash:0:12} relation=range_coverage observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples"
+  extra=""
+  [[ -n "$LO_SEED" ]] && extra=" lo_seed=$LO_SEED hi_seed=$HI_SEED"
+  echo "verdict=accept hash=${hash:0:12} relation=range_coverage observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples$extra"
   exit 0
 fi
 
