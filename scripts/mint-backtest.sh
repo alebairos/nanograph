@@ -49,7 +49,7 @@ for name, data in ((stem + "_rev1.c", honest), (stem + "_rev2.c", bug), (stem + 
 PY
 
 scripts/mint-one-elf.sh "$DIR/${STEM}_rev1.c" "$DIR/${STEM}_rev1.ngb"
-scripts/mint-one-elf.sh "$DIR/${STEM}_rev2.c" "$DIR/${STEM}_rev2.ngb"
+scripts/mint-one-elf.sh "$DIR/${STEM}_rev2.c" "$DIR/${STEM}_rev2.ngb" -D"${GUARD}"
 scripts/mint-one-elf.sh "$DIR/${STEM}_rev3.c" "$DIR/${STEM}_rev3.ngb"
 
 make -C tools -s bin/ngb-parse >/dev/null

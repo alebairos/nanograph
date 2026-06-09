@@ -1,0 +1,4 @@
+req=fixtures/metamorphic/capnproto_base64.req
+rev=rev1_honest    ngb=fixtures/backtest/capnproto-base64/capnproto_base64_rev1.ngb   expect=accept
+rev=rev2_invalidok ngb=fixtures/backtest/capnproto-base64/capnproto_base64_rev2.ngb   expect=reject
+rev=rev3_fix       ngb=fixtures/backtest/capnproto-base64/capnproto_base64_rev3.ngb   expect=accept

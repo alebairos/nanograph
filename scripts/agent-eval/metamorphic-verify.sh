@@ -59,6 +59,10 @@ gen_wabt_leb128() {
     ffffffffffffffffff02
 }
 
+gen_capnproto_base64() {
+  printf '%s\n' Zm9v Y29yZ2U= Zm9v@ Y29yZ2U==
+}
+
 # gb_flip seeds. Each is one gb_init_rand(seed) + one rand_len draw; the sweep
 # samples the draw's range. The honest range reaches max_len, the buggy one
 # (off-by-one span) never does, so the observed maximum separates them.
@@ -74,6 +78,7 @@ gen_probes() {
     leb128) gen_leb128 ;;
     knuth_sgb) gen_knuth_sgb ;;
     wabt_leb128) gen_wabt_leb128 ;;
+    capnproto_base64) gen_capnproto_base64 ;;
     knuth_rand_len) gen_knuth_rand_len ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
@@ -213,7 +218,14 @@ if [[ "$RELATION" == round_trip ]]; then
       [[ -z "$cp2" || "$cp2" == "$REJECT" ]] && continue
       b3="$(./scripts/run-linux-elf-capture.sh "$CAND" "$ENCODE" "$cp2" 2>/dev/null || true)"
       if [[ "$b3" != "$b" ]]; then
-        if [[ "$WIRE" == hex ]]; then hexw="$b"; else hexb="$(printf '%X' "$b")"; hexw="${hexb:1}"; fi
+        if [[ "$WIRE" == hex ]]; then
+          hexw="$b"
+        elif [[ "$WIRE" == ascii ]]; then
+          hexw="$(printf '%s' "$b" | hexdump -ve '1/1 "%02x"')"
+        else
+          hexb="$(printf '%X' "$b")"
+          hexw="${hexb:1}"
+        fi
         echo "verdict=reject hash=${hash:0:12} relation=round_trip witness bytes=$b hex=$hexw decode=$cp2 reencode=$b3"
         exit 1
       fi
