@@ -1,8 +1,8 @@
 {
-  "goal_id": "G37",
-  "current_issue": 57,
-  "milestone": "G37",
-  "product_proof_step": "G37-range-coverage-endpoint-witnesses",
+  "goal_id": "G38",
+  "current_issue": 59,
+  "milestone": "G38",
+  "product_proof_step": "G38-range-coverage-phase-split",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G37 done (#57): strengthened range_coverage with deterministic endpoint witnesses. Optional lo_seed/hi_seed in .req; metamorphic-verify checks isolated draw(lo_seed)==lo and draw(hi_seed)==hi before the 256-seed sweep. Primary proof is endpoint reachability; sweep is robustness bound check. G35 knuth_rand_len.req sets lo_seed=22 hi_seed=2 (honest 22->1, 2->10). Catch on buggy rev: draw(22) yields 2 not 1, witness hex=02 endpoint=lo; rev2_offbyone is span-minus-one mutant. Gate KNUTH-RAND-LEN witness updated 09->02. Documented METAMORPHIC-RELATIONS.md, CASE.md, BACKTEST.md. No .ngb remint. ALL-PROOFS OK. Next parked ideas only (full random_graph API, chap_name trim, etc.)."
+    "note": "G38 done (#59): split range_coverage into reachability and containment phases. .req keys reachability=on|off containment=sweep|off; rejects phase=reachability|containment; accept reachability=pass|skip containment=pass|skip. knuth_rand_len.req reachability=on containment=sweep. G35 backtest unchanged hex=02. Verifier-only, no .ngb remint. Umbrella #58 updated. Parked: G39 capnproto-base64, dna-revcomp, second generator, live eval add_two."
   },
   "history": [
     {
@@ -210,6 +210,12 @@
       "milestone": "G37",
       "closed": "2026-06-09",
       "note": "Strengthened range_coverage with endpoint witnesses. lo_seed/hi_seed in .req; isolated draw(lo_seed)==lo and draw(hi_seed)==hi before sweep. G35 req: lo_seed=22 hi_seed=2 (honest 22->1, 2->10). Buggy fails lo endpoint first (draw(22)=2), witness hex=02; rev2_offbyone is span-minus-one mutant. Gate witness 09->02. METAMORPHIC-RELATIONS.md, CASE.md, BACKTEST.md; no .ngb remint"
+    },
+    {
+      "issue": 59,
+      "milestone": "G38",
+      "closed": "2026-06-09",
+      "note": "Split range_coverage into reachability and containment phases. .req reachability=on|off containment=sweep|off; rejects phase=reachability|containment; accept reachability=pass|skip containment=pass|skip. knuth_rand_len.req reachability=on containment=sweep. G35 backtest unchanged hex=02. Verifier-only; no .ngb remint"
     }
   ]
 }

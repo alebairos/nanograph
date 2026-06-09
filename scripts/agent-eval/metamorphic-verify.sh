@@ -10,8 +10,8 @@ cd "$ROOT"
 #   round_trip  for each byte sequence b the decoder accepts,
 #               encode(decode(b)) == b. A correct codec accepts only canonical
 #               encodings, so this holds; an overlong-accepting decoder fails it.
-#   range_coverage  optional lo_seed/hi_seed endpoint draws, then sweep min/max
-#               must equal declared lo/hi (G35/G37 generators).
+#   range_coverage  reachability (lo_seed/hi_seed) and containment (sweep min/max)
+#               are separate phases (G38); rejects name phase=reachability|containment.
 # A candidate witness from the fast batched scan is confirmed by an isolated
 # clean re-run, which filters transient backend faults.
 
@@ -96,55 +96,80 @@ if [[ "$RELATION" == range_coverage ]]; then
   HI="$(reqval hi)"
   LO_SEED="$(reqval lo_seed)"
   HI_SEED="$(reqval hi_seed)"
+  REACH="$(reqval reachability)"
+  CONTAIN="$(reqval containment)"
   [[ -n "$DRAW" && -n "$LO" && -n "$HI" ]] || {
     echo "metamorphic-verify: range_coverage needs draw, lo, hi in $REQ" >&2
     exit 2
   }
-  if [[ -n "$LO_SEED" || -n "$HI_SEED" ]]; then
+  if [[ -z "$REACH" ]]; then
+    if [[ -n "$LO_SEED" && -n "$HI_SEED" ]]; then REACH=on; else REACH=off; fi
+  fi
+  if [[ -z "$CONTAIN" ]]; then CONTAIN=sweep; fi
+  [[ "$REACH" == on || "$REACH" == off ]] || {
+    echo "metamorphic-verify: reachability must be on or off" >&2
+    exit 2
+  }
+  [[ "$CONTAIN" == sweep || "$CONTAIN" == off ]] || {
+    echo "metamorphic-verify: containment must be sweep or off" >&2
+    exit 2
+  }
+  if [[ "$REACH" == on ]]; then
     [[ -n "$LO_SEED" && -n "$HI_SEED" ]] || {
-      echo "metamorphic-verify: range_coverage needs both lo_seed and hi_seed" >&2
+      echo "metamorphic-verify: reachability=on needs lo_seed and hi_seed" >&2
       exit 2
     }
   fi
 
-  if [[ -n "$LO_SEED" ]]; then
+  reach_result=skip
+  if [[ "$REACH" == on ]]; then
     lo_got="$(./scripts/run-linux-elf-capture.sh "$CAND" "$DRAW" "$LO_SEED" 2>/dev/null || true)"
     if [[ "$lo_got" != "$LO" ]]; then
-      echo "verdict=reject hash=${hash:0:12} relation=range_coverage endpoint=lo seed=$LO_SEED got=${lo_got:-} want=$LO hex=$(printf '%02x' "${lo_got:-0}")"
+      echo "verdict=reject hash=${hash:0:12} relation=range_coverage phase=reachability endpoint=lo seed=$LO_SEED got=${lo_got:-} want=$LO hex=$(printf '%02x' "${lo_got:-0}")"
       exit 1
     fi
     hi_got="$(./scripts/run-linux-elf-capture.sh "$CAND" "$DRAW" "$HI_SEED" 2>/dev/null || true)"
     if [[ "$hi_got" != "$HI" ]]; then
-      echo "verdict=reject hash=${hash:0:12} relation=range_coverage endpoint=hi seed=$HI_SEED got=${hi_got:-} want=$HI hex=$(printf '%02x' "${hi_got:-0}")"
+      echo "verdict=reject hash=${hash:0:12} relation=range_coverage phase=reachability endpoint=hi seed=$HI_SEED got=${hi_got:-} want=$HI hex=$(printf '%02x' "${hi_got:-0}")"
       exit 1
     fi
+    reach_result=pass
   fi
 
-  probes=()
-  while read -r p; do probes+=("$p"); done < <(gen_probes)
-
+  contain_result=skip
   obs_min=""
   obs_max=""
   samples=0
-  while read -r v; do
-    [[ "$v" =~ ^[0-9]+$ ]] || continue
-    samples=$((samples + 1))
-    [[ -z "$obs_min" || "$v" -lt "$obs_min" ]] && obs_min="$v"
-    [[ -z "$obs_max" || "$v" -gt "$obs_max" ]] && obs_max="$v"
-  done < <(printf '%s\n' "${probes[@]}" | run_mode "$DRAW")
+  if [[ "$CONTAIN" == sweep ]]; then
+    probes=()
+    while read -r p; do probes+=("$p"); done < <(gen_probes)
 
-  [[ "$samples" -ge 1 ]] || {
-    echo "metamorphic-verify: range_coverage drew 0 samples" >&2
-    exit 2
-  }
+    while read -r v; do
+      [[ "$v" =~ ^[0-9]+$ ]] || continue
+      samples=$((samples + 1))
+      [[ -z "$obs_min" || "$v" -lt "$obs_min" ]] && obs_min="$v"
+      [[ -z "$obs_max" || "$v" -gt "$obs_max" ]] && obs_max="$v"
+    done < <(printf '%s\n' "${probes[@]}" | run_mode "$DRAW")
 
-  if [[ "$obs_min" -ne "$LO" || "$obs_max" -ne "$HI" ]]; then
-    echo "verdict=reject hash=${hash:0:12} relation=range_coverage observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples hex=$(printf '%02x' "$obs_max")"
-    exit 1
+    [[ "$samples" -ge 1 ]] || {
+      echo "metamorphic-verify: range_coverage drew 0 samples" >&2
+      exit 2
+    }
+
+    if [[ "$obs_min" -ne "$LO" || "$obs_max" -ne "$HI" ]]; then
+      echo "verdict=reject hash=${hash:0:12} relation=range_coverage phase=containment observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples hex=$(printf '%02x' "$obs_max")"
+      exit 1
+    fi
+    contain_result=pass
   fi
-  extra=""
-  [[ -n "$LO_SEED" ]] && extra=" lo_seed=$LO_SEED hi_seed=$HI_SEED"
-  echo "verdict=accept hash=${hash:0:12} relation=range_coverage observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples$extra"
+
+  extra=" reachability=$reach_result containment=$contain_result"
+  [[ "$REACH" == on ]] && extra="$extra lo_seed=$LO_SEED hi_seed=$HI_SEED"
+  if [[ "$CONTAIN" == sweep ]]; then
+    echo "verdict=accept hash=${hash:0:12} relation=range_coverage observed=[$obs_min,$obs_max] declared=[$LO,$HI] samples=$samples$extra"
+  else
+    echo "verdict=accept hash=${hash:0:12} relation=range_coverage declared=[$LO,$HI]$extra"
+  fi
   exit 0
 fi
 

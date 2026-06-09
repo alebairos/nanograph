@@ -30,11 +30,11 @@ The `+1` fix is a strippable block: the driver computes `span = max_len - min_le
 
 A new relation, `range_coverage`, in `fixtures/metamorphic/knuth_rand_len.req`. Neither `round_trip` nor `involution` fits a generator. The relation sweeps gb_flip seeds, each a `gb_init_rand(seed)` plus one `rand_len` draw, and asserts the observed `[min, max]` equals the declared `[lo, hi]`. The driver stays a pure generator; the verifier aggregates the sweep, so the relation is reusable for any bounded generator.
 
-**Endpoint witnesses (G37).** `knuth_rand_len.req` sets `lo_seed=22` and `hi_seed=2`. Isolated draws on the honest revision verify `draw(22)==1` and `draw(2)==10` before any sweep. That is the primary proof and is fully deterministic.
+**Reachability phase (G37/G38).** `knuth_rand_len.req` sets `reachability=on`, `lo_seed=22`, `hi_seed=2`. Isolated draws verify `draw(22)==1` and `draw(2)==10`. Deterministic. Reject names `phase=reachability`.
 
-**Sweep robustness.** After endpoints pass, 256 seeds are swept and the observed min/max must equal `[1,10]`. The sweep is a bound check, not the main witness.
+**Containment phase (G38).** `containment=sweep` runs after reachability. 256 seeds swept; observed min/max must equal `[1,10]`. Sampled bound check for over-reach. Reject names `phase=containment`.
 
-**Catch.** The buggy revision fails the `lo` endpoint first (`draw(22)` yields 2, not 1), witness `hex=02`. The backtest `rev2_offbyone` revision is the structural span-minus-one mutant from `mint-backtest.sh` (`RAND_LEN_BUG`). If endpoints were omitted, the sweep alone would still catch the bug (observed max 9), but endpoint-first semantics make the reject reason explicit and rerunnable.
+**Catch.** Buggy revision fails `phase=reachability` first (`draw(22)` yields 2, not 1), witness `hex=02`. `rev2_offbyone` is the span-minus-one mutant from `mint-backtest.sh` (`RAND_LEN_BUG`). Sweep alone would also catch it (max 9), but reachability fails first with an explicit witness.
 
 ## Mint
 

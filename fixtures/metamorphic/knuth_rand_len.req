@@ -4,5 +4,7 @@ draw=draw
 domain=knuth_rand_len
 lo=1
 hi=10
+reachability=on
+containment=sweep
 lo_seed=22
 hi_seed=2

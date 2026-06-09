@@ -78,6 +78,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G35 | Real Knuth canon backtest: rand_len off-by-one (range-coverage relation) | #55 | Done |
 | G36 | Fix CI red: align ca_eca.c _start so O2 SSE stores don't fault on native | #56 | Done |
 | G37 | Strengthen range_coverage with endpoint witnesses (re-mint G35 proof) | #57 | Done |
+| G38 | Split range_coverage into reachability and containment phases | #59 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -121,6 +122,8 @@ G35: the first real-Knuth-canon backtest. It runs Knuth's actual GB_FLIP generat
 
 G37: strengthens `range_coverage` so the proof is deterministic, not sweep-shaped. Optional `lo_seed` and `hi_seed` in `.req`; when both are set, `metamorphic-verify.sh` checks isolated `draw(lo_seed)==lo` and `draw(hi_seed)==hi` before the 256-seed sweep. The sweep remains a robustness bound check. G35 `knuth_rand_len.req` sets `lo_seed=22`, `hi_seed=2` (honest `22→1`, `2→10`). **Catch** on buggy rev: `draw(22)` yields 2 not 1, witness `hex=02`, `endpoint=lo`; `rev2_offbyone` is the structural span-minus-one mutant. Timeline accept/reject/accept unchanged; gate witness updated from sweep-only `09` to endpoint `02`. Documented in `docs/specs/METAMORPHIC-RELATIONS.md`, `fixtures/backtest/knuth-rand-len/CASE.md`, `docs/BACKTEST.md`. No `.ngb` remint (relation change is verifier-only).
 
+G38: splits `range_coverage` into named phases. `.req` keys `reachability=on|off` and `containment=sweep|off` (defaults: reachability on when both seeds set, containment sweep). Rejects name `phase=reachability` or `phase=containment`; accept reports `reachability=pass|skip containment=pass|skip`. G35 `knuth_rand_len.req` sets `reachability=on containment=sweep`. Under-reach bugs fail reachability first; over-reach would fail containment. Verifier-only; no `.ngb` remint. Gated `KNUTH-RAND-LEN` unchanged.
+
 G31: a second worked backtest case proves the G30 driver generalizes. `fixtures/metamorphic/leb128.c` is an unsigned LEB128 varint codec whose non-minimal-acceptance bug (`NONMINIMAL_OK`) is caught by the unchanged `round_trip` relation (`80 00` decodes to 0, re-encodes to `00`, witness hex `8000`); the only new verifier code is `gen_leb128`. With two cases, the G30 mint and gate were generalized to `scripts/mint-backtest.sh` and `scripts/check-backtest.sh` (parameterized by source, guard macro, manifest, reject hex), the utf8-specific scripts deleted, and `check-all-proofs.sh` calls the one gate twice (utf8 C080, leb128 8000). `docs/BACKTEST.md` adds the second case and a formal-mining plan for real upstream histories. No floor or format change.
 
 G30: promotes the throwaway backtest spike into a committed harness. [`../BACKTEST.md`](../BACKTEST.md) explains replaying a function's revisions and flagging the buggy window. `scripts/mint-backtest-utf8.sh` derives three revisions of the UTF-8 codec (honest, overlong bug, fix) from `fixtures/metamorphic/utf8.c` and mints committed `.ngb` via the factored `scripts/mint-one-elf.sh`. `scripts/backtest-relation.sh` is a relation-agnostic driver that replays a `timeline.manifest` (ordered committed `.ngb` plus expected verdict) and asserts the sequence. `scripts/check-backtest-utf8.sh` asserts the timeline reads accept, reject with witness C0 80, accept, and that the fix returns to revision one's hash; runner-guarded, gated in `check-all-proofs.sh`. The driver is reused by the future real-git-history backtest. No floor or format change.
@@ -155,6 +158,9 @@ Parked ideas, each needing a concrete reason before it earns a slot. Do not buil
 
 | Parked | Trigger to revive |
 | --- | --- |
+| G39 capnproto-base64 real-history backtest | ICP follow-through from G32 shortlist (`capnproto-base64.fit` 8/8) |
+| dna-reverse-complement involution specimen | Extend involution lane beyond bswap/reverse32 |
+| Second generator case (over-reach or finite domain only) | Cited real-history candidate with different failure mode than G35 |
 | Second program live eval (`add_two` exit-code) | A real task needs a non-print_42 patch verified live |
 | Multi-op micro-op set | A real edit shape beyond single-byte rodata appears |
 | Differential conformance (one binary, two specs) | A spec-collision risk shows up in practice |
@@ -209,3 +215,5 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #55 | G35 real Knuth-canon backtest, rand_len off-by-one |
 | #56 | G36 fix CI red, ca_eca.c _start stack alignment |
 | #57 | G37 strengthen range_coverage with endpoint witnesses |
+| #58 | Post-G37 backlog (umbrella, parked next goals) |
+| #59 | G38 split range_coverage reachability/containment phases |
