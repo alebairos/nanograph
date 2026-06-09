@@ -1,8 +1,8 @@
 {
-  "goal_id": "G41",
-  "current_issue": 61,
-  "milestone": "G41",
-  "product_proof_step": "G41-cosmo-parseip-backtest",
+  "goal_id": "G44",
+  "current_issue": 62,
+  "milestone": "G44",
+  "product_proof_step": "G44-cosmo-parseip-witness-strengthen",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G41 done (#61): cosmo ParseIp backtest; value_oracle relation; witness 3235352e3235352e3235352e323536 (255.255.255.256) buggy got=4294967040. Dedup cards parked=1. G42 ljson parked; G43 cancelled. Parked: dna-revcomp, second generator."
+    "note": "G44 done (#62): wrap witness 1.1.1.4294967297 hex=312e312e312e34323934393637323937 in gen_cosmo_parseip; buggy got=16843009. Timeline witness unchanged. G42 ljson parked."
   },
   "history": [
     {
@@ -228,6 +228,12 @@
       "milestone": "G41",
       "closed": "2026-06-09",
       "note": "cosmo ParseIp real-history backtest. cosmo_parseip.c transcribes net.ParseIp; IP_OVERFLOW_OK strippable; value_oracle wire=ascii; witness 255.255.255.256 hex=3235352e3235352e3235352e323536 buggy got=4294967040 honest REJECT. Timeline accept/reject/accept; gated COSMO-PARSEIP. score-case-fit parked=1 for dedup cards"
+    },
+    {
+      "issue": 62,
+      "milestone": "G44",
+      "closed": "2026-06-09",
+      "note": "G41 witness strengthen. Added wrap probe 1.1.1.4294967297 to gen_cosmo_parseip; hex=312e312e312e34323934393637323937 buggy got=16843009 honest REJECT. Verifier-only; timeline witness unchanged. CASE.md documents both witnesses and guard mapping"
     }
   ]
 }

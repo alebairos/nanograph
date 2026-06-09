@@ -82,6 +82,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G39 | capnproto decodeBase64 real-history backtest (ICP follow-through) | #60 | Done |
 | G40 | Mine llamafile-stack subcases + scorecards (Justine/Cosmopolitan) | — | Done (shortlist) |
 | G41 | cosmo ParseIp real-history backtest (Justine ICP follow-through) | #61 | Done |
+| G44 | Strengthen cosmo ParseIp value_oracle witness set (u32 wrap probe) | #62 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -163,10 +164,13 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G41 | cosmo `ParseIp` real-history backtest | `cosmo-parseip.fit` 8/8 | **16** | **Done** |
 | G42 | cosmo `ljson` overlong UTF-8 real-history backtest | `cosmo-ljson-overlong.fit` 7/8 | **7** | Parked |
 | G43 | cosmo `uleb64`/`unuleb64` synthetic `round_trip` backtest | `cosmo-uleb64.fit` 7/8 | **7** | Cancelled |
+| G44 | Strengthen G41 ParseIp `value_oracle` witness set | `cosmo-parseip.fit` (same) | n/a | **Done** |
 
 **G40** (shortlist). Follow-through from G32 mining on the Justine/llamafile ICP thread ([`docs/icps/justine-tunney.md`](../icps/justine-tunney.md)). Six scorecards, anti-fabrication SHAs verified via `gh api`. Active FIT survivor executed as G41. `parked=1` scorecards (`cosmo-decodebase64`, `cosmo-isutf8`, `cosmo-uleb64`) score `gate=PARKED` and are excluded from the queue. NOT-A-FIT: `llamafile-inference` (`observable=0`). Score with `scripts/score-case-fit.sh fixtures/fit-cases/<name>.fit`. No floor or format change.
 
-**G41** (done). `jart/cosmopolitan` `ParseIp` (`net/http/parseip.c`). Integer overflow on `b *= 10; b += digit` before fix `c995838`; parent `539bddc`. New `value_oracle` relation; `fixtures/metamorphic/cosmo_parseip.c` behind trusted driver. **Catch** on `255.255.255.256` (`hex=3235352e3235352e3235352e323536`): buggy returns `4294967040`, honest returns `REJECT`. Timeline accept/reject/accept; gated `COSMO-PARSEIP`. `fixtures/backtest/cosmo-parseip/CASE.md`, root `THIRD-PARTY.md`.
+**G41** (done). `jart/cosmopolitan` `ParseIp` (`net/http/parseip.c`). Integer overflow on `b *= 10; b += digit` before fix `c995838`; parent `539bddc`. New `value_oracle` relation; `fixtures/metamorphic/cosmo_parseip.c` behind trusted driver. **Catch** on `255.255.255.256` (`hex=3235352e3235352e3235352e323536`): buggy returns `4294967040`, honest returns `REJECT`. Timeline accept/reject/accept; gated `COSMO-PARSEIP`. `fixtures/backtest/cosmo-parseip/CASE.md`, root `THIRD-PARTY.md`. Post-ship review (#62): primary witness exercises `> 255` only; overflow builtins unprobed.
+
+**G44** (done, #62). Verifier-only strengthen of G41 `value_oracle` probe set. Added wrap witness `1.1.1.4294967297` (`hex=312e312e312e34323934393637323937`): buggy returns `16843009` (silent `1.1.1.1`), honest `REJECT`. Exercises u32 wrap path the range witness misses. No `.ngb` remint; backtest timeline witness stays `255.255.255.256`.
 
 **G42** (parked). `jart/cosmopolitan` `ljson` string UTF-8 (`tool/net/ljson.c`). Overlong acceptance hole before `baf51a4`; parent `ccd057a`. Sharper fix commit than G41's omnibus `c995838`. Revive only when a second Justine-stack proof is explicitly wanted.
 
@@ -240,4 +244,5 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #59 | G38 split range_coverage reachability/containment phases |
 | #60 | G39 capnproto decodeBase64 real-history backtest |
 | #61 | G41 cosmo ParseIp real-history backtest |
+| #62 | G44 strengthen G41 ParseIp value_oracle witness set (u32 wrap) |
 | — | G40 llamafile-stack subcase mining + scorecards (shortlist) |

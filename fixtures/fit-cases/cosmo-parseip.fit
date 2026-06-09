@@ -5,4 +5,4 @@ observable=2
 silent_survival=2
 criticality=2
 relation=value_oracle
-note=jart/cosmopolitan ParseIp net/http/parseip.c integer overflow on digit parse. Fix c995838 parent 539bddc. Witness 255.255.255.256 hex=3235352e3235352e3235352e323536; buggy got=4294967040 honest REJECT. G41 done.
+note=jart/cosmopolitan ParseIp net/http/parseip.c integer overflow on digit parse. Fix c995838 parent 539bddc. Witnesses: 255.255.255.256 hex=3235352e3235352e3235352e323536 (range); 1.1.1.4294967297 hex=312e312e312e34323934393637323937 (wrap). G41+G44 done.
