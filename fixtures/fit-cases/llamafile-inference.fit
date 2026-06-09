@@ -1,0 +1,8 @@
+name=llamafile-inference
+oracle_hardness=2
+property_checkable=0
+observable=0
+silent_survival=1
+criticality=2
+relation=none
+note=Mozilla-Ocho/llamafile whole product. GPU FP stochastic inference; correctness not argv/stdout bounded. NOT-A-FIT cautionary row like robotics-control-loop.

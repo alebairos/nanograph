@@ -1,0 +1,9 @@
+name=cosmo-uleb64
+parked=1
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=1
+criticality=1
+relation=round_trip
+note=jart/cosmopolitan libc/fmt/uleb64.c+unuleb64.c inverse pair. Permissive decode accepts non-minimal per unuleb64_test.c. No verified fix commit; synthetic backtest lane like G31 leb128.

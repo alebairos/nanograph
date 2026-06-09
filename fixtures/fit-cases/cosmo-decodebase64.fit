@@ -1,0 +1,9 @@
+name=cosmo-decodebase64
+parked=1
+oracle_hardness=2
+property_checkable=2
+observable=1
+silent_survival=2
+criticality=1
+relation=round_trip
+note=jart/cosmopolitan net/http/decodebase64.c silently skips invalid chars by design. Same class as G39 capnproto-base64; park unless Justine-stack narrative needed after G41.

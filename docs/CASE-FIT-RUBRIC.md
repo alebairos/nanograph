@@ -52,7 +52,7 @@ Payment conservation is the bullseye, fit and most critical. The robotics contro
 scripts/score-case-fit.sh fixtures/fit-cases/payment-conservation.fit
 ```
 
-Exit 0 means the gate passed, exit 1 means NOT-A-FIT, exit 2 means the scorecard is malformed. Write a `.fit` for any candidate, score it, and only commit a goal for cases that pass the gate. Rank the survivors by priority.
+Exit 0 means the gate passed, exit 1 means NOT-A-FIT, exit 2 means the scorecard is malformed, exit 3 means `parked=1` (scored for reference but excluded from the active queue). Write a `.fit` for any candidate, score it, and only commit a goal for cases that pass the gate. Rank the survivors by priority.
 
 ## Scope honesty
 

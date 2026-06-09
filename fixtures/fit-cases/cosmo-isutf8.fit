@@ -1,0 +1,9 @@
+name=cosmo-isutf8
+parked=1
+oracle_hardness=2
+property_checkable=1
+observable=2
+silent_survival=2
+criticality=1
+relation=accept_reject
+note=jart/cosmopolitan libc/str/isutf8.c validator rejects overlong C0 80 per isutf8_test.c. Same bug class as G27 utf8.c demo; weak differentiation.

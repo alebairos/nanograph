@@ -31,6 +31,7 @@ done
 
 name="$(getval name)"
 relation="$(getval relation)"
+parked="$(getval parked)"
 
 fit_score=$(( oracle_hardness + property_checkable + observable + silent_survival ))
 priority=$(( fit_score * criticality ))
@@ -48,6 +49,11 @@ printf '  %-18s  %d\n' property_checkable "$property_checkable"
 printf '  %-18s  %d\n' observable "$observable"
 printf '  %-18s  %d\n' silent_survival "$silent_survival"
 printf '  --------------------------------\n'
+
+if [[ "$parked" == "1" || "$parked" == "true" ]]; then
+  printf '  gate=PARKED fit_score=%d/8 criticality=%d priority=%d\n' "$fit_score" "$criticality" "$priority"
+  exit 3
+fi
 
 if [[ -z "$zero_factors" ]]; then
   printf '  gate=FIT fit_score=%d/8 criticality=%d priority=%d\n' "$fit_score" "$criticality" "$priority"
