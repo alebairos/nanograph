@@ -1,0 +1,4 @@
+req=fixtures/metamorphic/cosmo_parseip.req
+rev=rev1_honest   ngb=fixtures/backtest/cosmo-parseip/cosmo_parseip_rev1.ngb   expect=accept
+rev=rev2_overflow ngb=fixtures/backtest/cosmo-parseip/cosmo_parseip_rev2.ngb   expect=reject
+rev=rev3_fix      ngb=fixtures/backtest/cosmo-parseip/cosmo_parseip_rev3.ngb   expect=accept

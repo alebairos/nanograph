@@ -63,6 +63,16 @@ gen_capnproto_base64() {
   printf '%s\n' Zm9v Y29yZ2U= Zm9v@ Y29yZ2U==
 }
 
+gen_cosmo_parseip() {
+  printf '%s\n' \
+    '0.0.0.0 0' \
+    '10.0.0.1 167772161' \
+    '127.0.0.1 2130706433' \
+    '192.168.1.1 3232235777' \
+    '255.255.255.255 4294967295' \
+    '255.255.255.256 REJECT'
+}
+
 # gb_flip seeds. Each is one gb_init_rand(seed) + one rand_len draw; the sweep
 # samples the draw's range. The honest range reaches max_len, the buggy one
 # (off-by-one span) never does, so the observed maximum separates them.
@@ -79,6 +89,7 @@ gen_probes() {
     knuth_sgb) gen_knuth_sgb ;;
     wabt_leb128) gen_wabt_leb128 ;;
     capnproto_base64) gen_capnproto_base64 ;;
+    cosmo_parseip) gen_cosmo_parseip ;;
     knuth_rand_len) gen_knuth_rand_len ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
@@ -238,6 +249,62 @@ if [[ "$RELATION" == round_trip ]]; then
     exit 2
   }
   echo "verdict=accept hash=${hash:0:12} relation=round_trip accepted=$accepted separator=none"
+  exit 0
+fi
+
+if [[ "$RELATION" == value_oracle ]]; then
+  MODE="$(reqval mode)"
+  REJECT="$(reqval reject)"
+  WIRE="$(reqval wire)"
+  [[ -n "$MODE" && -n "$REJECT" ]] || {
+    echo "metamorphic-verify: value_oracle needs mode, reject in $REQ" >&2
+    exit 2
+  }
+
+  ips=()
+  expects=()
+  while read -r line; do
+    [[ -z "$line" ]] && continue
+    ips+=("${line%% *}")
+    expects+=("${line#* }")
+  done < <(gen_probes)
+
+  gots=()
+  while read -r g; do gots+=("$g"); done < <(printf '%s\n' "${ips[@]}" | run_mode "$MODE")
+
+  matched=0
+  for i in "${!ips[@]}"; do
+    ip="${ips[$i]}"
+    want="${expects[$i]}"
+    got="${gots[$i]:-}"
+    if [[ "$want" == "$REJECT" ]]; then
+      [[ "$got" == "$REJECT" ]] && matched=$((matched + 1)) && continue
+    else
+      [[ "$got" == "$want" ]] && matched=$((matched + 1)) && continue
+    fi
+    got2="$(./scripts/run-linux-elf-capture.sh "$CAND" "$MODE" "$ip" 2>/dev/null || true)"
+    if [[ "$want" == "$REJECT" ]]; then
+      [[ -n "$got2" && "$got2" != "$REJECT" ]] || continue
+    else
+      [[ "$got2" == "$want" ]] && continue
+    fi
+    if [[ "$WIRE" == ascii ]]; then
+      hexw="$(printf '%s' "$ip" | hexdump -ve '1/1 "%02x"')"
+    elif [[ "$WIRE" == hex ]]; then
+      hexw="$ip"
+    else
+      hexb="$(printf '%X' "$ip")"
+      hexw="${hexb:1}"
+    fi
+    echo "verdict=reject hash=${hash:0:12} relation=value_oracle witness bytes=$ip hex=$hexw want=$want got=$got2"
+    exit 1
+  done
+
+  [[ "$matched" -ge 1 ]] || {
+    echo "metamorphic-verify: value_oracle matched 0 cases" >&2
+    exit 2
+  }
+  echo "verdict=accept hash=${hash:0:12} relation=value_oracle matched=$matched separator=none"
   exit 0
 fi
 
