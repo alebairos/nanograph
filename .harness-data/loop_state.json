@@ -1,8 +1,8 @@
 {
-  "goal_id": "G38",
-  "current_issue": 59,
-  "milestone": "G38",
-  "product_proof_step": "G38-range-coverage-phase-split",
+  "goal_id": "G39",
+  "current_issue": 60,
+  "milestone": "G39",
+  "product_proof_step": "G39-capnproto-base64-backtest",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G38 done (#59): split range_coverage into reachability and containment phases. .req keys reachability=on|off containment=sweep|off; rejects phase=reachability|containment; accept reachability=pass|skip containment=pass|skip. knuth_rand_len.req reachability=on containment=sweep. G35 backtest unchanged hex=02. Verifier-only, no .ngb remint. Umbrella #58 updated. Parked: G39 capnproto-base64, dna-revcomp, second generator, live eval add_two."
+    "note": "G39 done (#60): capnproto decodeBase64 real-history backtest. capnproto_base64.c + round_trip wire=ascii; witness hex=5a6d397640 (Zm9v@). mint-backtest INVALID_OK; gated CAPNPROTO-BASE64. Umbrella #58 updated. Parked: dna-revcomp, second generator, live eval add_two."
   },
   "history": [
     {
@@ -216,6 +216,12 @@
       "milestone": "G38",
       "closed": "2026-06-09",
       "note": "Split range_coverage into reachability and containment phases. .req reachability=on|off containment=sweep|off; rejects phase=reachability|containment; accept reachability=pass|skip containment=pass|skip. knuth_rand_len.req reachability=on containment=sweep. G35 backtest unchanged hex=02. Verifier-only; no .ngb remint"
+    },
+    {
+      "issue": 60,
+      "milestone": "G39",
+      "closed": "2026-06-09",
+      "note": "capnproto decodeBase64 real-history backtest (G32 follow-through). capnproto_base64.c transcribes libb64 encode/decode; INVALID_OK strippable + -D for rev2; wire=ascii witness 5a6d397640 (Zm9v@). Timeline accept/reject/accept; gated CAPNPROTO-BASE64"
     }
   ]
 }

@@ -29,7 +29,7 @@ eq=exact
 | Relation | Property | Status |
 | --- | --- | --- |
 | `involution` | `f(f(x)) == x` | **Done** (G24) |
-| `round_trip` | `encode(decode(b)) == b` over accepted byte sequences | Implemented (G27 utf8, G31 leb128) |
+| `round_trip` | `encode(decode(b)) == b` over accepted byte sequences | Implemented (G27 utf8, G31 leb128, G34 wabt, G39 capnproto) |
 | `range_coverage` | reachability (`lo_seed`/`hi_seed`) plus containment (sweep min/max) | Implemented (G35 knuth_rand_len; G37 endpoints; G38 named phases) |
 | `idempotent` | `f(f(x)) == f(x)` | Named, unimplemented |
 | `commutative` | `f(a,b) == f(b,a)` | Named, unimplemented |
@@ -106,6 +106,10 @@ The unit test stays green. NanoGraph rejects with a witness that names the offen
 ## Round-trip on a second codec (G31, LEB128)
 
 The same `round_trip` relation, unchanged, catches a second codec's bug. `fixtures/metamorphic/leb128.c` is an unsigned LEB128 varint `enc`/`dec` codec with the same `0x01 ++ bytes` packing, capped to four varint bytes. The honest decoder rejects non-minimal encodings. `NONMINIMAL_OK` drops the minimality check, the classic varint hole where `80 00` decodes to zero. `leb128.req` declares `domain=leb128`, the only new code is `gen_leb128` in the verifier. The relation rejects the buggy revision with witness `hex=8000`: `80 00` decodes to 0 and re-encodes to the canonical `00`. This is the proof that the relation and the backtest driver generalize across codecs, not just utf8. See [`../BACKTEST.md`](../BACKTEST.md).
+
+## Round-trip on base64 strings (G39, capnproto)
+
+The same `round_trip` relation catches capnproto's libb64-derived `decodeBase64` bug. `fixtures/metamorphic/capnproto_base64.c` vendors encode/decode from capnproto `encoding.c++` into freestanding C. Pre-fix decode skipped invalid bytes; fix `f3e0ed2` reports `hadErrors`. `capnproto_base64.req` declares `domain=capnproto_base64` and `wire=ascii` so probes are base64 strings and witness hex is the ASCII byte encoding (`Zm9v@` → `5a6d397640`). The relation rejects the buggy revision: `Zm9v@` decodes to `foo` and re-encodes to `Zm9v`. See `fixtures/backtest/capnproto-base64/CASE.md`.
 
 ## Range coverage on a generator (G35, G37, G38)
 
