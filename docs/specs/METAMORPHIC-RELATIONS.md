@@ -30,6 +30,7 @@ eq=exact
 | --- | --- | --- |
 | `involution` | `f(f(x)) == x` | **Done** (G24) |
 | `round_trip` | `encode(decode(b)) == b` over accepted byte sequences | Implemented (G27 utf8, G31 leb128, G34 wabt, G39 capnproto) |
+| `value_oracle` | `parse(s) == expected` over a probe table | Implemented (G41 cosmo_parseip) |
 | `range_coverage` | reachability (`lo_seed`/`hi_seed`) plus containment (sweep min/max) | Implemented (G35 knuth_rand_len; G37 endpoints; G38 named phases) |
 | `idempotent` | `f(f(x)) == f(x)` | Named, unimplemented |
 | `commutative` | `f(a,b) == f(b,a)` | Named, unimplemented |
@@ -110,6 +111,10 @@ The same `round_trip` relation, unchanged, catches a second codec's bug. `fixtur
 ## Round-trip on base64 strings (G39, capnproto)
 
 The same `round_trip` relation catches capnproto's libb64-derived `decodeBase64` bug. `fixtures/metamorphic/capnproto_base64.c` vendors encode/decode from capnproto `encoding.c++` into freestanding C. Pre-fix decode skipped invalid bytes; fix `f3e0ed2` reports `hadErrors`. `capnproto_base64.req` declares `domain=capnproto_base64` and `wire=ascii` so probes are base64 strings and witness hex is the ASCII byte encoding (`Zm9v@` → `5a6d397640`). The relation rejects the buggy revision: `Zm9v@` decodes to `foo` and re-encodes to `Zm9v`. See `fixtures/backtest/capnproto-base64/CASE.md`.
+
+## Value oracle on ParseIp (G41, cosmopolitan)
+
+`value_oracle` checks `parse(s) == expected` over a fixed probe table with no computed oracle. `fixtures/metamorphic/cosmo_parseip.c` transcribes cosmopolitan `ParseIp`. `cosmo_parseip.req` declares `mode=dec`, `wire=ascii`, and `gen_cosmo_parseip` supplies six `ip expected` pairs. Witness `255.255.255.256` (`hex=3235352e3235352e3235352e323536`). Buggy rev returns `4294967040`; honest rev returns `REJECT`. See `fixtures/backtest/cosmo-parseip/CASE.md`.
 
 ## Range coverage on a generator (G35, G37, G38)
 

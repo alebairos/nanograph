@@ -14,6 +14,10 @@ The Stanford GraphBase by Donald E. Knuth, mirror https://github.com/ascherer/sg
 
 The WebAssembly Binary Toolkit, https://github.com/WebAssembly/wabt , Apache-2.0. `fixtures/metamorphic/wabt_leb128.c` is a freestanding C transcription of `ReadU64Leb128` from `src/leb128.cc` and its real too-big-u64 mask bug (`0xf0` vs `0xfe`, fix `f1f3d6d` / PR #2256, buggy parent `89582f5`). It is not a verbatim build of wabt's C++. The decode arithmetic, masks, and bug are wabt's; `_start`, the hex parse, and print are our trusted driver. See `fixtures/backtest/wabt-leb128/CASE.md`.
 
+## Cosmopolitan / ParseIp (G41)
+
+Cosmopolitan Libc by Justine Alexandra Roberts Tunney, https://github.com/jart/cosmopolitan . `fixtures/metamorphic/cosmo_parseip.c` is a freestanding C transcription of `ParseIp` from `net/http/parseip.c`. Parent `539bddc` allowed octet digit overflow; fix `c995838` adds overflow guards. The parse loop is cosmopolitan's; `_start`, argv parse, and print are our trusted driver. See `fixtures/backtest/cosmo-parseip/CASE.md`.
+
 ## Cap'n Proto / kj (G39)
 
 Cap'n Proto, https://github.com/capnproto/capnproto . `fixtures/metamorphic/capnproto_base64.c` is a freestanding C transcription of libb64-derived base64 encode/decode from `c++/src/kj/encoding.c++` (public-domain libb64 core). Parent `9306bc0` silently skipped invalid and padding bytes; fix `f3e0ed2` (PR #595) reports `hadErrors`. The permissive skip-invalid loop and the strict WHATWG-aligned checks are capnproto's; `_start`, argv parse, and print are our trusted driver. See `fixtures/backtest/capnproto-base64/CASE.md`.

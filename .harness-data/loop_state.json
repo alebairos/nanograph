@@ -1,8 +1,8 @@
 {
-  "goal_id": "G39",
-  "current_issue": 60,
-  "milestone": "G39",
-  "product_proof_step": "G39-capnproto-base64-backtest",
+  "goal_id": "G41",
+  "current_issue": 61,
+  "milestone": "G41",
+  "product_proof_step": "G41-cosmo-parseip-backtest",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G39 done (#60): capnproto decodeBase64 real-history backtest. capnproto_base64.c + round_trip wire=ascii; witness hex=5a6d397640 (Zm9v@). mint-backtest INVALID_OK; gated CAPNPROTO-BASE64. Umbrella #58 updated. Parked: dna-revcomp, second generator, live eval add_two."
+    "note": "G41 done (#61): cosmo ParseIp backtest; value_oracle relation; witness 3235352e3235352e3235352e323536 (255.255.255.256) buggy got=4294967040. Dedup cards parked=1. G42 ljson parked; G43 cancelled. Parked: dna-revcomp, second generator."
   },
   "history": [
     {
@@ -222,6 +222,12 @@
       "milestone": "G39",
       "closed": "2026-06-09",
       "note": "capnproto decodeBase64 real-history backtest (G32 follow-through). capnproto_base64.c transcribes libb64 encode/decode; INVALID_OK strippable + -D for rev2; wire=ascii witness 5a6d397640 (Zm9v@). Timeline accept/reject/accept; gated CAPNPROTO-BASE64"
+    },
+    {
+      "issue": 61,
+      "milestone": "G41",
+      "closed": "2026-06-09",
+      "note": "cosmo ParseIp real-history backtest. cosmo_parseip.c transcribes net.ParseIp; IP_OVERFLOW_OK strippable; value_oracle wire=ascii; witness 255.255.255.256 hex=3235352e3235352e3235352e323536 buggy got=4294967040 honest REJECT. Timeline accept/reject/accept; gated COSMO-PARSEIP. score-case-fit parked=1 for dedup cards"
     }
   ]
 }

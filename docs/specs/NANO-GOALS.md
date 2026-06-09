@@ -80,6 +80,8 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G37 | Strengthen range_coverage with endpoint witnesses (re-mint G35 proof) | #57 | Done |
 | G38 | Split range_coverage into reachability and containment phases | #59 | Done |
 | G39 | capnproto decodeBase64 real-history backtest (ICP follow-through) | #60 | Done |
+| G40 | Mine llamafile-stack subcases + scorecards (Justine/Cosmopolitan) | — | Done (shortlist) |
+| G41 | cosmo ParseIp real-history backtest (Justine ICP follow-through) | #61 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -153,7 +155,22 @@ Shared machinery (`op=eca`, `conf-eval`, `ca_eca.c`, `mint-ca-fixtures.sh`, conf
 
 ## Next goals
 
-The three-track backtest arc is complete: G33 synthetic, G34 third-party real-history (wabt), G35 real Knuth canon. No backtest goal is queued next; revive a parked idea below when its trigger fires.
+G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://github.com/jart) code (Cosmopolitan libc inside [llamafile](https://builders.mozilla.org/project/llamafile/), not the inference runtime). The whole product is NOT-A-FIT (`llamafile-inference.fit`, `observable=0`). FIT survivors are ranked by `priority = fit_score * criticality` from committed scorecards in `fixtures/fit-cases/`.
+
+| ID | Goal | Scorecard | Priority | Status |
+| --- | --- | --- | --- | --- |
+| G40 | Mine llamafile-stack subcases + scorecards | six `.fit` files | n/a | **Done** (shortlist) |
+| G41 | cosmo `ParseIp` real-history backtest | `cosmo-parseip.fit` 8/8 | **16** | **Done** |
+| G42 | cosmo `ljson` overlong UTF-8 real-history backtest | `cosmo-ljson-overlong.fit` 7/8 | **7** | Parked |
+| G43 | cosmo `uleb64`/`unuleb64` synthetic `round_trip` backtest | `cosmo-uleb64.fit` 7/8 | **7** | Cancelled |
+
+**G40** (shortlist). Follow-through from G32 mining on the Justine/llamafile ICP thread ([`docs/icps/justine-tunney.md`](../icps/justine-tunney.md)). Six scorecards, anti-fabrication SHAs verified via `gh api`. Active FIT survivor executed as G41. `parked=1` scorecards (`cosmo-decodebase64`, `cosmo-isutf8`, `cosmo-uleb64`) score `gate=PARKED` and are excluded from the queue. NOT-A-FIT: `llamafile-inference` (`observable=0`). Score with `scripts/score-case-fit.sh fixtures/fit-cases/<name>.fit`. No floor or format change.
+
+**G41** (done). `jart/cosmopolitan` `ParseIp` (`net/http/parseip.c`). Integer overflow on `b *= 10; b += digit` before fix `c995838`; parent `539bddc`. New `value_oracle` relation; `fixtures/metamorphic/cosmo_parseip.c` behind trusted driver. **Catch** on `255.255.255.256` (`hex=3235352e3235352e3235352e323536`): buggy returns `4294967040`, honest returns `REJECT`. Timeline accept/reject/accept; gated `COSMO-PARSEIP`. `fixtures/backtest/cosmo-parseip/CASE.md`, root `THIRD-PARTY.md`.
+
+**G42** (parked). `jart/cosmopolitan` `ljson` string UTF-8 (`tool/net/ljson.c`). Overlong acceptance hole before `baf51a4`; parent `ccd057a`. Sharper fix commit than G41's omnibus `c995838`. Revive only when a second Justine-stack proof is explicitly wanted.
+
+**G43** (cancelled). `cosmo-uleb64` synthetic lane duplicates G31 leb128 with no verified fix SHA. Scorecard kept with `parked=1` for reference only.
 
 The retry-reduction line is closed (G14). G16 closes the repo-leakage gap for live eval. The proven claim is integrity plus execution-grounded conformance, and it stands on the deterministic suite without a live-agent number.
 
@@ -161,6 +178,7 @@ Parked ideas, each needing a concrete reason before it earns a slot. Do not buil
 
 | Parked | Trigger to revive |
 | --- | --- |
+| G42 cosmo ljson overlong UTF-8 backtest | Second Justine-stack proof explicitly wanted (sharper fix commit than G41) |
 | dna-reverse-complement involution specimen | Extend involution lane beyond bswap/reverse32 |
 | Second generator case (over-reach or finite domain only) | Cited real-history candidate with different failure mode than G35 |
 | Second program live eval (`add_two` exit-code) | A real task needs a non-print_42 patch verified live |
@@ -168,6 +186,7 @@ Parked ideas, each needing a concrete reason before it earns a slot. Do not buil
 | Differential conformance (one binary, two specs) | A spec-collision risk shows up in practice |
 | Portable verdict bundle (JSON) | An external auditor needs to verify without re-running probes |
 | Zerolang MIR seam (spike) | An external intent source wants to feed the conformance floor |
+| Cosmopolitan APE runner spike | macOS-native proof runs without qemu/Docker; tooling-only first |
 
 ## Completed product proof
 
@@ -220,3 +239,5 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #58 | Post-G37 backlog (umbrella, parked next goals) |
 | #59 | G38 split range_coverage reachability/containment phases |
 | #60 | G39 capnproto decodeBase64 real-history backtest |
+| #61 | G41 cosmo ParseIp real-history backtest |
+| — | G40 llamafile-stack subcase mining + scorecards (shortlist) |
