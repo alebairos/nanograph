@@ -74,7 +74,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G31 | Second backtest case (LEB128 varint) + generalize backtest scripts | #51 | Done |
 | G32 | Mine real-history backtest candidates (standalone permissive codecs) | #52 | Done |
 | G33 | Synthetic Knuth-shaped portability backtest (models save_graph erratum, no SGB bytes) | #53 | Done |
-| G34 | wabt ReadU64Leb128 real-history backtest (ICP follow-through) | #54 | Parked |
+| G34 | wabt ReadU64Leb128 real-history backtest (ICP follow-through) | #54 | Done |
 | G35 | Real Knuth canon backtest: rand_len off-by-one (range-coverage relation) | #55 | Parked |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
@@ -111,7 +111,7 @@ G32: executes stages 1-3 of the formal-mining plan for the standalone-codec lead
 
 G33: a synthetic, Knuth-shaped portability backtest. **It does not run Knuth's bytes.** It models the `save_graph` erratum (Stanford GraphBase page 414, December 2025), where `fopen(f,"w")` let Windows text mode expand internal `\n` to `\r\n` so a graph saved on Windows could not `restore_graph` on Linux; Knuth changed it to `fopen(f,"wb")`. The trusted driver `fixtures/metamorphic/knuth_sgb.c` is code we wrote that reconstructs the erratum with a `BUGGY_TEXTMODE` macro, because the bug is Windows-only and the Linux runner cannot observe the real defect. The SGB SHAs `c0943fd` (buggy) and `88fac2f` (fix) are provenance for the story, not inputs to the proof. What G33 actually proves is that the G30/G31 backtest pipeline generalizes to a third `round_trip` domain (`knuth_sgb`) with one driver and one `gen_` line. **Catch** on probe `266` (`0x01 0x0A`), witness hex `0A`; timeline accept, reject, accept; fix hash matches rev1. `fixtures/backtest/knuth-sgb/CASE.md`, root `THIRD-PARTY.md`, gated in `check-all-proofs.sh`. No floor or format change. The credibility claim that G33 verified canon was withdrawn; the real-Knuth proof is G35.
 
-G34: parked follow-through from G32. wabt `ReadU64Leb128` (parent `89582f5` to fix `f1f3d6d`), silent too-big-u64 LEB128 acceptance `round_trip` catches. The first true real-history backtest: a real function, a real silent bug, native on the Linux runner, no simulation.
+G34: the first true real-history backtest, follow-through from G32. wabt `ReadU64Leb128` (parent `89582f5` to fix `f1f3d6d` / PR #2256). The 10th byte of a u64 LEB128 may set only bit 0; the overflow check used `p[9] & 0xf0` (copied from the u32 path), which misses bits 1..3, so a 10-byte LEB128 above u64 max was silently accepted and truncated. Fix changes the mask to `0xfe`. `fixtures/metamorphic/wabt_leb128.c` transcribes wabt's decode arithmetic and the real mask faithfully into freestanding C behind a trusted driver (the G26 standard); it is not a verbatim build of wabt's C++, which is not freestanding. The fix is a strippable block (base `0xf0`, honest adds `0x0e`), so `mint-backtest.sh` derives the buggy revision. A new `wire=hex` carries the 10-byte input as a hex argv token. **Catch** on witness `ffffffffffffffffff02`; the buggy revision decodes it to the truncated `9223372036854775807`, the honest revision rejects it, both accept u64 max `ffffffffffffffffff01`. Timeline accept, reject, accept; fix hash matches rev1; gated `WABT-LEB128` in `check-all-proofs`. `fixtures/backtest/wabt-leb128/CASE.md`, root `THIRD-PARTY.md`.
 
 G35: the real Knuth-canon backtest, parked. Target is the documented "embarrassing off-by-one" in `gb_rand.w` (`rand_len`, errata page 388, fixed 1999). Buggy `min_len+gb_unif_rand(max_len-min_len)` yields a length in `[min,max-1]` and never reaches `max`; the fix adds `+1`. Mirror `ascherer/sgb` `fd99287` (1992 initial, buggy) to `65433e2` (2002-01-30, fixed), both verified to differ only by the `+1`. Unlike G33 this runs Knuth's actual integer arithmetic with no simulation: `gb_flip` plus `rand_len` is pure computation, no libc, no platform dependency, vendorable freestanding. The bug is silent (graphs still look valid, the max length is just never drawn) and deterministic under a fixed `gb_flip` seed. The cost is a new relation: it is not `round_trip` or `involution` but a range-coverage property (the empirical maximum over a seed sweep must equal `max`). That new relation in `metamorphic-verify`, plus vendoring `gb_flip`, is why G35 is its own goal, not a relabel.
 
@@ -141,8 +141,6 @@ Shared machinery (`op=eca`, `conf-eval`, `ca_eca.c`, `mint-ca-fixtures.sh`, conf
 
 ## Next goals
 
-**G34 (parked).** wabt `ReadU64Leb128` real-history backtest. The first true real-history proof, real function plus real silent bug, native on the runner.
-
 **G35 (parked).** Real Knuth-canon backtest on the `rand_len` off-by-one. Runs Knuth's actual arithmetic, needs a new range-coverage relation.
 
 The retry-reduction line is closed (G14). G16 closes the repo-leakage gap for live eval. The proven claim is integrity plus execution-grounded conformance, and it stands on the deterministic suite without a live-agent number.
@@ -151,8 +149,7 @@ Parked ideas, each needing a concrete reason before it earns a slot. Do not buil
 
 | Parked | Trigger to revive |
 | --- | --- |
-| G34 wabt ReadU64Leb128 real-history backtest | The first true real-history proof; pick up next |
-| G35 rand_len off-by-one (real Knuth canon) | A range-coverage relation earns its place, after G34 |
+| G35 rand_len off-by-one (real Knuth canon) | A range-coverage relation earns its place; pick up next |
 | Second program live eval (`add_two` exit-code) | A real task needs a non-print_42 patch verified live |
 | Multi-op micro-op set | A real edit shape beyond single-byte rodata appears |
 | Differential conformance (one binary, two specs) | A spec-collision risk shows up in practice |

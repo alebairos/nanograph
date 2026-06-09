@@ -49,12 +49,21 @@ gen_knuth_sgb() {
   printf '%s\n' 257 266 321 21039682 98305
 }
 
+# LEB128 byte sequences as lowercase hex (the wire is the byte string, not a
+# packed integer, so a 10-byte u64 LEB128 fits). Canonical entries round-trip;
+# the last is a too-big 10-byte form (10th byte 0x02) a correct decoder rejects.
+gen_wabt_leb128() {
+  printf '%s\n' 00 7f 8001 e58e26 80808080808080808001 ffffffffffffffffff01 \
+    ffffffffffffffffff02
+}
+
 gen_probes() {
   case "$DOMAIN" in
     u32) gen_u32 ;;
     utf8) gen_utf8 ;;
     leb128) gen_leb128 ;;
     knuth_sgb) gen_knuth_sgb ;;
+    wabt_leb128) gen_wabt_leb128 ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }
@@ -74,6 +83,7 @@ if [[ "$RELATION" == round_trip ]]; then
   ENCODE="$(reqval encode)"
   DECODE="$(reqval decode)"
   REJECT="$(reqval reject)"
+  WIRE="$(reqval wire)"
   [[ -n "$ENCODE" && -n "$DECODE" && -n "$REJECT" ]] || {
     echo "metamorphic-verify: round_trip needs encode, decode, reject in $REQ" >&2
     exit 2
@@ -109,8 +119,8 @@ if [[ "$RELATION" == round_trip ]]; then
       [[ -z "$cp2" || "$cp2" == "$REJECT" ]] && continue
       b3="$(./scripts/run-linux-elf-capture.sh "$CAND" "$ENCODE" "$cp2" 2>/dev/null || true)"
       if [[ "$b3" != "$b" ]]; then
-        hexb="$(printf '%X' "$b")"
-        echo "verdict=reject hash=${hash:0:12} relation=round_trip witness bytes=$b hex=${hexb:1} decode=$cp2 reencode=$b3"
+        if [[ "$WIRE" == hex ]]; then hexw="$b"; else hexb="$(printf '%X' "$b")"; hexw="${hexb:1}"; fi
+        echo "verdict=reject hash=${hash:0:12} relation=round_trip witness bytes=$b hex=$hexw decode=$cp2 reencode=$b3"
         exit 1
       fi
     fi
