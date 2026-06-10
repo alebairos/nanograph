@@ -140,6 +140,11 @@ gen_ca_flow90() {
   printf '%s\n' '1 2 5' '2 2 7' '1 3 42' '2 3 13'
 }
 
+# n m seed; n=48 triggers partial token path in zig_wyhash.c (PARTIAL_N).
+gen_zig_wyhash() {
+  printf '%s\n' '48 10 5' '48 12 7' '48 8 42' '48 15 13'
+}
+
 popcount_u() {
   local v="$1" c=0
   while ((v > 0)); do
@@ -169,6 +174,7 @@ gen_probes() {
     ca_step90) gen_ca_step90 ;;
     ca_step184) gen_ca_step184 ;;
     ca_flow90) gen_ca_flow90 ;;
+    zig_wyhash) gen_zig_wyhash ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }

@@ -49,6 +49,7 @@ make -C tools -s all
 ./scripts/check-backtest.sh fixtures/backtest/llvm-bolt-cmp/timeline.manifest 00 LLVM-BOLT-CMP
 ./scripts/check-backtest.sh fixtures/backtest/jemalloc-s2u/timeline.manifest 7000000000000101 JEMALLOC-S2U
 ./scripts/check-backtest.sh fixtures/backtest/conserve-popcount/timeline.manifest 3 CONSERVE-POPCOUNT
+./scripts/check-backtest.sh fixtures/backtest/zig-wyhash/timeline.manifest 5 ZIG-WYHASH
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

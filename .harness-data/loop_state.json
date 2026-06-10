@@ -1,21 +1,21 @@
 {
-  "goal_id": "G56",
-  "current_issue": 79,
-  "milestone": "G51-G53",
-  "product_proof_step": "language-diversity-mining",
+  "goal_id": "G58",
+  "current_issue": 81,
+  "milestone": "G57",
+  "product_proof_step": "language-diversity-execution",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/MINING-G51-G53.md",
+    "spec_path": "fixtures/backtest/zig-wyhash/CASE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/specs/MINING-G51-G53.md",
+    "verdict_adr": "docs/adr/ADR-019-flow-composition-relation.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "issue",
-    "note": "G51\u2013G53 mining complete (#70, PR #78). Next: G56 #79 Rust base64 backtest; G57 #80 Zig Wyhash flow_composition; G58 #81 Go streaming; G71 #82 crc32fast runner-up."
+    "note": "G57 complete (#80): ZIG-WYHASH flow_composition on mined Zig Wyhash. Next G58 #81 Go streaming, G56 #79 Rust base64."
   },
   "history": [
     {
@@ -276,6 +276,12 @@
       "milestone": "G51-G53",
       "closed": "2026-06-10",
       "note": "Language-diversity mining; 15 scorecards; MINING-G51-G53.md; flow_composition FIT in Rust/Zig/Go; linear_xor zero FIT; PR #78"
+    },
+    {
+      "issue": 80,
+      "milestone": "G57",
+      "closed": "2026-06-10",
+      "note": "Zig Wyhash flow_composition backtest; ZIG-WYHASH gated; witness hex=5; validates G69 on mined history"
     }
   ]
 }

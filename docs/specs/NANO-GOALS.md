@@ -30,7 +30,7 @@ What the program has settled versus what still needs a goal.
 | `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
 | Language-diversity mining yields FIT candidates (Rust, Zig, Go) | **Proven** | G51–G53 (#70); scorecards + [`MINING-G51-G53.md`](MINING-G51-G53.md) |
 | Verification floor is language-blind in practice (not only in docs) | **Unproven** | FIT survivors scored; no non-C gated specimen yet (G59 stretch deferred) |
-| `flow_composition` catches real-history incremental bugs | **Unproven** | FIT in all three langs (Wyhash, base64 streaming, crc32fast combine); G56–G58 execution pending |
+| `flow_composition` catches real-history incremental bugs | **Partially proven** | G57 ZIG-WYHASH (#80); Go/Rust execution still open (#81, #82) |
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
 | Cross-loader / APE target extension adds product value | **Unproven** | G54 (#71) falsification spike |
 | Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Unproven** | G55 (#72) falsification spike |
@@ -106,6 +106,7 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G67 | linear_xor homomorphism (rule 90 step) | #74 | Done |
 | G68 | Rule 184 conserve_popcount bridge | #75 | Done |
 | G69 | flow_composition on iterated CA | #76 | Done |
+| G57 | Zig Wyhash flow_composition real-history backtest | #80 | Done |
 
 G49 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-012-size-monotone-relation.md`](../adr/ADR-012-size-monotone-relation.md). **In progress** (#68); see Next goals.
 
@@ -250,7 +251,7 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G56** (open, #79). First Rust real-history backtest on `marshallpierce/rust-base64` `decode_helper` (`rust-base64-invalid-last.fit`, parent `95edf364` → fix `f6915a3`). `round_trip` relation.
 
-**G57** (open, #80). First Zig real-history backtest on `ziglang/zig` Wyhash iterative tail (`zig-std-wyhash-iterative.fit`, parent `90fde14c` → fix `f3fbdf2b`). `flow_composition` relation; validates G69 on mined history.
+**G57** (done, #80). Zig Wyhash iterative tail backtest gated `ZIG-WYHASH`. `flow_composition` on mined history; witness `hex=5` (seed 5, triple 48+10). Validates G69 beyond modeled CA.
 
 **G58** (open, #81). First Go real-history backtest on `golang/go` base64 streaming (`go-base64-streaming.fit`, parent `8971d618` → fix `20d745c`). `flow_composition` relation.
 
