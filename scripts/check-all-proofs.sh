@@ -40,6 +40,8 @@ make -C tools -s all
 ./scripts/check-backtest.sh fixtures/backtest/knuth-rand-len/timeline.manifest 02 KNUTH-RAND-LEN
 ./scripts/check-backtest.sh fixtures/backtest/capnproto-base64/timeline.manifest 5a6d397640 CAPNPROTO-BASE64
 ./scripts/check-backtest.sh fixtures/backtest/cosmo-parseip/timeline.manifest 3235352e3235352e3235352e323536 COSMO-PARSEIP
+./scripts/check-backtest.sh fixtures/backtest/cosmo-ljson/timeline.manifest c080 COSMO-LJSON
+./scripts/check-backtest.sh fixtures/backtest/llvm-bolt-cmp/timeline.manifest 00 LLVM-BOLT-CMP
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

@@ -1,0 +1,8 @@
+name=llvm-bolt-cmp-order
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=1
+relation=cmp_order
+note=llvm/llvm-project BOLT getCodeSections compareSections lambda violated strict weak ordering: missing A==B guard breaks irreflexivity on any self-pair reaching a return-true path (mover, main, warm in modeled scenario); production sorts silently misorder, only _GLIBCXX_DEBUG hardening asserts. Fix 5fe235b (+3 identity check), parent e8606ab. Apache-2.0 WITH LLVM-exception. Pure string logic over section names + two bool opts; freestanding-transcribable. Implemented as G48 (#67); timeline witness pair (0,0) hex=00.

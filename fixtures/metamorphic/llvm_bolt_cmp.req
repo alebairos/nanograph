@@ -1,0 +1,4 @@
+relation=cmp_order
+entry=argv_mode
+mode=cmp
+domain=llvm_bolt_cmp

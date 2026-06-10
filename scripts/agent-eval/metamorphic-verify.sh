@@ -12,6 +12,7 @@ cd "$ROOT"
 #               encodings, so this holds; an overlong-accepting decoder fails it.
 #   range_coverage  reachability (lo_seed/hi_seed) and containment (sweep min/max)
 #               are separate phases (G38); rejects name phase=reachability|containment.
+#   cmp_order     bool comparator: cmp(i,i)==0; cmp(i,j)==1 implies cmp(j,i)==0.
 # A candidate witness from the fast batched scan is confirmed by an isolated
 # clean re-run, which filters transient backend faults.
 
@@ -74,12 +75,39 @@ gen_cosmo_parseip() {
     '4294967296 REJECT'
 }
 
+# JSON string-body bytes (hex) to expected decoded bytes (hex), or REJECT. Valid
+# ASCII and 2/3/4-byte UTF-8 round-trip canonically; overlong c0 80 and surrogate
+# ed a0 80 must be rejected. The buggy rev echoes them verbatim.
+gen_cosmo_ljson() {
+  printf '%s\n' \
+    '666f6f 666f6f' \
+    'c2a9 c2a9' \
+    'e282ac e282ac' \
+    'f09f9880 f09f9880' \
+    'c080 REJECT' \
+    'eda080 REJECT'
+}
+
 # gb_flip seeds. Each is one gb_init_rand(seed) + one rand_len draw; the sweep
 # samples the draw's range. The honest range reaches max_len, the buggy one
 # (off-by-one span) never does, so the observed maximum separates them.
 gen_knuth_rand_len() {
   local s
   for ((s = 1; s <= 256; s++)); do printf '%s\n' "$s"; done
+}
+
+# Section index pairs for BOLT compareSections (0=mover, 1=main, 2=warm, 3=cold).
+# Full 4x4 matrix; self-pair 0 0 stays first as the pre-registered timeline
+# witness (irreflexivity on hot-text mover).
+gen_llvm_bolt_cmp() {
+  printf '%s\n' '0 0'
+  local i j
+  for ((i = 0; i < 4; i++)); do
+    for ((j = 0; j < 4; j++)); do
+      [[ "$i" -eq 0 && "$j" -eq 0 ]] && continue
+      printf '%s %s\n' "$i" "$j"
+    done
+  done
 }
 
 gen_probes() {
@@ -91,7 +119,9 @@ gen_probes() {
     wabt_leb128) gen_wabt_leb128 ;;
     capnproto_base64) gen_capnproto_base64 ;;
     cosmo_parseip) gen_cosmo_parseip ;;
+    cosmo_ljson) gen_cosmo_ljson ;;
     knuth_rand_len) gen_knuth_rand_len ;;
+    llvm_bolt_cmp) gen_llvm_bolt_cmp ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }
@@ -306,6 +336,62 @@ if [[ "$RELATION" == value_oracle ]]; then
     exit 2
   }
   echo "verdict=accept hash=${hash:0:12} relation=value_oracle matched=$matched separator=none"
+  exit 0
+fi
+
+if [[ "$RELATION" == cmp_order ]]; then
+  MODE="$(reqval mode)"
+  [[ -n "$MODE" && -n "$DOMAIN" ]] || {
+    echo "metamorphic-verify: cmp_order needs mode, domain in $REQ" >&2
+    exit 2
+  }
+
+  pairs=()
+  while read -r line; do [[ -z "$line" ]] && continue; pairs+=("$line"); done < <(gen_probes)
+  [[ "${#pairs[@]}" -ge 1 ]] || {
+    echo "metamorphic-verify: cmp_order generated 0 pairs for domain=$DOMAIN" >&2
+    exit 2
+  }
+
+  # A backend fault (empty or non-bool output) must not read as a semantic
+  # reject; retry once, then fail as a harness error.
+  cmp_run() { ./scripts/run-linux-elf-capture.sh "$CAND" "$MODE" "$1" "$2" 2>/dev/null | tr -d '\n\r' || true; }
+
+  checked=0
+  for line in "${pairs[@]}"; do
+    i="${line%% *}"
+    j="${line#* }"
+    ij="$(cmp_run "$i" "$j")"
+    [[ "$ij" == 0 || "$ij" == 1 ]] || ij="$(cmp_run "$i" "$j")"
+    [[ "$ij" == 0 || "$ij" == 1 ]] || {
+      echo "metamorphic-verify: cmp_order non-bool output for pair $i,$j (got '${ij}')" >&2
+      exit 2
+    }
+    ji="$(cmp_run "$j" "$i")"
+    [[ "$ji" == 0 || "$ji" == 1 ]] || ji="$(cmp_run "$j" "$i")"
+    [[ "$ji" == 0 || "$ji" == 1 ]] || {
+      echo "metamorphic-verify: cmp_order non-bool output for pair $j,$i (got '${ji}')" >&2
+      exit 2
+    }
+
+    if [[ "$i" == "$j" && "$ij" != "0" ]]; then
+      hex="$(printf '%x%x' "$i" "$j")"
+      echo "verdict=reject hash=${hash:0:12} relation=cmp_order witness pair=$i,$j hex=$hex got_ij=$ij want_ij=0"
+      exit 1
+    fi
+    if [[ "$i" != "$j" && "$ij" == "1" && "$ji" != "0" ]]; then
+      hex="$(printf '%x%x' "$i" "$j")"
+      echo "verdict=reject hash=${hash:0:12} relation=cmp_order witness pair=$i,$j hex=$hex got_ij=$ij got_ji=$ji"
+      exit 1
+    fi
+    checked=$((checked + 1))
+  done
+
+  [[ "$checked" -ge 1 ]] || {
+    echo "metamorphic-verify: cmp_order checked 0 pairs" >&2
+    exit 2
+  }
+  echo "verdict=accept hash=${hash:0:12} relation=cmp_order checked=$checked separator=none"
   exit 0
 fi
 

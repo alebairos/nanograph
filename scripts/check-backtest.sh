@@ -27,7 +27,7 @@ out="$(./scripts/backtest-relation.sh "$MANIFEST")" && rc=0 || rc=$?
 echo "$out"
 
 [[ "$rc" -eq 0 ]] || fail "timeline did not match every expect"
-echo "$out" | grep -q "reject .*hex=$EXPECT_HEX" || fail "reject row must show hex=$EXPECT_HEX"
+echo "$out" | grep -Eq "reject .*hex=${EXPECT_HEX}([[:space:]]|$)" || fail "reject row must show hex=$EXPECT_HEX"
 [[ "$(echo "$out" | grep -c "accept")" -eq 2 ]] || fail "expected two accept rows"
 
 echo "BACKTEST-$LABEL OK: timeline accept -> reject ($EXPECT_HEX) -> accept"
