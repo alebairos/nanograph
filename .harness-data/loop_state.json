@@ -1,21 +1,21 @@
 {
-  "goal_id": "G69",
-  "current_issue": 76,
-  "milestone": "G69",
-  "product_proof_step": "G66-G69-relation-families",
+  "goal_id": "G56",
+  "current_issue": 79,
+  "milestone": "G51-G53",
+  "product_proof_step": "language-diversity-mining",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/RELATION-TAXONOMY.md",
+    "spec_path": "docs/specs/MINING-G51-G53.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-019-flow-composition-relation.md",
+    "verdict_adr": "docs/specs/MINING-G51-G53.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
-    "type": "none",
-    "note": "G66\u2013G69 complete (#73\u2013#76): taxonomy, linear_xor, rule184 bridge, flow_composition. G49/G50 backtests gated. ALL-PROOFS OK."
+    "type": "issue",
+    "note": "G51\u2013G53 mining complete (#70, PR #78). Next: G56 #79 Rust base64 backtest; G57 #80 Zig Wyhash flow_composition; G58 #81 Go streaming; G71 #82 crc32fast runner-up."
   },
   "history": [
     {
@@ -270,6 +270,12 @@
       "milestone": "G69",
       "closed": "2026-06-10",
       "note": "flow_composition relation; ca_flow EVIL_SKIP; ADR-019; measure-relation-impact.sh"
+    },
+    {
+      "issue": 70,
+      "milestone": "G51-G53",
+      "closed": "2026-06-10",
+      "note": "Language-diversity mining; 15 scorecards; MINING-G51-G53.md; flow_composition FIT in Rust/Zig/Go; linear_xor zero FIT; PR #78"
     }
   ]
 }

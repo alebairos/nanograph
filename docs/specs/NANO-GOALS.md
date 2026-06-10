@@ -248,11 +248,13 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G54** (open, #71). Scientific spike on **target-bound, not language-bound** extensions (ADR-010). Cosmopolitan APE promises one x86_64 binary loadable on Linux, macOS, Windows, and BSD. Pre-registered hypotheses H1–H4 in #71: harness tooling without qemu on macOS (H1), metamorphic witness invariance Linux-ELF-vs-APE (H2), `ngb-pack`/`ngb-parse` on APE polyglot slice (H3), real portability bug observability beyond G33's modeled shim (H4). Deliverables: [`docs/specs/APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md), ADR-014 with PROVEN/REFUTED/INCONCLUSIVE per hypothesis, `fixtures/fit-cases/ape-target-extension.fit`. Final verdict **adopt**, **tooling-only**, or **reject**. Follow-on **G60–G62** if adopt. No `.ngb` format change unless H3 kill opens a separate ADR.
 
-**G56** (queued). First Rust real-history backtest on `marshallpierce/rust-base64` `decode_helper` (`rust-base64-invalid-last.fit`, parent `95edf364` → fix `f6915a3`). `round_trip` relation. Issue TBD.
+**G56** (open, #79). First Rust real-history backtest on `marshallpierce/rust-base64` `decode_helper` (`rust-base64-invalid-last.fit`, parent `95edf364` → fix `f6915a3`). `round_trip` relation.
 
-**G57** (queued). First Zig real-history backtest on `ziglang/zig` Wyhash iterative tail (`zig-std-wyhash-iterative.fit`, parent `90fde14c` → fix `f3fbdf2b`). `flow_composition` relation; validates G69 on mined history. Issue TBD.
+**G57** (open, #80). First Zig real-history backtest on `ziglang/zig` Wyhash iterative tail (`zig-std-wyhash-iterative.fit`, parent `90fde14c` → fix `f3fbdf2b`). `flow_composition` relation; validates G69 on mined history.
 
-**G58** (queued). First Go real-history backtest on `golang/go` base64 streaming (`go-base64-streaming.fit`, parent `8971d618` → fix `20d745c`). `flow_composition` relation. Issue TBD.
+**G58** (open, #81). First Go real-history backtest on `golang/go` base64 streaming (`go-base64-streaming.fit`, parent `8971d618` → fix `20d745c`). `flow_composition` relation.
+
+**G71** (open, #82). Rust crc32fast `flow_composition` runner-up after G56 extraction proves Rust path.
 
 **G40** (shortlist). Follow-through from G32 mining on the Justine/llamafile ICP thread ([`docs/icps/justine-tunney.md`](../icps/justine-tunney.md)). Six scorecards, anti-fabrication SHAs verified via `gh api`. Active FIT survivor executed as G41. `parked=1` scorecards (`cosmo-decodebase64`, `cosmo-isutf8`, `cosmo-uleb64`) score `gate=PARKED` and are excluded from the queue. NOT-A-FIT: `llamafile-inference` (`observable=0`). Score with `scripts/score-case-fit.sh fixtures/fit-cases/<name>.fit`. No floor or format change.
 
@@ -341,9 +343,11 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #67 | G48 LLVM BOLT cmp_order real-history backtest |
 | #68 | G49 jemalloc size_monotone real-history backtest |
 | #69 | G50 conserve_popcount modeled backtest (reverse32) |
-| #70 | G51–G53 Rust, Zig, Go backtest mining (language diversity) — closed |
-| — | G56–G58 execution issues (filed post-#70) |
-| — | G71–G72 conditional follow-ons (flow_composition mined proof) |
+| #70 | G51–G53 Rust, Zig, Go backtest mining (language diversity) |
+| #79 | G56 Rust base64 real-history backtest |
+| #80 | G57 Zig Wyhash flow_composition backtest |
+| #81 | G58 Go base64 streaming flow_composition backtest |
+| #82 | G71 Rust crc32fast flow_composition backtest |
 | #71 | G54 falsify Cosmopolitan APE target extension (prove or refute) |
 | #72 | G55 falsify candidate-ID sidecar at VerificationRequest seam |
 | #73 | G66 relation taxonomy (docs) |
