@@ -4,5 +4,5 @@ property_checkable=2
 observable=1
 silent_survival=2
 criticality=1
-relation=round_trip
-note=jart/cosmopolitan ljson tool/net/ljson.c JSON string decoder accepted overlong UTF-8 before kJsonStr table. Fix baf51a4 parent ccd057a. Witness JSON string \xc0\x80. Lua-bound today; freestanding driver target raises observable to 2.
+relation=value_oracle
+note=jart/cosmopolitan ljson tool/net/ljson.c JSON string decoder accepted overlong UTF-8 before kJsonStr table. Fix baf51a4 parent ccd057a. Witness c080 (overlong U+0000). Implemented as G42 (#66). Relation corrected from round_trip to value_oracle: the buggy decoder copies bytes verbatim so round_trip is identity and misses it; the acceptance gap needs value_oracle.

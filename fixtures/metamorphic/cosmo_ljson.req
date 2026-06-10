@@ -1,0 +1,6 @@
+relation=value_oracle
+entry=argv_mode
+mode=dec
+domain=cosmo_ljson
+reject=REJECT
+wire=hex

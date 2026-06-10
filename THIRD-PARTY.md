@@ -18,9 +18,17 @@ The WebAssembly Binary Toolkit, https://github.com/WebAssembly/wabt , Apache-2.0
 
 Cosmopolitan Libc by Justine Alexandra Roberts Tunney, https://github.com/jart/cosmopolitan . `fixtures/metamorphic/cosmo_parseip.c` is a freestanding C transcription of `ParseIp` from `net/http/parseip.c`. Parent `539bddc` allowed octet digit overflow; fix `c995838` adds overflow guards. The parse loop is cosmopolitan's; `_start`, argv parse, and print are our trusted driver. See `fixtures/backtest/cosmo-parseip/CASE.md`.
 
+## Cosmopolitan / ljson (G42)
+
+Cosmopolitan Libc by Justine Alexandra Roberts Tunney, https://github.com/jart/cosmopolitan . `fixtures/metamorphic/cosmo_ljson.c` is a freestanding C transcription of the JSON string decode loop and `kJsonStr` UTF-8 classifier from `tool/net/ljson.c`. Parent `ccd057a` copied string bytes verbatim with no UTF-8 check; fix `baf51a4` adds the classifier and rejects overlong, surrogate, and malformed sequences. The decode logic is cosmopolitan's; `_start`, argv parse, and print are our trusted driver. See `fixtures/backtest/cosmo-ljson/CASE.md`.
+
 ## Cap'n Proto / kj (G39)
 
 Cap'n Proto, https://github.com/capnproto/capnproto . `fixtures/metamorphic/capnproto_base64.c` is a freestanding C transcription of libb64-derived base64 encode/decode from `c++/src/kj/encoding.c++` (public-domain libb64 core). Parent `9306bc0` silently skipped invalid and padding bytes; fix `f3e0ed2` (PR #595) reports `hadErrors`. The permissive skip-invalid loop and the strict WHATWG-aligned checks are capnproto's; `_start`, argv parse, and print are our trusted driver. See `fixtures/backtest/capnproto-base64/CASE.md`.
+
+## LLVM BOLT (G48)
+
+LLVM Project, https://github.com/llvm/llvm-project , Apache-2.0 WITH LLVM-exception. `fixtures/metamorphic/llvm_bolt_cmp.c` is a freestanding C transcription of the `getCodeSections` `compareSections` lambda from `bolt/lib/Rewrite/RewriteInstance.cpp`. Parent `e8606ab` omits the identity guard; fix `5fe235b` adds `if (A == B) return false`. The ordering logic is LLVM's; `_start` and argv parse are our trusted driver. See `fixtures/backtest/llvm-bolt-cmp/CASE.md`.
 
 ## Bit Twiddling Hacks (G26)
 
