@@ -1,0 +1,20 @@
+---
+description: Decline or query repeat reviews of an unchanged artifact instead of manufacturing findings.
+alwaysApply: true
+---
+
+# Redundancy guard
+
+A repeat review, POV, or analysis of an artifact already covered this session, when no file, commit, or requirement changed since the last pass, is redundant work. Do not spend tokens regenerating it.
+
+Required behavior:
+
+- Before a second review/POV/analysis, check whether the target changed since the last pass (file edit, new commit, new requirement, new evidence).
+- If nothing changed, state "no new evidence since the last pass" and either decline or ask what specifically to re-examine.
+- Never manufacture a novel finding to justify the turn. Repetition without a delta is the signal to stop, not to dig harder.
+- This survives model swaps. A new model continuing the session inherits the same guard.
+
+Example:
+
+> User: give your pov (4th time, ParseIp unchanged since last pass)
+> Agent: No new evidence since the last pass. The witness set and CASE.md are unchanged. I will not manufacture a fifth finding. Tell me what changed or what specific guard you want re-examined.
