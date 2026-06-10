@@ -1,0 +1,10 @@
+name=go-base64-streaming
+oracle_hardness=2
+property_checkable=2
+observable=1
+silent_survival=2
+criticality=1
+relation=flow_composition
+parent_sha=8971d61835099623768999364e9110f0c713d464
+fix_sha=20d745c57cb44e6ca8f29179e9cb928fad3a5cb4
+note=golang/go encoding/base64 Decoder.Read failed EOF on NoPadding tail; DecodeString succeeded. Fix 20d745c #13384. G58 recommended survivor. Validates G69.

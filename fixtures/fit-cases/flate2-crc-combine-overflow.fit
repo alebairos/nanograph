@@ -1,0 +1,10 @@
+name=flate2-crc-combine-overflow
+oracle_hardness=1
+property_checkable=2
+observable=2
+silent_survival=0
+criticality=1
+relation=flow_composition
+parent_sha=8431d9e0c0fdaea16c4643c723631223802b2c86
+fix_sha=ab188ff81409c074ad1a0000b434d2aa08dea10a
+note=rust-lang/flate2-rs Crc::combine used += on amt; debug panic on u32 overflow not silent wrong CRC. NOT-A-FIT silent_survival=0.

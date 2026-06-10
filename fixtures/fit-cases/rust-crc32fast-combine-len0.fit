@@ -1,0 +1,10 @@
+name=rust-crc32fast-combine-len0
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=1
+criticality=1
+relation=flow_composition
+parent_sha=cdbd51fecfa3a0343509b5faab3ce4cc5539d14a
+fix_sha=724ceb6d7f0b24fd2ac2be3461bdcefdae619703
+note=srijs/rust-crc32fast combine(crc1,crc2,len2=0) returned crc1^crc2 instead of crc1; witness combine(0,1,0)->1 want 0. Wolfram flow_composition real-history candidate (validates G69).

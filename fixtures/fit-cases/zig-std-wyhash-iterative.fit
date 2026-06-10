@@ -1,0 +1,10 @@
+name=zig-std-wyhash-iterative
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=1
+relation=flow_composition
+parent_sha=90fde14c5f4406c284ec030186172b3db4697258
+fix_sha=f3fbdf2b44e37d2522c0c879f46c5dee057c14bd
+note=ziglang/zig std.hash.Wyhash iterative update dropped last-16 tail when len>=48 and remainder<16; fix f3fbdf2b PR #16696. G57 recommended survivor. Validates G69 on real history.

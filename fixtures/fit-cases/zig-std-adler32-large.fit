@@ -1,0 +1,10 @@
+name=zig-std-adler32-large
+oracle_hardness=2
+property_checkable=1
+observable=2
+silent_survival=2
+criticality=1
+relation=value_oracle
+parent_sha=e3d12471a2554154b507ed675e35530b55259984
+fix_sha=a5af78c376fc41424b81ea83766b38a0a1d17870
+note=ziglang/zig std.hash.Adler32 wrong index i+n*j for inputs>5553; fix a5af78c. Golden 0x707f15b2 at 5553 bytes. Homomorphism-adjacent, not linear_xor.

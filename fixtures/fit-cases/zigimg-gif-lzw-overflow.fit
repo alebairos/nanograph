@@ -1,0 +1,10 @@
+name=zigimg-gif-lzw-overflow
+oracle_hardness=2
+property_checkable=2
+observable=1
+silent_survival=2
+criticality=1
+relation=round_trip
+parent_sha=0dd86499cccdbf798330e184d02d5efac7e5b50b
+fix_sha=9cab2519a9cb2b0dfda3696443a13b7aa3c22220
+note=zigimg/zigimg GIF LZW next_code overflow without clear code; fix 9cab2519 PR #329. MIT standalone. Transcribe with allocator stub.

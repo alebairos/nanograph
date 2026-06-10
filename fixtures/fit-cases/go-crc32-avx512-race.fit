@@ -1,0 +1,11 @@
+name=go-crc32-avx512-race
+oracle_hardness=2
+property_checkable=2
+observable=0
+silent_survival=2
+criticality=1
+relation=linear_xor
+parked=0
+parent_sha=6fbad4be75e7
+fix_sha=e81eac19d30f
+note=hash/crc32 AVX512 path returned wrong IEEE checksum under -race (#74767); fix e81eac1. Homomorphism-adjacent (CRC is GF(2) linear) but defect requires race detector + AVX512 host; not argv/stdout pure on Linux floor.

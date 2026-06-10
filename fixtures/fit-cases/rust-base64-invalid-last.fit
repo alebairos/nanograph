@@ -1,0 +1,10 @@
+name=rust-base64-invalid-last
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=1
+relation=round_trip
+parent_sha=95edf364fe727c11f4cc0f9922be056aa31536bf
+fix_sha=f6915a3abaeba260ce3bae001a0667cb44f560fb
+note=marshallpierce/rust-base64 decode_helper accepted trailing symbols with unused encoded bits (iYV=, /x==); fix f6915a3 adds InvalidLastSymbol. Apache-2.0. G56 recommended survivor.
