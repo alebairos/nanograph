@@ -1,0 +1,9 @@
+name=zig-linear-xor-parked
+oracle_hardness=2
+property_checkable=2
+observable=0
+silent_survival=1
+criticality=1
+relation=linear_xor
+parked=1
+note=No verified CRC-combine or XOR-fold silent bug fix in ziglang/zig std or MIT standalone repos searched. Wolfram linear_xor family kill report for Zig.

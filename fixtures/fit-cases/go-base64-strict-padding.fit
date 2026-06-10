@@ -1,0 +1,10 @@
+name=go-base64-strict-padding
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=1
+criticality=1
+relation=round_trip
+parent_sha=56b5546b9138f80bb0b20aebcc1fa551096e87df
+fix_sha=87b1aaa37cefec8deacdf9c3c30d26015bdfb00b
+note=encoding/base64 Strict mode rejects non-zero padding bits (#15656). Opt-in API; default decoder unchanged. Capnproto-base64 analog but weaker silent_survival for default path.

@@ -1,0 +1,10 @@
+name=go-hex-decode-dst
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=1
+criticality=1
+relation=value_oracle
+parent_sha=02d8ebda8398342516a24a3e8435d527ed156cab
+fix_sha=f02cdba16398cee70a69262a55eb357dac6f81df
+note=golang/go hex.Decode returned 0 bytes written before error when dst too small; fix f02cdba reports partial decode. BSD-3-Clause. Simpler G58 backup.

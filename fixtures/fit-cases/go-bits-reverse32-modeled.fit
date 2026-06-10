@@ -1,0 +1,11 @@
+name=go-bits-reverse32-modeled
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=1
+criticality=1
+relation=conserve_popcount
+parked=1
+parent_sha=n/a
+fix_sha=n/a
+note=No real-history Go stdlib popcount-conservation bug found in encoding/* or strconv mining pass. Parked modeled follow-on: transcribe math/bits.Reverse32 + EVIL mask (G50 pattern) into cgo-free Go main or transcribe-to-C. Ceiling: swap/rotate permutations conserve popcount.

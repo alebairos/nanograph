@@ -1,0 +1,10 @@
+name=miniz-inflate-huffman
+oracle_hardness=1
+property_checkable=1
+observable=1
+silent_survival=2
+criticality=1
+relation=value_oracle
+parent_sha=d0f3e0cb44fb9a0ce0b876010025949700533258
+fix_sha=c40992ad6df8040794df767290ed0ffc45edc2e0
+note=Frommi/miniz_oxide init_tree accepted incomplete litlen Huffman trees; fix c40992a rejects per zlib #137 vector. MIT. Heavy inflate context; transcribe validation path.

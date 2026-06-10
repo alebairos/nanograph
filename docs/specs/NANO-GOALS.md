@@ -28,7 +28,10 @@ What the program has settled versus what still needs a goal.
 | A passing unit test hides a bug a metamorphic relation catches | **Proven** | G27 demo: `utf8.c` codec, honest decoder rejects overlong/surrogate/range, `OVERLONG_OK` accepts the classic overlong hole (`C0 80` decodes to U+0000); the fixed canonical unit test `decode(encode(cp))==cp` stays green on the buggy binary, the `round_trip` relation (`encode(decode(b))==b` over a byte domain incl. overlong) rejects it with witness `bytes=C0 80 decode=0 reencode=00` |
 | `size_monotone` catches a real allocator sizing bug | **Proven** | G49 jemalloc backtest gated `JEMALLOC-S2U` (#68) |
 | `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
-| Verification floor is language-blind in practice (not only in docs) | **Unproven** | G51–G53 (#70) mining; no non-C gated specimen yet |
+| Language-diversity mining yields FIT candidates (Rust, Zig, Go) | **Proven** | G51–G53 (#70); scorecards + [`MINING-G51-G53.md`](MINING-G51-G53.md) |
+| Verification floor is language-blind in practice (not only in docs) | **Unproven** | FIT survivors scored; no non-C gated specimen yet (G59 stretch deferred) |
+| `flow_composition` catches real-history incremental bugs | **Unproven** | FIT in all three langs (Wyhash, base64 streaming, crc32fast combine); G56–G58 execution pending |
+| `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
 | Cross-loader / APE target extension adds product value | **Unproven** | G54 (#71) falsification spike |
 | Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Unproven** | G55 (#72) falsification spike |
 | Relation taxonomy guides mining before new MR branches | **Proven** | G66 RELATION-TAXONOMY + BACKTEST checklist; gated `check-relation-taxonomy.sh` |
@@ -96,6 +99,9 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G48 | LLVM BOLT cmp_order real-history backtest (comparator contract) | #67 | Done |
 | G49 | jemalloc size_monotone real-history backtest | #68 | Done |
 | G50 | conserve_popcount modeled backtest (reverse32) | #69 | Done |
+| G51 | Mine Rust backtest candidates (language diversity) | #70 | Done |
+| G52 | Mine Zig backtest candidates (language diversity) | #70 | Done |
+| G53 | Mine Go backtest candidates (language diversity) | #70 | Done |
 | G66 | Relation taxonomy for mining + catalog | #73 | Done |
 | G67 | linear_xor homomorphism (rule 90 step) | #74 | Done |
 | G68 | Rule 184 conserve_popcount bridge | #75 | Done |
@@ -191,9 +197,9 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G48 | LLVM BOLT `cmp_order` real-history backtest | `llvm-bolt-cmp-order.fit` 8/8 | **8** | **Done** |
 | G49 | jemalloc `size_monotone` real-history backtest | `jemalloc-s2u-monotone.fit` | TBD | **Done** (#68) |
 | G50 | `conserve_popcount` modeled backtest (reverse32) | TBD | n/a | **Done** (#69) |
-| G51 | Mine Rust backtest candidates (language diversity) | TBD | n/a | **Open** (#70) |
-| G52 | Mine Zig backtest candidates (language diversity) | TBD | n/a | **Open** (#70) |
-| G53 | Mine Go backtest candidates (language diversity) | TBD | n/a | **Open** (#70) |
+| G51 | Mine Rust backtest candidates (language diversity) | `rust-base64-invalid-last.fit` 8/8 | **8** | **Done** (#70) |
+| G52 | Mine Zig backtest candidates (language diversity) | `zig-std-wyhash-iterative.fit` 8/8 | **8** | **Done** (#70) |
+| G53 | Mine Go backtest candidates (language diversity) | `go-base64-streaming.fit` 7/8 | **7** | **Done** (#70) |
 | G54 | Falsify Cosmopolitan APE as target extension | `ape-target-extension.fit` | n/a | **Open** (#71) |
 | G55 | Falsify candidate-ID sidecar at `.req` seam | n/a | n/a | **Open** (#72) |
 | G66 | Relation taxonomy for mining + catalog | n/a | n/a | **Done** |
@@ -217,6 +223,14 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 | G63 | Candidate-ID sidecar contract + `*.req.auto` gate | G55 H1+H2 **PROVEN** | G55 / #72 |
 | G64 | Agent build→sidecar→verify loop harness | G55 verdict **adopt sidecar** + G63 done | G55 / #72 |
 | G65 | `size_monotone` second mined bug (broader power claim) | Real-history candidate beyond jemalloc overflow boundary | G49 done + mining |
+| G71 | Rust crc32fast `flow_composition` real-history backtest (G69 mined proof) | G51 runner-up + G69 done | G51 / #70 |
+| G72 | Tri-language `flow_composition` witness equivalence (Rust/Zig/Go vs modeled G69) | G57 + G58 backtests done | G57/G58 |
+
+**G51** (done, #70). Rust mining shortlist in [`MINING-G51-G53.md`](MINING-G51-G53.md). Top FIT `rust-base64-invalid-last` (G56 survivor). Wolfram runner-up `rust-crc32fast-combine-len0` (G71). `linear_xor` PARKED on BE-only baseline.
+
+**G52** (done, #70). Zig mining shortlist. Top FIT `zig-std-wyhash-iterative` (`flow_composition`, G57 survivor). `linear_xor` family kill (no verified fix).
+
+**G53** (done, #70). Go mining shortlist. Top FIT `go-base64-streaming` (`flow_composition`, G58 survivor). `linear_xor` NOT-A-FIT (AVX512+race). `conserve_popcount` PARKED modeled only.
 
 **G49** (done, #68). jemalloc `sz_s2u_compute_using_delta`. Gated `BACKTEST-JEMALLOC-S2U` in `check-all-proofs.sh`. Witness `hex=7000000000000101`.
 
@@ -234,7 +248,11 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G54** (open, #71). Scientific spike on **target-bound, not language-bound** extensions (ADR-010). Cosmopolitan APE promises one x86_64 binary loadable on Linux, macOS, Windows, and BSD. Pre-registered hypotheses H1–H4 in #71: harness tooling without qemu on macOS (H1), metamorphic witness invariance Linux-ELF-vs-APE (H2), `ngb-pack`/`ngb-parse` on APE polyglot slice (H3), real portability bug observability beyond G33's modeled shim (H4). Deliverables: [`docs/specs/APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md), ADR-014 with PROVEN/REFUTED/INCONCLUSIVE per hypothesis, `fixtures/fit-cases/ape-target-extension.fit`. Final verdict **adopt**, **tooling-only**, or **reject**. Follow-on **G60–G62** if adopt. No `.ngb` format change unless H3 kill opens a separate ADR.
 
-**G51–G53** (open, #70). Language-diversity mining track. G32 proved formal mining on C/C++ permissive codecs; every gated proof still mints C via `gcc:13`. ADR-010 states the floor is language-blind at verify time; this track tests whether Rust, Zig, and Go upstream histories yield FIT scorecards and whether extraction behind a trusted driver (freestanding build or transcribe) is practical. Per [`../BACKTEST.md`](../BACKTEST.md) stages 1–3 only until a FIT survivor is chosen. Each language delivers ≥3 scored `fixtures/fit-cases/*.fit` cards with verified parent+fix SHAs, a mining note (FIT / NOT-A-FIT / PARKED + extraction feasibility), and an explicit kill report if zero FIT. Stretch per language: one native specimen through an existing relation gate with no verifier change. Follow-on **G56–G59** per language if FIT. No language front end, no `.ngb` format change.
+**G56** (queued). First Rust real-history backtest on `marshallpierce/rust-base64` `decode_helper` (`rust-base64-invalid-last.fit`, parent `95edf364` → fix `f6915a3`). `round_trip` relation. Issue TBD.
+
+**G57** (queued). First Zig real-history backtest on `ziglang/zig` Wyhash iterative tail (`zig-std-wyhash-iterative.fit`, parent `90fde14c` → fix `f3fbdf2b`). `flow_composition` relation; validates G69 on mined history. Issue TBD.
+
+**G58** (queued). First Go real-history backtest on `golang/go` base64 streaming (`go-base64-streaming.fit`, parent `8971d618` → fix `20d745c`). `flow_composition` relation. Issue TBD.
 
 **G40** (shortlist). Follow-through from G32 mining on the Justine/llamafile ICP thread ([`docs/icps/justine-tunney.md`](../icps/justine-tunney.md)). Six scorecards, anti-fabrication SHAs verified via `gh api`. Active FIT survivor executed as G41. `parked=1` scorecards (`cosmo-decodebase64`, `cosmo-isutf8`, `cosmo-uleb64`) score `gate=PARKED` and are excluded from the queue. NOT-A-FIT: `llamafile-inference` (`observable=0`). Score with `scripts/score-case-fit.sh fixtures/fit-cases/<name>.fit`. No floor or format change.
 
@@ -323,7 +341,9 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #67 | G48 LLVM BOLT cmp_order real-history backtest |
 | #68 | G49 jemalloc size_monotone real-history backtest |
 | #69 | G50 conserve_popcount modeled backtest (reverse32) |
-| #70 | G51–G53 Rust, Zig, Go backtest mining (language diversity) |
+| #70 | G51–G53 Rust, Zig, Go backtest mining (language diversity) — closed |
+| — | G56–G58 execution issues (filed post-#70) |
+| — | G71–G72 conditional follow-ons (flow_composition mined proof) |
 | #71 | G54 falsify Cosmopolitan APE target extension (prove or refute) |
 | #72 | G55 falsify candidate-ID sidecar at VerificationRequest seam |
 | #73 | G66 relation taxonomy (docs) |

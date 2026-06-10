@@ -1,0 +1,10 @@
+name=go-strconv-parseuint
+oracle_hardness=1
+property_checkable=1
+observable=2
+silent_survival=2
+criticality=1
+relation=value_oracle
+parent_sha=1d81251599fd1b8f9da888e10c1054c96d1e1fb1
+fix_sha=fc6b74ce39748efc360afea4164c92a710ad6e77
+note=golang/go ParseUint bitSize=32 overflow mishandled maxUint64 input; fix fc6b74c. value_oracle witness on overflow path.

@@ -1,0 +1,11 @@
+name=rust-crc32fast-linear-xor-be
+oracle_hardness=2
+property_checkable=2
+observable=0
+silent_survival=2
+criticality=1
+relation=linear_xor
+parked=1
+parent_sha=316d1e5c75ffa9162346481ae1d0f9404825a413
+fix_sha=210ad2198b3dfd804fc3ef5f25bc6d8a0fe1a13c
+note=srijs/rust-crc32fast update_fast_16 used from_le(crc) on BE table indices; identical on x86_64 LE. Wolfram linear_xor; needs BE simulation or runner extension.
