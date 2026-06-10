@@ -71,7 +71,7 @@ gen_cosmo_parseip() {
     '192.168.1.1 3232235777' \
     '255.255.255.255 4294967295' \
     '255.255.255.256 REJECT' \
-    '1.1.1.4294967297 REJECT'
+    '4294967296 REJECT'
 }
 
 # gb_flip seeds. Each is one gb_init_rand(seed) + one rand_len draw; the sweep

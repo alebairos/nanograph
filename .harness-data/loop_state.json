@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "none",
-    "note": "G44 done (#62): wrap witness 1.1.1.4294967297 hex=312e312e312e34323934393637323937 in gen_cosmo_parseip; buggy got=16843009. Timeline witness unchanged. G42 ljson parked."
+    "note": "G44 done (#62): corrected wrap witness to undotted 4294967296 hex=34323934393637323936; buggy got=0. Timeline witness unchanged."
   },
   "history": [
     {
@@ -233,7 +233,7 @@
       "issue": 62,
       "milestone": "G44",
       "closed": "2026-06-09",
-      "note": "G41 witness strengthen. Added wrap probe 1.1.1.4294967297 to gen_cosmo_parseip; hex=312e312e312e34323934393637323937 buggy got=16843009 honest REJECT. Verifier-only; timeline witness unchanged. CASE.md documents both witnesses and guard mapping"
+      "note": "G41 witness strengthen corrected. Added undotted wrap probe 4294967296 to gen_cosmo_parseip; hex=34323934393637323936 buggy got=0 honest REJECT. Verifier-only; timeline witness unchanged. CASE.md maps witnesses to actual guards"
     }
   ]
 }

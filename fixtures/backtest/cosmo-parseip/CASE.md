@@ -24,9 +24,9 @@ Upstream: https://github.com/jart/cosmopolitan
 | Witness input | hex | Guards exercised | Buggy rev | Honest rev |
 | --- | --- | --- | --- | --- |
 | `255.255.255.256` | `3235352e3235352e3235352e323536` | `nb > 255 && dotted` (timeline gate) | `4294967040` | `REJECT` |
-| `1.1.1.4294967297` | `312e312e312e34323934393637323937` | u32 wrap via unchecked `b *= 10; b += digit` | `16843009` (`1.1.1.1`) | `REJECT` |
+| `4294967296` | `34323934393637323936` | u32 wrap via unchecked `b *= 10; b += digit` (no dots, `dotted==0`) | `0` | `REJECT` |
 
-The range witness is the backtest timeline reject hex. The wrap witness (G44) closes the gap where overflow builtins are dead on the range input.
+The range witness is the backtest timeline reject hex. The undotted wrap witness (G44 correction) closes the gap where overflow builtins are dead on dotted inputs.
 
 ## Mint
 
