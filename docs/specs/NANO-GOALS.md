@@ -83,6 +83,8 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G40 | Mine llamafile-stack subcases + scorecards (Justine/Cosmopolitan) | — | Done (shortlist) |
 | G41 | cosmo ParseIp real-history backtest (Justine ICP follow-through) | #61 | Done |
 | G44 | Strengthen cosmo ParseIp value_oracle witness set (u32 wrap probe) | #62 | Done |
+| G42 | cosmo ljson overlong UTF-8 real-history backtest (reselected, value_oracle) | #66 | Done |
+| G48 | LLVM BOLT cmp_order real-history backtest (comparator contract) | #67 | Done |
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -162,9 +164,10 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | --- | --- | --- | --- | --- |
 | G40 | Mine llamafile-stack subcases + scorecards | six `.fit` files | n/a | **Done** (shortlist) |
 | G41 | cosmo `ParseIp` real-history backtest | `cosmo-parseip.fit` 8/8 | **16** | **Done** |
-| G42 | cosmo `ljson` overlong UTF-8 real-history backtest | `cosmo-ljson-overlong.fit` 7/8 | **7** | Parked |
+| G42 | cosmo `ljson` overlong UTF-8 real-history backtest | `cosmo-ljson-overlong.fit` 7/8 | **7** | **Done** |
 | G43 | cosmo `uleb64`/`unuleb64` synthetic `round_trip` backtest | `cosmo-uleb64.fit` 7/8 | **7** | Cancelled |
 | G44 | Strengthen G41 ParseIp `value_oracle` witness set | `cosmo-parseip.fit` (same) | n/a | **Done** |
+| G48 | LLVM BOLT `cmp_order` real-history backtest | `llvm-bolt-cmp-order.fit` 8/8 | **8** | **Done** |
 
 **G40** (shortlist). Follow-through from G32 mining on the Justine/llamafile ICP thread ([`docs/icps/justine-tunney.md`](../icps/justine-tunney.md)). Six scorecards, anti-fabrication SHAs verified via `gh api`. Active FIT survivor executed as G41. `parked=1` scorecards (`cosmo-decodebase64`, `cosmo-isutf8`, `cosmo-uleb64`) score `gate=PARKED` and are excluded from the queue. NOT-A-FIT: `llamafile-inference` (`observable=0`). Score with `scripts/score-case-fit.sh fixtures/fit-cases/<name>.fit`. No floor or format change.
 
@@ -172,9 +175,11 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 
 **G44** (done, #62). Verifier-only strengthen of G41 `value_oracle` probe set. Added undotted wrap witness `4294967296` (`hex=34323934393637323936`): buggy returns `0`, honest `REJECT`. This isolates the u32 overflow path because `dotted==0` disables the range guard. No `.ngb` remint; backtest timeline witness stays `255.255.255.256`.
 
-**G42** (parked). `jart/cosmopolitan` `ljson` string UTF-8 (`tool/net/ljson.c`). Overlong acceptance hole before `baf51a4`; parent `ccd057a`. Sharper fix commit than G41's omnibus `c995838`. Revive only when a second Justine-stack proof is explicitly wanted.
+**G42** (done, #66). `jart/cosmopolitan` `ljson` string UTF-8 (`tool/net/ljson.c`). Reselected after punycode (CVE-2022-3602) proved a memory-safety OOB `round_trip` cannot see, and pg-semver (`4d79dcc`, 64-bit no-op) and utf8proc (`6249e6b`, refactor not a defect) failed the clean-fit bar. The pre-fix string loop copied bytes above `0x1F` verbatim with no UTF-8 check; fix `baf51a4` (parent `ccd057a`) adds the `kJsonStr` classifier and rejects overlong, surrogate, and malformed sequences. `fixtures/metamorphic/cosmo_ljson.c` transcribes the classifier and raw-byte validation behind a trusted driver; strippable honest decoder, rev2 compiled with `-DLJSON_NOUTF8` for the verbatim parent path. Relation corrected from the scorecard's `round_trip` to `value_oracle`: the buggy decoder is a verbatim pass-through, so `round_trip` is the identity and misses it; the acceptance gap needs `value_oracle`. **Catch** on `c080` (overlong U+0000): buggy echoes `c080`, honest `REJECT`. Timeline accept/reject/accept; gated `COSMO-LJSON`. `fixtures/backtest/cosmo-ljson/CASE.md`, root `THIRD-PARTY.md`.
 
 **G43** (cancelled). `cosmo-uleb64` synthetic lane duplicates G31 leb128 with no verified fix SHA. Scorecard kept with `parked=1` for reference only.
+
+**G48** (done, #67). `llvm/llvm-project` BOLT `getCodeSections` `compareSections` lambda. Mined round 2 after Linux ORC `0210d25` parked on GPL. Parent `e8606ab` omits identity guard; fix `5fe235b` adds `if (A == B) return false`. New `cmp_order` relation (irreflexivity + antisymmetry on bool comparator). `fixtures/metamorphic/llvm_bolt_cmp.c` transcribes string ordering logic; strippable guard, rev2 `-DCMP_IDENTITY_OK`. **Catch** on pair `(0,0)` mover self (`hex=00`): buggy `got_ij=1`, honest `0`. Timeline accept/reject/accept; gated `LLVM-BOLT-CMP`. ADR-011. `fixtures/backtest/llvm-bolt-cmp/CASE.md`, root `THIRD-PARTY.md`.
 
 The retry-reduction line is closed (G14). G16 closes the repo-leakage gap for live eval. The proven claim is integrity plus execution-grounded conformance, and it stands on the deterministic suite without a live-agent number.
 
@@ -182,7 +187,9 @@ Parked ideas, each needing a concrete reason before it earns a slot. Do not buil
 
 | Parked | Trigger to revive |
 | --- | --- |
-| G42 cosmo ljson overlong UTF-8 backtest | Second Justine-stack proof explicitly wanted (sharper fix commit than G41) |
+| G45 differential-backend conformance, same `.ngb` across runners (#63) | A second backend-drift defect surfaces that one runner misses (G36 was the first and is already fixed structurally), or a new vectorization/alignment surface needs cross-runner regression insurance |
+| G46 disjoint-patch commutativity at observable level (#64) | An agent produces an order-sensitive disjoint-patch sequence observed in practice, not by analogy to confluence theory |
+| G47 superposition-style search for the G23 verifier (#65) | G23 sum-ordered enumeration provably misses a known bug within budget, and a portable deterministic superposition variant exists with no HVM4-in-CI dependency; leans reject (synthesis vs verification mismatch) |
 | dna-reverse-complement involution specimen | Extend involution lane beyond bswap/reverse32 |
 | Second generator case (over-reach or finite domain only) | Cited real-history candidate with different failure mode than G35 |
 | Second program live eval (`add_two` exit-code) | A real task needs a non-print_42 patch verified live |
@@ -245,4 +252,7 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #60 | G39 capnproto decodeBase64 real-history backtest |
 | #61 | G41 cosmo ParseIp real-history backtest |
 | #62 | G44 strengthen G41 ParseIp value_oracle witness set (u32 wrap) |
+| #63–#65 | G45/G46/G47 exploration triage (parked, closed not-planned) |
+| #66 | G42 cosmo ljson overlong UTF-8 real-history backtest (reselected) |
+| #67 | G48 LLVM BOLT cmp_order real-history backtest |
 | — | G40 llamafile-stack subcase mining + scorecards (shortlist) |

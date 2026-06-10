@@ -1,21 +1,21 @@
 {
-  "goal_id": "G44",
-  "current_issue": 62,
-  "milestone": "G44",
-  "product_proof_step": "G44-cosmo-parseip-witness-strengthen",
+  "goal_id": "G48",
+  "current_issue": 67,
+  "milestone": "G48",
+  "product_proof_step": "G48-llvm-bolt-cmp-order-backtest",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/METAMORPHIC-RELATIONS.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-010-utf8-roundtrip-demo.md",
+    "verdict_adr": "docs/adr/ADR-011-cmp-order-relation.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G44 done (#62): corrected wrap witness to undotted 4294967296 hex=34323934393637323936; buggy got=0. Timeline witness unchanged."
+    "note": "G48 done (#67): LLVM BOLT cmp_order backtest. New relation irreflexivity+antisymmetry. llvm_bolt_cmp.c transcribes compareSections; rev2 -DCMP_IDENTITY_OK. Witness hex=00 pair (0,0) mover self buggy got_ij=1. Timeline accept/reject/accept rev1==rev3 35433a9eed68. Gated LLVM-BOLT-CMP. ADR-011."
   },
   "history": [
     {
@@ -234,6 +234,18 @@
       "milestone": "G44",
       "closed": "2026-06-09",
       "note": "G41 witness strengthen corrected. Added undotted wrap probe 4294967296 to gen_cosmo_parseip; hex=34323934393637323936 buggy got=0 honest REJECT. Verifier-only; timeline witness unchanged. CASE.md maps witnesses to actual guards"
+    },
+    {
+      "issue": 66,
+      "milestone": "G42",
+      "closed": "2026-06-09",
+      "note": "cosmo ljson overlong UTF-8 real-history backtest. Reselected after punycode (CVE-2022-3602 OOB, round_trip blind), pg-semver 4d79dcc (64-bit no-op), utf8proc 6249e6b (refactor not defect) failed clean-fit. Parent ccd057a copies string bytes verbatim; fix baf51a4 adds kJsonStr UTF-8 validation. cosmo_ljson.c transcribes classifier + raw-byte validation behind trusted driver; rev2 -DLJSON_NOUTF8 = verbatim parent path. Relation corrected round_trip->value_oracle (verbatim pass-through is identity, round_trip misses). Witness c080 overlong U+0000 buggy echoes honest REJECT; surrogate eda080 second witness. Timeline accept/reject/accept; rev1==rev3 24814448a6c0; gated COSMO-LJSON. Faithfulness limit: raw string-body bytes only, no JSON escapes/CESU-8"
+    },
+    {
+      "issue": 67,
+      "milestone": "G48",
+      "closed": "2026-06-10",
+      "note": "LLVM BOLT cmp_order real-history backtest. Mined round 2 (Linux ORC parked GPL). Parent e8606ab compareSections omits identity guard; fix 5fe235b +3 lines. New cmp_order relation: irreflexivity cmp(i,i)==0, antisymmetry. llvm_bolt_cmp.c transcribes string ordering; rev2 -DCMP_IDENTITY_OK. Witness hex=00 pair (0,0) mover self buggy got_ij=1 honest 0. Timeline accept/reject/accept rev1==rev3 35433a9eed68. Gated LLVM-BOLT-CMP. ADR-011, METAMORPHIC-RELATIONS.md, THIRD-PARTY.md"
     }
   ]
 }

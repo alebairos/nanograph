@@ -30,8 +30,9 @@ eq=exact
 | --- | --- | --- |
 | `involution` | `f(f(x)) == x` | **Done** (G24) |
 | `round_trip` | `encode(decode(b)) == b` over accepted byte sequences | Implemented (G27 utf8, G31 leb128, G34 wabt, G39 capnproto) |
-| `value_oracle` | `parse(s) == expected` over a probe table | Implemented (G41 cosmo_parseip) |
+| `value_oracle` | `parse(s) == expected` over a probe table | Implemented (G41 cosmo_parseip, G42 cosmo_ljson) |
 | `range_coverage` | reachability (`lo_seed`/`hi_seed`) plus containment (sweep min/max) | Implemented (G35 knuth_rand_len; G37 endpoints; G38 named phases) |
+| `cmp_order` | irreflexivity `cmp(i,i)==0`; antisymmetry `cmp(i,j)==1` implies `cmp(j,i)==0` | Implemented (G48 llvm_bolt_cmp) |
 | `idempotent` | `f(f(x)) == f(x)` | Named, unimplemented |
 | `commutative` | `f(a,b) == f(b,a)` | Named, unimplemented |
 
@@ -116,6 +117,8 @@ The same `round_trip` relation catches capnproto's libb64-derived `decodeBase64`
 
 `value_oracle` checks `parse(s) == expected` over a fixed probe table with no computed oracle. `fixtures/metamorphic/cosmo_parseip.c` transcribes cosmopolitan `ParseIp`. `cosmo_parseip.req` declares `mode=dec`, `wire=ascii`, and `gen_cosmo_parseip` supplies six `ip expected` pairs. Witness `255.255.255.256` (`hex=3235352e3235352e3235352e323536`). Buggy rev returns `4294967040`; honest rev returns `REJECT`. See `fixtures/backtest/cosmo-parseip/CASE.md`.
 
+G42 reuses the relation on cosmopolitan `ljson` string UTF-8 validation (`fixtures/metamorphic/cosmo_ljson.c`, `wire=hex`). The buggy decoder copies invalid bytes verbatim, an identity `round_trip` cannot see; `value_oracle` separates the acceptance gap directly. Witness `c080` (overlong U+0000): buggy echoes, honest `REJECT`. See `fixtures/backtest/cosmo-ljson/CASE.md`.
+
 ## Range coverage on a generator (G35, G37, G38)
 
 A third relation for bounded generators where neither `round_trip` nor `involution` applies. The driver stays a pure generator (`draw <seed>` prints one draw). The verifier runs two named phases with separate claims and ceilings.
@@ -135,6 +138,32 @@ A third relation for bounded generators where neither `round_trip` nor `involuti
 Accept reports `reachability=pass|skip containment=pass|skip`. Under-reach bugs (G35) fail reachability first. Over-reach bugs would fail containment.
 
 G35 case: Knuth `gb_flip` plus `rand_len`, `reachability=on`, `containment=sweep`, `lo=1`, `hi=10`, `lo_seed=22`, `hi_seed=2`. Buggy revision fails `phase=reachability` first (`draw(22)` yields 2, witness `hex=02`). See [`../BACKTEST.md`](../BACKTEST.md) and `fixtures/backtest/knuth-rand-len/CASE.md`.
+
+## Comparator contract (G48, cmp_order)
+
+A fifth relation for bool comparators used with `qsort`-style sorts. Decision: [`../adr/ADR-011-cmp-order-relation.md`](../adr/ADR-011-cmp-order-relation.md).
+
+For `cmp(i,j)` returning `0` or `1` (less-than predicate), the verifier checks a probe table of index pairs:
+
+- **Irreflexivity:** `cmp(i,i) == 0`.
+- **Antisymmetry:** if `cmp(i,j) == 1` then `cmp(j,i) == 0`.
+
+No scalar oracle. The contract is the property. Reject witnesses name `pair=i,j` and `hex=` as two nybbles.
+
+Request schema (`fixtures/metamorphic/llvm_bolt_cmp.req`):
+
+| Key | Meaning | G48 value |
+| --- | --- | --- |
+| `relation` | property over runs | `cmp_order` |
+| `entry` | how operands reach the binary | `argv_mode` |
+| `mode` | argv[1] selecting the comparator entry | `cmp` |
+| `domain` | pair generator in the verifier | `llvm_bolt_cmp` |
+
+`mode` and `domain` are required; a missing key or an empty pair table is a deterministic `exit 2` schema error, not a reject. The runner calls the candidate once per direction (`cmp(i,j)`, `cmp(j,i)`) and requires the output to be exactly `0` or `1`. Anything else (empty output, a crash) is retried once and then fails as a harness error (`exit 2`), so a backend fault can never masquerade as a semantic reject. A confirmed violation prints `verdict=reject ... witness pair=i,j hex=.. got_ij=.. want_ij=..`. The G48 pair generator emits the full 4x4 index matrix (16 pairs), witness pair `0 0` first.
+
+G48 case: LLVM BOLT `compareSections`, parent `e8606ab` to fix `5fe235b`. The missing identity guard breaks irreflexivity for every section whose self-comparison reaches a `return true` path (mover, main, warm in the modeled scenario; the cold self-pair compares equal names and stays 0). **Catch** on witness `hex=00`, the mover self-pair, first in probe order. Timeline accept, reject, accept; gated `LLVM-BOLT-CMP`. See `fixtures/backtest/llvm-bolt-cmp/CASE.md`.
+
+G48 demonstrates **irreflexivity** power only. The witness trips `cmp(i,i)==0`. The antisymmetry arm is implemented but the BOLT bug does not exercise it (every off-diagonal pair on the buggy rev is consistent), so antisymmetry has no tested witness yet. Transitivity is not checked. Note the famous `return a-b` qsort overflow is a **transitivity** violation (`INT_MIN, 0, INT_MAX`), which `cmp_order` as built does not catch. Per ADR-007's anti-Goodhart stance, the unproven arms do not get a power claim until a real bug exercises them.
 
 ## Specimens
 
