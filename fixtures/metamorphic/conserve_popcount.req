@@ -1,0 +1,4 @@
+relation=conserve_popcount
+entry=argv_mode
+mode=rev
+domain=conserve_popcount

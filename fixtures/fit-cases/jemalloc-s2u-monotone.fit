@@ -1,0 +1,8 @@
+name=jemalloc-s2u-monotone
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=2
+criticality=1
+relation=size_monotone
+note=jemalloc/jemalloc sz_s2u_compute_using_delta numeric overflow at SIZE_T_MAX inverts usable size against the top valid class (parent 136d342aa094, fix 6b245225459f). BSD-2-Clause. Witness pair 0x70000000000000ff -> 0xffffffffffffff00. Demonstrated power is overflow-boundary monotonicity, not ordinary interior sizes.

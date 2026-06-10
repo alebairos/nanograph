@@ -1,21 +1,21 @@
 {
-  "goal_id": "G48",
-  "current_issue": 67,
-  "milestone": "G48",
-  "product_proof_step": "G48-llvm-bolt-cmp-order-backtest",
+  "goal_id": "G69",
+  "current_issue": 76,
+  "milestone": "G69",
+  "product_proof_step": "G66-G69-relation-families",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/METAMORPHIC-RELATIONS.md",
+    "spec_path": "docs/specs/RELATION-TAXONOMY.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-011-cmp-order-relation.md",
+    "verdict_adr": "docs/adr/ADR-019-flow-composition-relation.md",
     "eval_logs": [
       ".harness-data/agent-eval/conformance/run.jsonl"
     ]
   },
   "next_action": {
     "type": "none",
-    "note": "G48 done (#67): LLVM BOLT cmp_order backtest. New relation irreflexivity+antisymmetry. llvm_bolt_cmp.c transcribes compareSections; rev2 -DCMP_IDENTITY_OK. Witness hex=00 pair (0,0) mover self buggy got_ij=1. Timeline accept/reject/accept rev1==rev3 35433a9eed68. Gated LLVM-BOLT-CMP. ADR-011."
+    "note": "G66\u2013G69 complete (#73\u2013#76): taxonomy, linear_xor, rule184 bridge, flow_composition. G49/G50 backtests gated. ALL-PROOFS OK."
   },
   "history": [
     {
@@ -246,6 +246,30 @@
       "milestone": "G48",
       "closed": "2026-06-10",
       "note": "LLVM BOLT cmp_order real-history backtest. Mined round 2 (Linux ORC parked GPL). Parent e8606ab compareSections omits identity guard; fix 5fe235b +3 lines. New cmp_order relation: irreflexivity cmp(i,i)==0, antisymmetry. llvm_bolt_cmp.c transcribes string ordering; rev2 -DCMP_IDENTITY_OK. Witness hex=00 pair (0,0) mover self buggy got_ij=1 honest 0. Timeline accept/reject/accept rev1==rev3 35433a9eed68. Gated LLVM-BOLT-CMP. ADR-011, METAMORPHIC-RELATIONS.md, THIRD-PARTY.md"
+    },
+    {
+      "issue": 73,
+      "milestone": "G66",
+      "closed": "2026-06-10",
+      "note": "Relation taxonomy RELATION-TAXONOMY.md + BACKTEST checklist; ADR-016; check-relation-taxonomy.sh"
+    },
+    {
+      "issue": 74,
+      "milestone": "G67",
+      "closed": "2026-06-10",
+      "note": "linear_xor relation; rule 90 step specimen; ADR-017; check-linear-xor.sh"
+    },
+    {
+      "issue": 75,
+      "milestone": "G68",
+      "closed": "2026-06-10",
+      "note": "Rule 184 conserve_popcount bridge; ADR-018; check-rule184-conserve.sh"
+    },
+    {
+      "issue": 76,
+      "milestone": "G69",
+      "closed": "2026-06-10",
+      "note": "flow_composition relation; ca_flow EVIL_SKIP; ADR-019; measure-relation-impact.sh"
     }
   ]
 }

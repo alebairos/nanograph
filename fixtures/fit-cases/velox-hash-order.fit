@@ -1,0 +1,9 @@
+name=velox-hash-order
+oracle_hardness=2
+property_checkable=2
+observable=1
+silent_survival=2
+criticality=1
+relation=conserve_popcount
+parked=1
+note=facebookincubator/velox Variant::hash commutative combine fix b4ac86a6804 (parent 0d73f4850592). Apache-2.0. Inverted relation: hash wrongly conserved under permutation, not a conserve_popcount catch. Non-freestanding C++.

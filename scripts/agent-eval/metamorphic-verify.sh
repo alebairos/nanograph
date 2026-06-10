@@ -13,6 +13,10 @@ cd "$ROOT"
 #   range_coverage  reachability (lo_seed/hi_seed) and containment (sweep min/max)
 #               are separate phases (G38); rejects name phase=reachability|containment.
 #   cmp_order     bool comparator: cmp(i,i)==0; cmp(i,j)==1 implies cmp(j,i)==0.
+#   size_monotone x < y implies f(x) <= f(y) over ascending size probes.
+#   conserve_popcount popcount(f(x)) == popcount(x) for a bit-permutation map.
+#   linear_xor      f(a^b) == f(a)^f(b) over probe pairs (GF(2) homomorphism).
+#   flow_composition flow(n+m,s) == flow(m, flow(n,s)) over probe triples.
 # A candidate witness from the fast batched scan is confirmed by an isolated
 # clean re-run, which filters transient backend faults.
 
@@ -110,6 +114,44 @@ gen_llvm_bolt_cmp() {
   done
 }
 
+# Ascending request sizes for jemalloc sz_s2u_compute_using_delta. The pair
+# 0x70000000000000ff -> 0xffffffffffffff00 is the pre-registered timeline
+# witness (overflow wrap inverts usable size).
+gen_jemalloc_s2u() {
+  printf '%s\n' 1024 4096 65536 8070450532247928832
+}
+
+# u32 probes; 3 first as the pre-registered timeline witness (popcount 2 -> 1).
+gen_conserve_popcount() {
+  printf '%s\n' 3 1 2 4 5 6 7 8 9 10 255 256
+}
+
+# Rule-90 step pairs; (1,2) is the pre-registered timeline witness for linear_xor.
+gen_ca_step90() {
+  printf '%s\n' '1 2' '3 5' '7 11' '255 256'
+}
+
+gen_ca_step184() {
+  printf '%s\n' 5 9 42 255 513
+}
+
+# n m seed triples; (1,2,5) is the pre-registered flow_composition witness.
+gen_ca_flow90() {
+  printf '%s\n' '1 2 5' '2 2 7' '1 3 42' '2 3 13'
+}
+
+popcount_u() {
+  local v="$1" c=0
+  while ((v > 0)); do
+    c=$((c + v % 2))
+    v=$((v / 2))
+  done
+  printf '%s' "$c"
+}
+
+u64_lt() { python3 -c 'import sys; print(int(sys.argv[1]) < int(sys.argv[2]))' "$1" "$2"; }
+u64_gt() { python3 -c 'import sys; print(int(sys.argv[1]) > int(sys.argv[2]))' "$1" "$2"; }
+
 gen_probes() {
   case "$DOMAIN" in
     u32) gen_u32 ;;
@@ -122,6 +164,11 @@ gen_probes() {
     cosmo_ljson) gen_cosmo_ljson ;;
     knuth_rand_len) gen_knuth_rand_len ;;
     llvm_bolt_cmp) gen_llvm_bolt_cmp ;;
+    jemalloc_s2u) gen_jemalloc_s2u ;;
+    conserve_popcount) gen_conserve_popcount ;;
+    ca_step90) gen_ca_step90 ;;
+    ca_step184) gen_ca_step184 ;;
+    ca_flow90) gen_ca_flow90 ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }
@@ -392,6 +439,195 @@ if [[ "$RELATION" == cmp_order ]]; then
     exit 2
   }
   echo "verdict=accept hash=${hash:0:12} relation=cmp_order checked=$checked separator=none"
+  exit 0
+fi
+
+if [[ "$RELATION" == size_monotone ]]; then
+  MODE="$(reqval mode)"
+  OVERFLOW_SIZE="$(reqval overflow_size)"
+  OVERFLOW_EXPECT="$(reqval overflow_expect)"
+  [[ -n "$MODE" && -n "$DOMAIN" && -n "$OVERFLOW_SIZE" && -n "$OVERFLOW_EXPECT" ]] || {
+    echo "metamorphic-verify: size_monotone needs mode, domain, overflow_size, overflow_expect in $REQ" >&2
+    exit 2
+  }
+
+  sizes=()
+  while read -r s; do [[ -z "$s" ]] && continue; sizes+=("$s"); done < <(gen_probes)
+  [[ "${#sizes[@]}" -ge 2 ]] || {
+    echo "metamorphic-verify: size_monotone needs >=2 ascending interior sizes" >&2
+    exit 2
+  }
+
+  mono_run() { ./scripts/run-linux-elf-capture.sh "$CAND" "$MODE" "$1" 2>/dev/null | tr -d '\n\r' || true; }
+
+  prev_x="${sizes[0]}"
+  prev_fx="$(mono_run "$prev_x")"
+  [[ "$prev_fx" =~ ^[0-9]+$ ]] || {
+    echo "metamorphic-verify: size_monotone non-numeric output for x=$prev_x (got '${prev_fx}')" >&2
+    exit 2
+  }
+
+  checked=1
+  for ((i = 1; i < ${#sizes[@]}; i++)); do
+    x="${sizes[$i]}"
+    fx="$(mono_run "$x")"
+    [[ "$fx" =~ ^[0-9]+$ ]] || fx="$(mono_run "$x")"
+    [[ "$fx" =~ ^[0-9]+$ ]] || {
+      echo "metamorphic-verify: size_monotone non-numeric output for x=$x (got '${fx}')" >&2
+      exit 2
+    }
+    if [[ "$(u64_lt "$prev_x" "$x")" == True && "$(u64_gt "$prev_fx" "$fx")" == True ]]; then
+      hex="$(python3 -c 'import sys; print(format(int(sys.argv[1]), "x"))' "$x")"
+      echo "verdict=reject hash=${hash:0:12} relation=size_monotone phase=monotone witness x=$prev_x y=$x fx=$prev_fx fy=$fx hex=$hex"
+      exit 1
+    fi
+    prev_x="$x"
+    prev_fx="$fx"
+    checked=$((checked + 1))
+  done
+
+  ov_got="$(mono_run "$OVERFLOW_SIZE")"
+  [[ "$ov_got" =~ ^[0-9]+$ ]] || ov_got="$(mono_run "$OVERFLOW_SIZE")"
+  [[ "$ov_got" =~ ^[0-9]+$ ]] || {
+    echo "metamorphic-verify: size_monotone non-numeric overflow output (got '${ov_got}')" >&2
+    exit 2
+  }
+  if [[ "$ov_got" != "$OVERFLOW_EXPECT" ]]; then
+    hex="$(python3 -c 'import sys; print(format(int(sys.argv[1]), "x"))' "$OVERFLOW_SIZE")"
+    echo "verdict=reject hash=${hash:0:12} relation=size_monotone phase=overflow size=$OVERFLOW_SIZE got=$ov_got want=$OVERFLOW_EXPECT hex=$hex"
+    exit 1
+  fi
+
+  echo "verdict=accept hash=${hash:0:12} relation=size_monotone checked=$checked overflow=pass separator=none"
+  exit 0
+fi
+
+if [[ "$RELATION" == linear_xor ]]; then
+  MODE="$(reqval mode)"
+  [[ -n "$MODE" && -n "$DOMAIN" ]] || {
+    echo "metamorphic-verify: linear_xor needs mode, domain in $REQ" >&2
+    exit 2
+  }
+
+  pairs=()
+  while read -r line; do [[ -z "$line" ]] && continue; pairs+=("$line"); done < <(gen_probes)
+  [[ "${#pairs[@]}" -ge 1 ]] || {
+    echo "metamorphic-verify: linear_xor generated 0 pairs" >&2
+    exit 2
+  }
+
+  xor_run() { ./scripts/run-linux-elf-capture.sh "$CAND" "$MODE" "$1" 2>/dev/null | tr -d '\n\r' || true; }
+
+  checked=0
+  for line in "${pairs[@]}"; do
+    a="${line%% *}"
+    b="${line#* }"
+    ab=$((a ^ b))
+    fab="$(xor_run "$ab")"
+    fa="$(xor_run "$a")"
+    fb="$(xor_run "$b")"
+    [[ "$fab" =~ ^[0-9]+$ && "$fa" =~ ^[0-9]+$ && "$fb" =~ ^[0-9]+$ ]] || {
+      echo "metamorphic-verify: linear_xor non-numeric output for pair $a,$b" >&2
+      exit 2
+    }
+    want=$((fa ^ fb))
+    if [[ "$fab" != "$want" ]]; then
+      hex="$(printf '%x' "$ab")"
+      echo "verdict=reject hash=${hash:0:12} relation=linear_xor witness a=$a b=$b xor=$ab fab=$fab fa=$fa fb=$fb want=$want hex=$hex"
+      exit 1
+    fi
+    checked=$((checked + 1))
+  done
+
+  echo "verdict=accept hash=${hash:0:12} relation=linear_xor checked=$checked separator=none"
+  exit 0
+fi
+
+if [[ "$RELATION" == flow_composition ]]; then
+  MODE="$(reqval mode)"
+  MAX_TOTAL="$(reqval max_total)"
+  [[ -n "$MODE" && -n "$DOMAIN" && -n "$MAX_TOTAL" ]] || {
+    echo "metamorphic-verify: flow_composition needs mode, domain, max_total in $REQ" >&2
+    exit 2
+  }
+
+  triples=()
+  while read -r line; do [[ -z "$line" ]] && continue; triples+=("$line"); done < <(gen_probes)
+  [[ "${#triples[@]}" -ge 1 ]] || {
+    echo "metamorphic-verify: flow_composition generated 0 triples" >&2
+    exit 2
+  }
+
+  flow_run() {
+    ./scripts/run-linux-elf-capture.sh "$CAND" "$MODE" "$1" "$2" 2>/dev/null | tr -d '\n\r' || true
+  }
+
+  checked=0
+  for line in "${triples[@]}"; do
+    n="${line%% *}"
+    rest="${line#* }"
+    m="${rest%% *}"
+    seed="${rest#* }"
+    total=$((n + m))
+    if [[ "$total" -gt "$MAX_TOTAL" ]]; then
+      continue
+    fi
+    once="$(flow_run "$total" "$seed")"
+    part="$(flow_run "$n" "$seed")"
+    composed="$(flow_run "$m" "$part")"
+    [[ "$once" =~ ^[0-9]+$ && "$part" =~ ^[0-9]+$ && "$composed" =~ ^[0-9]+$ ]] || {
+      echo "metamorphic-verify: flow_composition non-numeric output n=$n m=$m seed=$seed" >&2
+      exit 2
+    }
+    if [[ "$once" != "$composed" ]]; then
+      hex="$(printf '%x' "$seed")"
+      echo "verdict=reject hash=${hash:0:12} relation=flow_composition witness n=$n m=$m seed=$seed once=$once composed=$composed hex=$hex"
+      exit 1
+    fi
+    checked=$((checked + 1))
+  done
+
+  [[ "$checked" -ge 1 ]] || {
+    echo "metamorphic-verify: flow_composition checked 0 triples within max_total=$MAX_TOTAL" >&2
+    exit 2
+  }
+  echo "verdict=accept hash=${hash:0:12} relation=flow_composition checked=$checked separator=none"
+  exit 0
+fi
+
+if [[ "$RELATION" == conserve_popcount ]]; then
+  MODE="$(reqval mode)"
+  [[ -n "$MODE" && -n "$DOMAIN" ]] || {
+    echo "metamorphic-verify: conserve_popcount needs mode, domain in $REQ" >&2
+    exit 2
+  }
+
+  probes=()
+  while read -r p; do [[ -z "$p" ]] && continue; probes+=("$p"); done < <(gen_probes)
+  [[ "${#probes[@]}" -ge 1 ]] || {
+    echo "metamorphic-verify: conserve_popcount generated 0 probes" >&2
+    exit 2
+  }
+
+  checked=0
+  for x in "${probes[@]}"; do
+    got="$(./scripts/run-linux-elf-capture.sh "$CAND" "$MODE" "$x" 2>/dev/null | tr -d '\n\r' || true)"
+    [[ "$got" =~ ^[0-9]+$ ]] || got="$(./scripts/run-linux-elf-capture.sh "$CAND" "$MODE" "$x" 2>/dev/null | tr -d '\n\r' || true)"
+    [[ "$got" =~ ^[0-9]+$ ]] || {
+      echo "metamorphic-verify: conserve_popcount non-numeric output for x=$x (got '${got}')" >&2
+      exit 2
+    }
+    want="$(popcount_u "$x")"
+    got_pc="$(popcount_u "$got")"
+    if [[ "$got_pc" != "$want" ]]; then
+      hex="$(printf '%x' "$x")"
+      echo "verdict=reject hash=${hash:0:12} relation=conserve_popcount witness x=$x hex=$hex pop_in=$want pop_out=$got_pc got=$got"
+      exit 1
+    fi
+    checked=$((checked + 1))
+  done
+
+  echo "verdict=accept hash=${hash:0:12} relation=conserve_popcount checked=$checked separator=none"
   exit 0
 fi
 
