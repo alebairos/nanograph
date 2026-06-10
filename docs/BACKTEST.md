@@ -58,11 +58,26 @@ A backtest validates the bug class NanoGraph can express as a relation, not all 
 The two cases here are author-built histories with known answers. They prove the mechanism. The next step is mining real upstream histories where a relation-expressible bug was fixed, the counterfactual NanoGraph is built for. Proposed process, each stage filtering to the next.
 
 1. Source. Permissive-license codecs, serializers, and parsers, the [`ICP.md`](ICP.md) shape. Start with standalone repos before functions buried in large projects.
-2. Signal. A fix commit whose bug is non-canonical or non-minimal acceptance, a length or bounds error, or a broken involution or round-trip. The commit message and test diff name the property.
+2. Signal. A fix commit whose bug is non-canonical or non-minimal acceptance, a length or bounds error, or a broken involution or round-trip. The commit message and test diff name the property. Use the **family signal checklist** ([`RELATION-TAXONOMY.md`](specs/RELATION-TAXONOMY.md)) before proposing a new relation branch.
 3. Score. Run each candidate through [`CASE-FIT-RUBRIC.md`](CASE-FIT-RUBRIC.md). Keep only a FIT, rank by priority.
 4. Vendor. Extract the function and its types behind the trusted driver, never the whole project, so the buggy and fixed commits both build today.
 5. Replay. Generate the manifest from `git rev-list` over the fix range and run `scripts/backtest-relation.sh`. Pre-register the property before reading the timeline.
 6. Report. Publish catches, misses, and false positives. A miss is as informative as a catch.
+
+### Family signal checklist (G66)
+
+Before scoring, map the fix to an existing relation family ([`specs/RELATION-TAXONOMY.md`](specs/RELATION-TAXONOMY.md)). Try the family branch first; open a new ADR only when no branch fits and a modeled witness exists.
+
+| Family | Grep / test-diff signals |
+| --- | --- |
+| Section / retraction | non-minimal, overlong, invalid skip, re-encode, canonical |
+| Order | comparator, overflow wrap, monotonic, sort contract |
+| Invariant preservation | popcount, conservation, permutation, particle count |
+| Homomorphism | CRC combine, XOR fold, linear CA, `combine` vs concat on equal-length buffers |
+| Flow / composition | incremental update, one-shot vs streaming, generation count |
+| Identity | involution, idempotent, self-inverse |
+| Image / coverage | off-by-one span, endpoint never reached, range |
+| Point oracle | named input/output table, parse rejection gap |
 
 G32 delivered the scored shortlist. G33 ran the synthetic track, G34 ran the first third-party real-history case (wabt), G35 ran the first real Knuth canon.
 

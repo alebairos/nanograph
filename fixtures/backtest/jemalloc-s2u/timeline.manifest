@@ -1,0 +1,4 @@
+req=fixtures/metamorphic/jemalloc_s2u.req
+rev=rev1_honest       ngb=fixtures/backtest/jemalloc-s2u/jemalloc_s2u_rev1.ngb   expect=accept
+rev=rev2_s2u-overflow ngb=fixtures/backtest/jemalloc-s2u/jemalloc_s2u_rev2.ngb   expect=reject
+rev=rev3_fix          ngb=fixtures/backtest/jemalloc-s2u/jemalloc_s2u_rev3.ngb   expect=accept

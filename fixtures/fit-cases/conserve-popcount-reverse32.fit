@@ -1,0 +1,8 @@
+name=conserve-popcount-reverse32
+oracle_hardness=2
+property_checkable=2
+observable=2
+silent_survival=1
+criticality=1
+relation=conserve_popcount
+note=Modeled conservation backtest on public-domain Bit Twiddling Hacks reverse32. EVIL_REVERSE_OK mask typo drops bits; popcount not conserved at x=3 (2->1). No clean real-history non-memory conservation bug survived mining (velox hash inverted relation; musl qsort is memory corruption). Ceiling: swap-based shuffles conserve popcount.

@@ -26,6 +26,15 @@ What the program has settled versus what still needs a goal.
 | The relation floor and the value-oracle floor compose (cheap pre-filter, expensive backstop) | **Proven** | G25 handoff: `conf-eval op=bswap` gives the value oracle an expected byte swap; on the same `bswap32_imposter` the involution relation accepts and the value oracle rejects with witness `x=256` (`got=256 want=65536`); turns G24's asserted complementarity into a tested fact on one artifact |
 | The floors verify real, vendored, third-party code we did not author | **Proven** | G26: `reverse32.c` ships the public-domain "Reverse bits in parallel" routine (Bit Twiddling Hacks) verbatim behind a trusted driver; `conf-eval op=bitrev` is an independent loop reference; relation accepts the real bit reversal and rejects an `EVIL_REVERSE` mask typo with witness `x=1`; value oracle accepts the real bytes and rejects `bswap32` (an involution that is not bit reversal) with witness `x=1` |
 | A passing unit test hides a bug a metamorphic relation catches | **Proven** | G27 demo: `utf8.c` codec, honest decoder rejects overlong/surrogate/range, `OVERLONG_OK` accepts the classic overlong hole (`C0 80` decodes to U+0000); the fixed canonical unit test `decode(encode(cp))==cp` stays green on the buggy binary, the `round_trip` relation (`encode(decode(b))==b` over a byte domain incl. overlong) rejects it with witness `bytes=C0 80 decode=0 reencode=00` |
+| `size_monotone` catches a real allocator sizing bug | **Proven** | G49 jemalloc backtest gated `JEMALLOC-S2U` (#68) |
+| `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
+| Verification floor is language-blind in practice (not only in docs) | **Unproven** | G51–G53 (#70) mining; no non-C gated specimen yet |
+| Cross-loader / APE target extension adds product value | **Unproven** | G54 (#71) falsification spike |
+| Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Unproven** | G55 (#72) falsification spike |
+| Relation taxonomy guides mining before new MR branches | **Proven** | G66 RELATION-TAXONOMY + BACKTEST checklist; gated `check-relation-taxonomy.sh` |
+| Homomorphism family (`linear_xor`) catches non-linear CA rule | **Proven** | G67 rule 90 vs rule 30 imposter; gated `check-linear-xor.sh` |
+| Scalar conservation applies to Wolfram particle rule 184 | **Proven** | G68 `conserve_popcount` on rule 184 step; gated `check-rule184-conserve.sh` |
+| Flow composition catches skipped-generation drift | **Proven** | G69 `flow_composition` + EVIL_SKIP; gated `check-flow-composition.sh`; matrix `measure-relation-impact.sh` |
 | Stacked gates reduce live-agent retries | **Not the claim** | G14 blind A/B was inconclusive (answer leaked across ~18 repo files, no tool-call trace); reframed to pre-execution rejection above |
 | Live eval generalizes beyond print_42 | **Parked** | Single program only; no reason to expand until a workload needs it |
 | Human-auditable verdict trail | **Parked** | `probe_bundle` is text concatenation; revisit if an external auditor needs it |
@@ -85,6 +94,16 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G44 | Strengthen cosmo ParseIp value_oracle witness set (u32 wrap probe) | #62 | Done |
 | G42 | cosmo ljson overlong UTF-8 real-history backtest (reselected, value_oracle) | #66 | Done |
 | G48 | LLVM BOLT cmp_order real-history backtest (comparator contract) | #67 | Done |
+| G49 | jemalloc size_monotone real-history backtest | #68 | Done |
+| G50 | conserve_popcount modeled backtest (reverse32) | #69 | Done |
+| G66 | Relation taxonomy for mining + catalog | #73 | Done |
+| G67 | linear_xor homomorphism (rule 90 step) | #74 | Done |
+| G68 | Rule 184 conserve_popcount bridge | #75 | Done |
+| G69 | flow_composition on iterated CA | #76 | Done |
+
+G49 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-012-size-monotone-relation.md`](../adr/ADR-012-size-monotone-relation.md). **In progress** (#68); see Next goals.
+
+G50 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-013-conserve-popcount-relation.md`](../adr/ADR-013-conserve-popcount-relation.md). **In progress** (#69); see Next goals.
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -150,7 +169,7 @@ G27 spec: the demo case in [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md
 | 30 | Chaotic | Rich stdout; golden + patch negative | **Done** (G17/G18 primary specimen) |
 | 50 | Regular / nested | Second rule byte; golden-only oracle; behavioral-not-structural | **Done** (G19) |
 | 110 | Left-propagating; glider structure at scale | Richer observable (9.3 KB, `init=right` fills grid); golden-only, no closed-form witness; not an oracle-ceiling claim | **Done** (G19 toy, G20 scaled) |
-| 184 | Particle-like | Longer runs; byte-for-byte diff scale | Parked |
+| 184 | Particle-like | `conserve_popcount` on one-step rule 184 (G68); bridges scalar MR to ruliad | **Done** (G68) |
 | 73 | Replicator | Miscompilation locality in grid output | Parked |
 | 126 | Complex transient | `gens` parameter stress | Parked |
 
@@ -158,9 +177,11 @@ Shared machinery (`op=eca`, `conf-eval`, `ca_eca.c`, `mint-ca-fixtures.sh`, conf
 
 ## Next goals
 
+Status buckets: **Done** (gated or shortlist complete), **In progress** (issue open, implementation started), **Open** (exploration spike, no product commit yet), **Conditional** (pre-registered follow-on; opens only when a parent spike or mining track passes its verdict).
+
 G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://github.com/jart) code (Cosmopolitan libc inside [llamafile](https://builders.mozilla.org/project/llamafile/), not the inference runtime). The whole product is NOT-A-FIT (`llamafile-inference.fit`, `observable=0`). FIT survivors are ranked by `priority = fit_score * criticality` from committed scorecards in `fixtures/fit-cases/`.
 
-| ID | Goal | Scorecard | Priority | Status |
+| ID | Goal | Scorecard / issue | Priority | Status |
 | --- | --- | --- | --- | --- |
 | G40 | Mine llamafile-stack subcases + scorecards | six `.fit` files | n/a | **Done** (shortlist) |
 | G41 | cosmo `ParseIp` real-history backtest | `cosmo-parseip.fit` 8/8 | **16** | **Done** |
@@ -168,6 +189,52 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G43 | cosmo `uleb64`/`unuleb64` synthetic `round_trip` backtest | `cosmo-uleb64.fit` 7/8 | **7** | Cancelled |
 | G44 | Strengthen G41 ParseIp `value_oracle` witness set | `cosmo-parseip.fit` (same) | n/a | **Done** |
 | G48 | LLVM BOLT `cmp_order` real-history backtest | `llvm-bolt-cmp-order.fit` 8/8 | **8** | **Done** |
+| G49 | jemalloc `size_monotone` real-history backtest | `jemalloc-s2u-monotone.fit` | TBD | **Done** (#68) |
+| G50 | `conserve_popcount` modeled backtest (reverse32) | TBD | n/a | **Done** (#69) |
+| G51 | Mine Rust backtest candidates (language diversity) | TBD | n/a | **Open** (#70) |
+| G52 | Mine Zig backtest candidates (language diversity) | TBD | n/a | **Open** (#70) |
+| G53 | Mine Go backtest candidates (language diversity) | TBD | n/a | **Open** (#70) |
+| G54 | Falsify Cosmopolitan APE as target extension | `ape-target-extension.fit` | n/a | **Open** (#71) |
+| G55 | Falsify candidate-ID sidecar at `.req` seam | n/a | n/a | **Open** (#72) |
+| G66 | Relation taxonomy for mining + catalog | n/a | n/a | **Done** |
+| G67 | `linear_xor` homomorphism (rule 90 step) | n/a | n/a | **Done** |
+| G68 | Rule 184 `conserve_popcount` bridge | n/a | n/a | **Done** |
+| G69 | `flow_composition` on iterated CA | n/a | n/a | **Done** |
+
+### Conditional follow-ons (pre-registered)
+
+These earn issues only when the parent goal's verdict or mining output satisfies the trigger. Do not start without the trigger.
+
+| ID | Goal | Trigger | Parent |
+| --- | --- | --- | --- |
+| G56 | First Rust real-history backtest | G51 delivers ≥1 FIT scorecard with verified SHAs + extraction note | G51 / #70 |
+| G57 | First Zig real-history backtest | G52 delivers ≥1 FIT scorecard with verified SHAs + extraction note | G52 / #70 |
+| G58 | First Go real-history backtest | G53 delivers ≥1 FIT scorecard with verified SHAs + extraction note | G53 / #70 |
+| G59 | Non-C freestanding specimen through existing gate unchanged | G51–G53 stretch passes on one Rust, Zig, or Go binary | G51–G53 / #70 |
+| G60 | APE harness tooling (native macOS proof subset) | G54 H1 **PROVEN** | G54 / #71 |
+| G61 | APE specimen runner + witness cross-loader gate | G54 H2 **PROVEN** (verification extension, not tooling-only) | G54 / #71 |
+| G62 | Real portability bug via APE (G33 bridge) | G54 H4 **PROVEN** with FIT candidate | G54 / #71 |
+| G63 | Candidate-ID sidecar contract + `*.req.auto` gate | G55 H1+H2 **PROVEN** | G55 / #72 |
+| G64 | Agent build→sidecar→verify loop harness | G55 verdict **adopt sidecar** + G63 done | G55 / #72 |
+| G65 | `size_monotone` second mined bug (broader power claim) | Real-history candidate beyond jemalloc overflow boundary | G49 done + mining |
+
+**G49** (done, #68). jemalloc `sz_s2u_compute_using_delta`. Gated `BACKTEST-JEMALLOC-S2U` in `check-all-proofs.sh`. Witness `hex=7000000000000101`.
+
+**G50** (done, #69). Modeled `conserve_popcount` on reverse32. Gated `BACKTEST-CONSERVE-POPCOUNT`. Witness `hex=3`. G68 extends same relation to rule 184 step.
+
+**G69** (done, #76). `flow_composition` relation on `fixtures/metamorphic/ca_flow.c` (rule 90). `-DEVIL_SKIP` omits one middle generation when `steps >= 2`. Gate `scripts/check-flow-composition.sh`. Impact matrix `scripts/measure-relation-impact.sh`. ADR-019. No `.ngb` format change.
+
+**G68** (done). Rule 184 one-step specimen reuses G50 `conserve_popcount` without a new branch. `-DEVIL_DROP` on `ca_step.c`. Ruliad rule 184 marked Done in ledger. Gate `scripts/check-rule184-conserve.sh`. ADR-018.
+
+**G67** (done). `linear_xor` relation on rule 90 CA step; `-DEVIL_RULE` compiles rule 30 imposter. Gate `scripts/check-linear-xor.sh`. ADR-017. Mining note: CRC/checksum combine histories are the real-history follow-on (scorecard TBD).
+
+**G66** (done). [`RELATION-TAXONOMY.md`](RELATION-TAXONOMY.md), family column in METAMORPHIC-RELATIONS, BACKTEST stage-2 checklist. ADR-016. Gate `scripts/check-relation-taxonomy.sh`. Docs only.
+
+**G55** (open, #72). Explores the **parked ADR-007 seam** without breaking language-blind verify. A language-aware **sidecar** (outside `metamorphic-verify.sh`) proposes `VerificationRequest` files after an agent build; NanoGraph consumes `.req` + `.ngb` only. Product hypothesis: sidecar to code/build/verify loops for correctness-critical codecs. Pre-registered H1–H4 in #72: round-trip pair recall on ≥5 known fixtures (H1), verdict equivalence vs hand `.req` (H2), agent-loop latency (H3), boundary independence from `tools/` (H4). Deliverables: [`docs/specs/CANDIDATE-ID-SPIKE.md`](CANDIDATE-ID-SPIKE.md), ADR-015, prototype under `spike/candidate-id/`, optional `*.req.auto` diffs. Verdict **adopt sidecar**, **skill-only**, or **reject**. Follow-on **G63–G64** if adopt. Composes with G51–G53 (mining) and G54 (target); does not ingest zerolang/MIR.
+
+**G54** (open, #71). Scientific spike on **target-bound, not language-bound** extensions (ADR-010). Cosmopolitan APE promises one x86_64 binary loadable on Linux, macOS, Windows, and BSD. Pre-registered hypotheses H1–H4 in #71: harness tooling without qemu on macOS (H1), metamorphic witness invariance Linux-ELF-vs-APE (H2), `ngb-pack`/`ngb-parse` on APE polyglot slice (H3), real portability bug observability beyond G33's modeled shim (H4). Deliverables: [`docs/specs/APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md), ADR-014 with PROVEN/REFUTED/INCONCLUSIVE per hypothesis, `fixtures/fit-cases/ape-target-extension.fit`. Final verdict **adopt**, **tooling-only**, or **reject**. Follow-on **G60–G62** if adopt. No `.ngb` format change unless H3 kill opens a separate ADR.
+
+**G51–G53** (open, #70). Language-diversity mining track. G32 proved formal mining on C/C++ permissive codecs; every gated proof still mints C via `gcc:13`. ADR-010 states the floor is language-blind at verify time; this track tests whether Rust, Zig, and Go upstream histories yield FIT scorecards and whether extraction behind a trusted driver (freestanding build or transcribe) is practical. Per [`../BACKTEST.md`](../BACKTEST.md) stages 1–3 only until a FIT survivor is chosen. Each language delivers ≥3 scored `fixtures/fit-cases/*.fit` cards with verified parent+fix SHAs, a mining note (FIT / NOT-A-FIT / PARKED + extraction feasibility), and an explicit kill report if zero FIT. Stretch per language: one native specimen through an existing relation gate with no verifier change. Follow-on **G56–G59** per language if FIT. No language front end, no `.ngb` format change.
 
 **G40** (shortlist). Follow-through from G32 mining on the Justine/llamafile ICP thread ([`docs/icps/justine-tunney.md`](../icps/justine-tunney.md)). Six scorecards, anti-fabrication SHAs verified via `gh api`. Active FIT survivor executed as G41. `parked=1` scorecards (`cosmo-decodebase64`, `cosmo-isutf8`, `cosmo-uleb64`) score `gate=PARKED` and are excluded from the queue. NOT-A-FIT: `llamafile-inference` (`observable=0`). Score with `scripts/score-case-fit.sh fixtures/fit-cases/<name>.fit`. No floor or format change.
 
@@ -197,7 +264,6 @@ Parked ideas, each needing a concrete reason before it earns a slot. Do not buil
 | Differential conformance (one binary, two specs) | A spec-collision risk shows up in practice |
 | Portable verdict bundle (JSON) | An external auditor needs to verify without re-running probes |
 | Zerolang MIR seam (spike) | An external intent source wants to feed the conformance floor |
-| Cosmopolitan APE runner spike | macOS-native proof runs without qemu/Docker; tooling-only first |
 
 ## Completed product proof
 
@@ -255,4 +321,14 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #63–#65 | G45/G46/G47 exploration triage (parked, closed not-planned) |
 | #66 | G42 cosmo ljson overlong UTF-8 real-history backtest (reselected) |
 | #67 | G48 LLVM BOLT cmp_order real-history backtest |
+| #68 | G49 jemalloc size_monotone real-history backtest |
+| #69 | G50 conserve_popcount modeled backtest (reverse32) |
+| #70 | G51–G53 Rust, Zig, Go backtest mining (language diversity) |
+| #71 | G54 falsify Cosmopolitan APE target extension (prove or refute) |
+| #72 | G55 falsify candidate-ID sidecar at VerificationRequest seam |
+| #73 | G66 relation taxonomy (docs) |
+| #74 | G67 linear_xor homomorphism relation |
+| #75 | G68 rule 184 conserve_popcount bridge |
+| #76 | G69 flow_composition relation |
+| — | G56–G65 conditional follow-ons (pre-registered in Next goals; no issue until trigger) |
 | — | G40 llamafile-stack subcase mining + scorecards (shortlist) |

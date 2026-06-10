@@ -29,6 +29,11 @@ make -C tools -s all
 ./scripts/check-input-math-conformance.sh
 ./scripts/check-adversarial-verifier.sh
 ./scripts/check-metamorphic-involution.sh
+./scripts/check-relation-taxonomy.sh
+./scripts/check-linear-xor.sh
+./scripts/check-rule184-conserve.sh
+./scripts/check-flow-composition.sh
+./scripts/measure-relation-impact.sh
 ./scripts/check-bswap-value-oracle.sh
 ./scripts/check-reverse32-real.sh
 ./scripts/check-utf8-roundtrip.sh
@@ -42,6 +47,8 @@ make -C tools -s all
 ./scripts/check-backtest.sh fixtures/backtest/cosmo-parseip/timeline.manifest 3235352e3235352e3235352e323536 COSMO-PARSEIP
 ./scripts/check-backtest.sh fixtures/backtest/cosmo-ljson/timeline.manifest c080 COSMO-LJSON
 ./scripts/check-backtest.sh fixtures/backtest/llvm-bolt-cmp/timeline.manifest 00 LLVM-BOLT-CMP
+./scripts/check-backtest.sh fixtures/backtest/jemalloc-s2u/timeline.manifest 7000000000000101 JEMALLOC-S2U
+./scripts/check-backtest.sh fixtures/backtest/conserve-popcount/timeline.manifest 3 CONSERVE-POPCOUNT
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

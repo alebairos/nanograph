@@ -1,0 +1,4 @@
+req=fixtures/metamorphic/conserve_popcount.req
+rev=rev1_honest       ngb=fixtures/backtest/conserve-popcount/conserve_popcount_rev1.ngb   expect=accept
+rev=rev2_evil-reverse ngb=fixtures/backtest/conserve-popcount/conserve_popcount_rev2.ngb   expect=reject
+rev=rev3_fix          ngb=fixtures/backtest/conserve-popcount/conserve_popcount_rev3.ngb   expect=accept

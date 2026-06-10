@@ -26,17 +26,21 @@ eq=exact
 
 ## Relations
 
-| Relation | Property | Status |
-| --- | --- | --- |
-| `involution` | `f(f(x)) == x` | **Done** (G24) |
-| `round_trip` | `encode(decode(b)) == b` over accepted byte sequences | Implemented (G27 utf8, G31 leb128, G34 wabt, G39 capnproto) |
-| `value_oracle` | `parse(s) == expected` over a probe table | Implemented (G41 cosmo_parseip, G42 cosmo_ljson) |
-| `range_coverage` | reachability (`lo_seed`/`hi_seed`) plus containment (sweep min/max) | Implemented (G35 knuth_rand_len; G37 endpoints; G38 named phases) |
-| `cmp_order` | irreflexivity `cmp(i,i)==0`; antisymmetry `cmp(i,j)==1` implies `cmp(j,i)==0` | Implemented (G48 llvm_bolt_cmp) |
-| `idempotent` | `f(f(x)) == f(x)` | Named, unimplemented |
-| `commutative` | `f(a,b) == f(b,a)` | Named, unimplemented |
+| Relation | Family | Property | Status |
+| --- | --- | --- | --- |
+| `involution` | Identity | `f(f(x)) == x` | **Done** (G24) |
+| `round_trip` | Section / retraction | `encode(decode(b)) == b` over accepted byte sequences | Implemented (G27 utf8, G31 leb128, G34 wabt, G39 capnproto) |
+| `value_oracle` | Point oracle (probe table, not MR) | `parse(s) == expected` over a probe table | Implemented (G41 cosmo_parseip, G42 cosmo_ljson) |
+| `range_coverage` | Image / coverage | reachability (`lo_seed`/`hi_seed`) plus containment (sweep min/max) | Implemented (G35 knuth_rand_len; G37 endpoints; G38 named phases) |
+| `cmp_order` | Order | irreflexivity `cmp(i,i)==0`; antisymmetry `cmp(i,j)==1` implies `cmp(j,i)==0` | Implemented (G48 llvm_bolt_cmp) |
+| `size_monotone` | Order | `x < y` implies `f(x) <= f(y)` | Implemented (G49 jemalloc) |
+| `conserve_popcount` | Invariant preservation | `popcount(f(x)) == popcount(x)` | Implemented (G50 reverse32; G68 rule 184 step) |
+| `linear_xor` | Homomorphism | `f(a^b) == f(a)^f(b)` over probe pairs | Implemented (G67 rule 90 step) |
+| `flow_composition` | Flow / composition | `flow(n+m,s) == flow(m, flow(n,s))` | Implemented (G69 ca_flow) |
+| `idempotent` | Identity | `f(f(x)) == f(x)` | Named, unimplemented |
+| `commutative` | (named) | `f(a,b) == f(b,a)` | Named, unimplemented |
 
-Each is a branch in the verifier's dispatch. Adding one is a `.req` plus a branch, not a new floor.
+Taxonomy index: [`RELATION-TAXONOMY.md`](RELATION-TAXONOMY.md). Each implemented relation is a branch in the verifier's dispatch. Adding one is a `.req` plus a branch, not a new floor.
 
 ## Mechanism
 
@@ -164,6 +168,24 @@ Request schema (`fixtures/metamorphic/llvm_bolt_cmp.req`):
 G48 case: LLVM BOLT `compareSections`, parent `e8606ab` to fix `5fe235b`. The missing identity guard breaks irreflexivity for every section whose self-comparison reaches a `return true` path (mover, main, warm in the modeled scenario; the cold self-pair compares equal names and stays 0). **Catch** on witness `hex=00`, the mover self-pair, first in probe order. Timeline accept, reject, accept; gated `LLVM-BOLT-CMP`. See `fixtures/backtest/llvm-bolt-cmp/CASE.md`.
 
 G48 demonstrates **irreflexivity** power only. The witness trips `cmp(i,i)==0`. The antisymmetry arm is implemented but the BOLT bug does not exercise it (every off-diagonal pair on the buggy rev is consistent), so antisymmetry has no tested witness yet. Transitivity is not checked. Note the famous `return a-b` qsort overflow is a **transitivity** violation (`INT_MIN, 0, INT_MAX`), which `cmp_order` as built does not catch. Per ADR-007's anti-Goodhart stance, the unproven arms do not get a power claim until a real bug exercises them.
+
+## Homomorphism on a linear CA step (G67, linear_xor)
+
+Decision: [`../adr/ADR-017-linear-xor-relation.md`](../adr/ADR-017-linear-xor-relation.md).
+
+Rule 90's one-step map on a WIDTH-bit row is linear over GF(2). For probe pairs `(a,b)`, the verifier requires `step(a^b) == step(a)^step(b)` with three batched runs per pair. `fixtures/metamorphic/ca_step.c` compiles with `-DRULE=90`; `-DEVIL_RULE` swaps rule 30 to break linearity while keeping a plausible CA step. Gate `scripts/check-linear-xor.sh`: honest accepts, evil rejects with witness on pair `(1,2)`. Ceiling: any linear map passes, including the wrong rule if it were linear (rule 30 is not, which is why it rejects).
+
+## Rule 184 conserve_popcount bridge (G68)
+
+Decision: [`../adr/ADR-018-rule184-conserve-bridge.md`](../adr/ADR-018-rule184-conserve-bridge.md).
+
+Rule 184 (particle traffic) conserves popcount per generation. The same `conserve_popcount` branch as G50 applies to `ca_step.c` with `-DRULE=184` and `mode=step`. `-DEVIL_DROP` clears bit 0 when set, breaking conservation on seeds with the low bit set. This unifies the scalar relation lane with the ruliad exploration ledger without a stdout golden. Gate `scripts/check-rule184-conserve.sh`. Unlike G50 reverse32, the bug is not an involution failure.
+
+## Flow composition on iterated CA (G69, flow_composition)
+
+Decision: [`../adr/ADR-019-flow-composition-relation.md`](../adr/ADR-019-flow-composition-relation.md).
+
+`fixtures/metamorphic/ca_flow.c` exposes `flow <steps> <seed>`. For triples `(n,m,seed)` with `n+m <= max_total`, the verifier checks `flow(n+m,seed) == flow(m, flow(n,seed))`. `-DEVIL_SKIP` omits one middle generation when `steps >= 2`, modeling incremental-update drift. Gate `scripts/check-flow-composition.sh`. Impact matrix: `scripts/measure-relation-impact.sh`.
 
 ## Specimens
 
