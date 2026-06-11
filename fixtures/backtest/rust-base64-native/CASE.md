@@ -30,3 +30,7 @@ Upstream: https://github.com/marshallpierce/rust-base64
 ## Result
 
 Catch. Timeline accept → reject (`hex=6959563d`) → accept. Fix returns to revision one's `graph_root_hash`.
+
+## Git history note
+
+Git may show these `.ngb` files as renames from deleted `c-bswap32-native` blobs. The content is independent mined Rust base64. Trust `rust_base64.req` replay and `check-native-port-fidelity.sh`, not rename similarity.

@@ -49,7 +49,9 @@ Two legs. **CI** runs the committed-artifact leg only (no Docker mint). **Manual
 ./scripts/check-lang-packs.sh
 ```
 
-For each pack: committed honest `.ngb` → `ngb-parse` (I1–I6) → `metamorphic-verify.sh` accept under the pack's `.req`, plus one **real-history** native backtest timeline per non-C pack (Zig, Rust, Go) in `check-lang-packs.sh`.
+For each pack: committed honest `.ngb` → `ngb-parse` (I1–I6) → `metamorphic-verify.sh` accept under the pack's `.req`, plus one **real-history** native backtest timeline per non-C pack (Zig, Rust, Go) in `check-lang-packs.sh`. The **C pack** has no separate lang-pack backtest directory. C real-history coverage lives in the general 15-case backtest suite (`check-all-proofs.sh`). C's lang-pack CI leg is honest involution gate only (`bswap32.ngb` + `bswap32.req`).
+
+After backtest legs, `check-native-port-fidelity.sh` asserts native Rust/Go rev2 reject witnesses match the C-mined sibling case on the same `.req`.
 
 ### Manual mint leg (authoring)
 
@@ -81,7 +83,15 @@ Retrofit proofs (2026-06-11, both unchanged minters):
   -- ./scripts/mint-one-go.sh fixtures/metamorphic/go_native_base64_streaming.go /tmp/lp_go.ngb
 ```
 
-G77 (#106) wired `check-lang-packs.sh` into CI. **Follow-on (G77b):** replaced synthetic `*-bswap32-native` timelines with mined `rust-base64-native` (G56) and `go-base64-streaming-native` (G58); tightened `check-backtest.sh` witness regex; Go evil bswap uses build tags not a duplicate file.
+G77 (#106) wired `check-lang-packs.sh` into CI. **Follow-on (G77b):** replaced synthetic `*-bswap32-native` timelines with mined `rust-base64-native` (G56) and `go-base64-streaming-native` (G58); tightened `check-backtest.sh` witness regex; Go evil bswap uses build tags not a duplicate file. **G77c (docs+ fidelity):** G75/G76 narrative updated for current CI gate; native port fidelity check; epistemology note below.
+
+## Native specimen epistemology
+
+**Native** in a lang-pack backtest means the artifact was minted by `mint-one-<lang>.sh`, not that upstream Rust/Go sources were compiled verbatim. Specimens are faithful ports of the freestanding C transcription already used in the mined C backtest (same bug guard, same `.req`, same reject witness). The proof is that the lang-pack pipeline preserves real-history relation semantics at native scale. See sibling `fixtures/backtest/<case>/CASE.md` (C) and `fixtures/backtest/<case>-native/CASE.md` (native). `check-native-port-fidelity.sh` compares rev2 reject witnesses across the pair.
+
+## Artifact size note
+
+Go pack `.ngb` files carry the full Go runtime (~1.5MB per revision). That weight is expected and unchanged since G76. It is the stress test that pack/parse/verify stay language-blind at production scale.
 
 ## Contribution checklist (for an external agent)
 

@@ -41,5 +41,6 @@ echo "== lang-pack native backtests (real-history) =="
 ./scripts/check-backtest.sh fixtures/backtest/zig-wyhash-native/timeline.manifest 5 ZIG-WYHASH-NATIVE
 ./scripts/check-backtest.sh fixtures/backtest/rust-base64-native/timeline.manifest 6959563d RUST-BASE64-NATIVE
 ./scripts/check-backtest.sh fixtures/backtest/go-base64-streaming-native/timeline.manifest 5 GO-BASE64-STREAMING-NATIVE
+./scripts/check-native-port-fidelity.sh
 
-echo "LANG-PACKS OK (4 packs + 3 mined native backtests)"
+echo "LANG-PACKS OK (4 packs + 3 mined native backtests + port fidelity)"
