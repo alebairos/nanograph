@@ -34,6 +34,89 @@ fi
 # shellcheck source=blind-probe-generators.sh
 source "$(dirname "$0")/blind-probe-generators.sh"
 
+witness_field() {
+  sed -n "s/.* ${2}=\([^ ]*\).*/\1/p" <<<"$1" | head -1
+}
+
+# Returns 0 when rev1 passes the same witness rev2 rejected (true defect separator).
+rev1_passes_witness() {
+  local rev1="$1" req="$2" relation="$3" witness_line="$4"
+  local mode encode decode reject draw lo hi
+
+  case "$relation" in
+    round_trip)
+      local b cp2 b3
+      b="$(witness_field "$witness_line" bytes)"
+      [[ -n "$b" ]] || return 1
+      encode="$(sed -n 's/^encode=//p' "$req" | head -1)"
+      decode="$(sed -n 's/^decode=//p' "$req" | head -1)"
+      reject="$(sed -n 's/^reject=//p' "$req" | head -1)"
+      cp2="$(./scripts/run-linux-elf-capture.sh "$rev1" "$decode" "$b" 2>/dev/null | tr -d '\n\r' || true)"
+      [[ -n "$cp2" && "$cp2" != "$reject" ]] || return 1
+      b3="$(./scripts/run-linux-elf-capture.sh "$rev1" "$encode" "$cp2" 2>/dev/null | tr -d '\n\r' || true)"
+      [[ "$b3" == "$b" ]]
+      ;;
+    flow_composition)
+      local n m seed once part composed max_total
+      n="$(witness_field "$witness_line" n)"
+      m="$(witness_field "$witness_line" m)"
+      seed="$(witness_field "$witness_line" seed)"
+      [[ -n "$n" && -n "$m" && -n "$seed" ]] || return 1
+      mode="$(sed -n 's/^mode=//p' "$req" | head -1)"
+      max_total="$(sed -n 's/^max_total=//p' "$req" | head -1)"
+      if [[ "$((n + m))" -gt "$max_total" ]]; then
+        return 1
+      fi
+      once="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$((n + m))" "$seed" 2>/dev/null | tr -d '\n\r' || true)"
+      part="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$n" "$seed" 2>/dev/null | tr -d '\n\r' || true)"
+      composed="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$m" "$part" 2>/dev/null | tr -d '\n\r' || true)"
+      [[ "$once" =~ ^[0-9]+$ && "$part" =~ ^[0-9]+$ && "$composed" =~ ^[0-9]+$ && "$once" == "$composed" ]]
+      ;;
+    cmp_order)
+      local i j ij ji pair
+      pair="$(witness_field "$witness_line" pair)"
+      [[ -n "$pair" ]] || return 1
+      i="${pair%%,*}"
+      j="${pair#*,}"
+      mode="$(sed -n 's/^mode=//p' "$req" | head -1)"
+      ij="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$i" "$j" 2>/dev/null | tr -d '\n\r' || true)"
+      [[ "$ij" == 0 || "$ij" == 1 ]] || return 1
+      if [[ "$i" == "$j" ]]; then
+        [[ "$ij" == "0" ]]
+      else
+        ji="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$j" "$i" 2>/dev/null | tr -d '\n\r' || true)"
+        [[ "$ji" == 0 || "$ji" == 1 ]] && [[ ! ("$ij" == "1" && "$ji" != "0") ]]
+      fi
+      ;;
+    range_coverage)
+      local seed endpoint want got lo_seed hi_seed
+      seed="$(witness_field "$witness_line" seed)"
+      endpoint="$(witness_field "$witness_line" endpoint)"
+      want="$(witness_field "$witness_line" want)"
+      draw="$(sed -n 's/^draw=//p' "$req" | head -1)"
+      lo="$(sed -n 's/^lo=//p' "$req" | head -1)"
+      hi="$(sed -n 's/^hi=//p' "$req" | head -1)"
+      lo_seed="$(sed -n 's/^lo_seed=//p' "$req" | head -1)"
+      hi_seed="$(sed -n 's/^hi_seed=//p' "$req" | head -1)"
+      got="$(./scripts/run-linux-elf-capture.sh "$rev1" "$draw" "$seed" 2>/dev/null | tr -d '\n\r' || true)"
+      if [[ "$endpoint" == lo ]]; then
+        [[ "$got" == "$lo" ]]
+      elif [[ "$endpoint" == hi ]]; then
+        [[ "$got" == "$hi" ]]
+      elif [[ -n "$want" ]]; then
+        [[ "$got" == "$want" ]]
+      else
+        [[ "$got" =~ ^[0-9]+$ && "$got" -ge "$lo" && "$got" -le "$hi" ]]
+      fi
+      ;;
+    value_oracle)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
 
 search_self_oracle() {
   local cand="$1" req="$2"
@@ -106,7 +189,19 @@ run_case() {
 
   if grep -q '^verdict=reject' <<<"$out"; then
     witness="$(grep '^verdict=reject' <<<"$out" | head -1)"
-    echo "case=$label relation=$relation result=found wall_ms=$wall $witness"
+    if [[ "$relation" == value_oracle ]]; then
+      spec=true_found
+    elif rev1_passes_witness "$rev1" "$req" "$relation" "$witness"; then
+      spec=true_found
+    else
+      sleep 1
+      if rev1_passes_witness "$rev1" "$req" "$relation" "$witness"; then
+        spec=true_found
+      else
+        spec=both_reject
+      fi
+    fi
+    echo "case=$label relation=$relation result=found specificity=$spec wall_ms=$wall $witness"
   elif grep -q '^verdict=accept' <<<"$out"; then
     echo "case=$label relation=$relation result=miss wall_ms=$wall reason=budget-exhausted"
   else
@@ -141,6 +236,8 @@ else
 fi
 
 found=0
+true_found=0
+both_reject=0
 miss=0
 err=0
 total=${#CASES[@]}
@@ -152,15 +249,18 @@ for entry in "${CASES[@]}"; do
   line="$(run_case "$label" "$manifest")"
   echo "$line"
   if grep -q 'result=found' <<<"$line"; then found=$((found + 1)); fi
+  if grep -q 'specificity=true_found' <<<"$line"; then true_found=$((true_found + 1)); fi
+  if grep -q 'specificity=both_reject' <<<"$line"; then both_reject=$((both_reject + 1)); fi
   if grep -q 'result=miss' <<<"$line"; then miss=$((miss + 1)); fi
   if grep -q 'result=error' <<<"$line"; then err=$((err + 1)); fi
 done
 
-pct=$((found * 100 / total))
-echo "BLIND-PROBE-SEARCH SUMMARY found=$found miss=$miss error=$err total=$total rate=${pct}%"
-if [[ "$pct" -ge 50 ]]; then
+found_pct=$((found * 100 / total))
+true_pct=$((true_found * 100 / total))
+echo "BLIND-PROBE-SEARCH SUMMARY found=$found true_found=$true_found both_reject=$both_reject miss=$miss error=$err total=$total found_rate=${found_pct}% true_rate=${true_pct}%"
+if [[ "$true_pct" -ge 50 ]]; then
   echo "BLIND-PROBE-SEARCH VERDICT PROVEN_bounded"
-elif [[ "$pct" -ge 20 ]]; then
+elif [[ "$true_pct" -ge 20 ]]; then
   echo "BLIND-PROBE-SEARCH VERDICT PARTIAL"
 else
   echo "BLIND-PROBE-SEARCH VERDICT REFUTED"
