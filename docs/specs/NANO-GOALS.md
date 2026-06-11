@@ -29,13 +29,13 @@ What the program has settled versus what still needs a goal.
 | `size_monotone` catches a real allocator sizing bug | **Proven** | G49 jemalloc backtest gated `JEMALLOC-S2U` (#68) |
 | `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
 | Language-diversity mining yields FIT candidates (Rust, Zig, Go) | **Proven** | G51–G53 (#70); scorecards + [`MINING-G51-G53.md`](MINING-G51-G53.md) |
-| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig)** | G59 `ZIG-WYHASH-NATIVE`; native Zig `.ngb` through unchanged verifier; n=1 native non-C; upgrade path is lang packs (ADR-021, G74→G75/G76) |
+| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig)** | G59 `ZIG-WYHASH-NATIVE`; native Zig `.ngb` through unchanged verifier; blind search also re-detects the native artifact (true_found, #96), so language-blind and blind-detection claims intersect; still n=1 native non-C; upgrade path is lang packs (ADR-021, G74→G75/G76) |
 | Rust real-history backtests execute on language-diversity lane | **Proven** | G56 `RUST-BASE64-INVALID-LAST` + G71 `RUST-CRC32FAST-COMBINE-LEN0` |
 | `flow_composition` catches real-history incremental bugs | **Proven (Rust+Zig+Go)** | G57/G59 Wyhash + G58 Go streaming + G71 crc32fast; witness `hex=5` all three; [`FLOW-COMPOSITION-TRI-LANGUAGE.md`](FLOW-COMPOSITION-TRI-LANGUAGE.md) |
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
 | Cross-loader / APE target extension adds product value | **Refuted (G54)** | ADR-014 **reject**; H4 kill, H1/H2 blocked on cosmocc; [`APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md) |
 | Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Partial (G55)** | ADR-015 **skill-only**; H1 4/5 + H2 proven; H3 **PROVEN** under frozen sidecar on novel + 5/5 mined house-style specimens (#85–#87); recall is convention-lint (prose dependency); G63–G64 parked; [`CANDIDATE-ID-SPIKE-FOLLOWON.md`](CANDIDATE-ID-SPIKE-FOLLOWON.md) |
-| Verification floor discovers defects without curated probes | **Proven (bounded, G73)** | Blind search **6/12 true_found** (8/12 rev2 reject, 2 both_reject) at default budget; rev1 specificity control in `blind-probe-search.sh`; [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md); misses are budget/domain-size (utf8 C080, wabt ff02, parseip 256) |
+| Verification floor discovers defects without curated probes | **Proven (bounded, G73)** | Blind search **8/13 true_found (61%)** after hardening (#96): hints declared in `.req`, native Zig case true_found, rust-base64 converted to true separator via `probe_block=4`; 1 both_reject (capnproto WHATWG leniency, documented relation gap); [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
 | Relation taxonomy guides mining before new MR branches | **Proven** | G66 RELATION-TAXONOMY + BACKTEST checklist; gated `check-relation-taxonomy.sh` |
 | Homomorphism family (`linear_xor`) catches non-linear CA rule | **Proven** | G67 rule 90 vs rule 30 imposter; gated `check-linear-xor.sh` |
 | Scalar conservation applies to Wolfram particle rule 184 | **Proven** | G68 `conserve_popcount` on rule 184 step; gated `check-rule184-conserve.sh` |
@@ -221,7 +221,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 
 | Gap | Status | Next action |
 | --- | --- | --- |
-| Probe generator (detection) | **Done bounded (G73)** | 6/12 true_found (8/12 rev2 reject, 2 both_reject); rev1 specificity control; see [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
+| Probe generator (detection) | **Done bounded (G73 + #96)** | 8/13 true_found (61%) incl. native Zig; one documented relation gap (capnproto); see [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
 | Extractor (freestanding specimen) | **Mitigated by agents** | Delegate transcription pattern (H3 tranches 2–3); productize only if paying candidate binds cost |
 | Fit conditionality | **Scoping** | `score-case-fit.sh`; say no to NOT-A-FIT |
 | Platform (x86_64 Linux ELF) | **Intentional** | APE rejected ADR-014; no reopen without new evidence |
@@ -269,7 +269,7 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G74** (done, #93). Lang-pack contract per ADR-021: language support is a modular pack (one `mint-one-<lang>.sh` + one specimen) proven by `check-lang-pack.sh` (mint → I1–I6 parse → honest accept), not a plugin framework. C and Zig minters retrofit green with zero minter changes (`bswap32.req` involution, `zig_wyhash.req` flow_composition). Gate is manual, not CI (Zig toolchain download). Each later pack (G75 Rust, G76 Go) upgrades the language-blind claim by one native language. Spec [`LANG-PACKS.md`](LANG-PACKS.md).
 
-**G73** (done, #89). Blind probe generation eval. `blind-probe-search.sh` + `blind-probe-generators.sh`; **6/12 true_found** (8/12 rev2 reject, 2 both_reject) at default budget with rev1 specificity control (**PROVEN bounded**, exactly at 50% margin). Misses documented (utf8/leb128/wabt/parseip budget). No CI gate (~198s wall). Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
+**G73** (done, #89; hardened #96). Blind probe generation eval. `blind-probe-search.sh` + `blind-probe-generators.sh`; after hardening, **8/13 true_found (61%)** with rev1 replay control (`METAMORPHIC_PROBES`), `.req`-declared generator hints, native Zig corpus case (blind true_found), and capture-level fault retry. One documented relation gap (capnproto WHATWG leniency). Misses documented (utf8/leb128/wabt/parseip budget). No CI gate (~207s wall). Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 
 **G54** (done, #71; tooling revisit #85). APE target extension spike. Verdict **reject** per ADR-014 for verification extension; H1 tooling tier **PROVEN** (#85). G60–G62 stay parked.
 

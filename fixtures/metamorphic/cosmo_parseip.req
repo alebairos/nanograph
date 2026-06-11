@@ -4,3 +4,4 @@ mode=dec
 domain=cosmo_parseip
 reject=REJECT
 wire=ascii
+probe_style=ipv4

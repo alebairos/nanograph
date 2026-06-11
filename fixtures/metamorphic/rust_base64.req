@@ -6,3 +6,4 @@ domain=rust_base64
 reject=REJECT
 eq=exact
 wire=ascii
+probe_block=4

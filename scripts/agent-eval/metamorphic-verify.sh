@@ -170,6 +170,10 @@ u64_lt() { python3 -c 'import sys; print(int(sys.argv[1]) < int(sys.argv[2]))' "
 u64_gt() { python3 -c 'import sys; print(int(sys.argv[1]) > int(sys.argv[2]))' "$1" "$2"; }
 
 gen_probes() {
+  if [[ -n "${METAMORPHIC_PROBES:-}" ]]; then
+    printf '%s\n' "$METAMORPHIC_PROBES"
+    return
+  fi
   if [[ "${METAMORPHIC_BLIND:-}" == 1 ]]; then
     # shellcheck source=blind-probe-generators.sh
     source "$(dirname "$0")/blind-probe-generators.sh"
@@ -349,7 +353,9 @@ if [[ "$RELATION" == round_trip ]]; then
     accepted=$((accepted + 1))
   done
 
-  [[ "$accepted" -ge 1 ]] || {
+  # Witness replay (METAMORPHIC_PROBES) may pass a single probe the candidate
+  # rejects outright; that is a non-violation, not a harness error.
+  [[ "$accepted" -ge 1 || -n "${METAMORPHIC_PROBES:-}" ]] || {
     echo "metamorphic-verify: round_trip accepted 0 inputs (domain has no canonical sample)" >&2
     exit 2
   }
@@ -427,8 +433,8 @@ if [[ "$RELATION" == cmp_order ]]; then
     exit 2
   }
 
-  # A backend fault (empty or non-bool output) must not read as a semantic
-  # reject; retry once, then fail as a harness error.
+  # Empty-output backend faults are retried inside run-linux-elf-capture.sh;
+  # anything still non-bool here is a harness error.
   cmp_run() { ./scripts/run-linux-elf-capture.sh "$CAND" "$MODE" "$1" "$2" 2>/dev/null | tr -d '\n\r' || true; }
 
   checked=0
@@ -436,13 +442,11 @@ if [[ "$RELATION" == cmp_order ]]; then
     i="${line%% *}"
     j="${line#* }"
     ij="$(cmp_run "$i" "$j")"
-    [[ "$ij" == 0 || "$ij" == 1 ]] || ij="$(cmp_run "$i" "$j")"
     [[ "$ij" == 0 || "$ij" == 1 ]] || {
       echo "metamorphic-verify: cmp_order non-bool output for pair $i,$j (got '${ij}')" >&2
       exit 2
     }
     ji="$(cmp_run "$j" "$i")"
-    [[ "$ji" == 0 || "$ji" == 1 ]] || ji="$(cmp_run "$j" "$i")"
     [[ "$ji" == 0 || "$ji" == 1 ]] || {
       echo "metamorphic-verify: cmp_order non-bool output for pair $j,$i (got '${ji}')" >&2
       exit 2

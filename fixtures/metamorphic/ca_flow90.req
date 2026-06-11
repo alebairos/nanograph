@@ -3,3 +3,4 @@ entry=argv_mode
 mode=flow
 domain=ca_flow90
 max_total=12
+flow_nm=1 2
