@@ -57,9 +57,21 @@ Unchanged from [`APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md). H3 partial ELF-only
 
 **No change.** Witness parity on one utf8 probe shows APE can reproduce metamorphic reject semantics natively on macOS. That is evidence for a **tooling** follow-on (Tier 1 in the Justine POV thread), not for extending the verify floor or un-parking G60–G62. H1 remains partial until rubric consumes APE binaries.
 
+## Tranche 2: H1 PROVEN (#85)
+
+`check-input-math-conformance.sh` and `run-linux-elf-capture.sh` gained env seams (`CONF_EVAL`, `NGB_PARSE`, `NGB_EXTRACT`; native default unchanged). `spike/ape/run-h1-ape-rubric.sh` builds `conf-eval`, `ngb-parse`, `ngb-extract` as APE, wraps them in loader shims, and runs the real gate twice.
+
+```
+native rc=0 wall_ms=3026  INPUT-MATH-CONFORMANCE OK
+ape    rc=0 wall_ms=4145  INPUT-MATH-CONFORMANCE OK
+```
+
+**H1: PROVEN.** The full gcd case table (v1/v2 accepts, near-miss split) passes with all three harness tools as APE binaries on macOS arm64, no local C toolchain compile of the tools. Specimens stay Linux ELF via docker by design. This moves the ADR-014 tooling tier from parked to viable; the verify-floor reject is untouched. See the ADR-014 addendum.
+
 ## Verification
 
 ```bash
 ./spike/ape/run-g54-followon.sh
+./spike/ape/run-h1-ape-rubric.sh
 ./scripts/check-canonical-drift.sh
 ```
