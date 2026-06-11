@@ -8,6 +8,9 @@
  *   dec <b64>   decode standard padded base64; lowercase hex or REJECT.
  *   enc <hex>   canonical padded base64 or REJECT.
  *
+ * round_trip: enc(dec(b)) == b for accepted b. Lax decode accepts iYV=,
+ * re-encodes to iYU= != iYV=.
+ *
  * LAX_PAD_BITS omits only the trailing unused-bit check; invalid alphabet,
  * padding shape, and other errors stay strict in both builds. */
 
