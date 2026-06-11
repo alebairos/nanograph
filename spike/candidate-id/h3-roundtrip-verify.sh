@@ -26,7 +26,7 @@ run_mode() {
   done
 }
 
-probes=(00 41 FF F)
+read -r -a probes <<<"${PROBES:-00 41 FF F}"
 decoded=()
 while read -r d; do decoded+=("$d"); done < <(printf '%s\n' "${probes[@]}" | run_mode "$DECODE")
 
