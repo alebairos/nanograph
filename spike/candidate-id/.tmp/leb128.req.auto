@@ -1,0 +1,7 @@
+relation=round_trip
+entry=argv_mode
+encode=enc
+decode=dec
+domain=leb128
+reject=4294967295
+eq=exact

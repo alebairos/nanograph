@@ -1,0 +1,8 @@
+relation=round_trip
+entry=argv_mode
+encode=enc
+decode=dec
+domain=h3_nibbles
+reject=1114112
+eq=exact
+wire=ascii
