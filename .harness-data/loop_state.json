@@ -1,12 +1,12 @@
 {
-  "goal_id": "G59",
-  "current_issue": 81,
-  "milestone": "G58-G59",
-  "product_proof_step": "language-blind-native",
+  "goal_id": "G55",
+  "current_issue": 72,
+  "milestone": "G54-G55",
+  "product_proof_step": "tri-language-flow-comp",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "fixtures/backtest/zig-wyhash-native/CASE.md",
+    "spec_path": "docs/specs/CANDIDATE-ID-SPIKE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-019-flow-composition-relation.md",
     "eval_logs": [
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "issue",
-    "note": "G57/G58/G59 complete. G59 native Zig + G58 Go streaming + G57 transcription. Next: G56 #79 Rust base64 or G72 tri-language doc."
+    "note": "G54 reject + G55 skill-only. Spikes closed. Next: G63-G64/G60-G62 parked until new triggers."
   },
   "history": [
     {
@@ -282,6 +282,30 @@
       "milestone": "G57",
       "closed": "2026-06-10",
       "note": "Zig Wyhash flow_composition backtest; ZIG-WYHASH gated; witness hex=5; validates G69 on mined history"
+    },
+    {
+      "issue": 79,
+      "milestone": "G56",
+      "closed": "2026-06-11",
+      "note": "Rust base64 InvalidLastSymbol round_trip backtest; RUST-BASE64-INVALID-LAST; witness hex=6959563d"
+    },
+    {
+      "issue": 82,
+      "milestone": "G71",
+      "closed": "2026-06-11",
+      "note": "Rust crc32fast combine len2=0 flow_composition; RUST-CRC32FAST-COMBINE-LEN0; witness hex=5; G72 tri-language doc"
+    },
+    {
+      "issue": 71,
+      "milestone": "G54",
+      "closed": "2026-06-11",
+      "note": "APE target extension spike reject; ADR-014; H4 refuted"
+    },
+    {
+      "issue": 72,
+      "milestone": "G55",
+      "closed": "2026-06-11",
+      "note": "Candidate-ID sidecar skill-only; ADR-015; H1 4/5 H2 proven"
     }
   ]
 }
