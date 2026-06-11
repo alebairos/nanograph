@@ -4,7 +4,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 # Lang-pack CI gate (ADR-021, G77). Committed-artifact leg only: parse (I1–I6)
-# + honest accept. No Docker mint (network/toolchain) so safe inside check-all-proofs.
+# + honest accept + real-history native backtest per non-C pack. No Docker mint.
 
 fail() { echo "LANG-PACKS FAIL: $1" >&2; exit 1; }
 
@@ -32,14 +32,14 @@ check_pack C   fixtures/metamorphic/bswap32.ngb \
   fixtures/metamorphic/bswap32.req
 check_pack Zig fixtures/backtest/zig-wyhash-native/zig_native_wyhash_rev1.ngb \
   fixtures/metamorphic/zig_wyhash.req
-check_pack Rust fixtures/backtest/rust-bswap32-native/rust_native_bswap32_rev1.ngb \
-  fixtures/metamorphic/bswap32.req
-check_pack Go  fixtures/backtest/go-bswap32-native/go_native_bswap32_rev1.ngb \
-  fixtures/metamorphic/bswap32.req
+check_pack Rust fixtures/backtest/rust-base64-native/rust_native_base64_rev1.ngb \
+  fixtures/metamorphic/rust_base64.req
+check_pack Go  fixtures/backtest/go-base64-streaming-native/go_native_base64_streaming_rev1.ngb \
+  fixtures/metamorphic/go_base64_streaming.req
 
-echo "== lang-pack native backtests =="
-./scripts/check-backtest.sh fixtures/backtest/c-bswap32-native/timeline.manifest x=1 C-BSWAP32-NATIVE
-./scripts/check-backtest.sh fixtures/backtest/rust-bswap32-native/timeline.manifest x=1 RUST-BSWAP32-NATIVE
-./scripts/check-backtest.sh fixtures/backtest/go-bswap32-native/timeline.manifest x=1 GO-BSWAP32-NATIVE
+echo "== lang-pack native backtests (real-history) =="
+./scripts/check-backtest.sh fixtures/backtest/zig-wyhash-native/timeline.manifest 5 ZIG-WYHASH-NATIVE
+./scripts/check-backtest.sh fixtures/backtest/rust-base64-native/timeline.manifest 6959563d RUST-BASE64-NATIVE
+./scripts/check-backtest.sh fixtures/backtest/go-base64-streaming-native/timeline.manifest 5 GO-BASE64-STREAMING-NATIVE
 
-echo "LANG-PACKS OK (4 packs + 3 native bswap32 backtests; Zig wyhash backtest in all-proofs)"
+echo "LANG-PACKS OK (4 packs + 3 mined native backtests)"

@@ -1,0 +1,4 @@
+req=fixtures/metamorphic/go_base64_streaming.req
+rev=rev1_honest  ngb=fixtures/backtest/go-base64-streaming-native/go_native_base64_streaming_rev1.ngb   expect=accept
+rev=rev2_tailfix ngb=fixtures/backtest/go-base64-streaming-native/go_native_base64_streaming_rev2.ngb   expect=reject
+rev=rev3_fix     ngb=fixtures/backtest/go-base64-streaming-native/go_native_base64_streaming_rev3.ngb   expect=accept

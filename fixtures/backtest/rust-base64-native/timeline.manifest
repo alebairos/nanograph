@@ -1,0 +1,4 @@
+req=fixtures/metamorphic/rust_base64.req
+rev=rev1_honest      ngb=fixtures/backtest/rust-base64-native/rust_native_base64_rev1.ngb   expect=accept
+rev=rev2_invalidlast ngb=fixtures/backtest/rust-base64-native/rust_native_base64_rev2.ngb   expect=reject
+rev=rev3_fix         ngb=fixtures/backtest/rust-base64-native/rust_native_base64_rev3.ngb   expect=accept

@@ -35,7 +35,11 @@ A pack consists of:
 
 ## Addendum 2026-06-11 (G77, #106)
 
-CI runs `check-lang-packs.sh` inside `check-all-proofs.sh`. It verifies committed honest `.ngb` per pack and native backtest timelines (C/Rust/Go `*-bswap32-native`, Zig `zig-wyhash-native` in the general backtest suite). Docker mint stays manual at pack authoring time; CI never pulls toolchains.
+CI runs `check-lang-packs.sh` inside `check-all-proofs.sh`. It verifies committed honest `.ngb` per pack and **real-history** native backtests for Zig (`zig-wyhash-native`), Rust (`rust-base64-native`, G56), and Go (`go-base64-streaming-native`, G58). Docker mint stays manual at pack authoring time; CI never pulls toolchains.
+
+## Addendum 2026-06-11 (G77 follow-on)
+
+Removed synthetic `*-bswap32-native` CI timelines. Lang-pack gate honest specimens for Rust/Go now use the mined-case `.req`. `check-backtest.sh` witness match requires `(hex|x)=<value>` at field boundary. Go evil bswap uses build tags, not a duplicate source file.
 
 ## Kill trigger
 
