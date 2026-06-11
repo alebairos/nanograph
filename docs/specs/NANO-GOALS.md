@@ -29,7 +29,7 @@ What the program has settled versus what still needs a goal.
 | `size_monotone` catches a real allocator sizing bug | **Proven** | G49 jemalloc backtest gated `JEMALLOC-S2U` (#68) |
 | `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
 | Language-diversity mining yields FIT candidates (Rust, Zig, Go) | **Proven** | G51–G53 (#70); scorecards + [`MINING-G51-G53.md`](MINING-G51-G53.md) |
-| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig+Rust)** | G59 `ZIG-WYHASH-NATIVE` + G75 native no_std Rust `bswap32` through the unchanged verifier (`check-lang-pack.sh`, #98); blind search re-detects the native Zig artifact (true_found, #96); n=2 native non-C; Go (G76) pending |
+| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig+Rust+Go)** | G59 `ZIG-WYHASH-NATIVE` + G75 native no_std Rust + G76 native Go (full runtime, 1.5MB `.ngb`) all through the unchanged verifier (`check-lang-pack.sh`); blind search re-detects the native Zig artifact (true_found, #96); n=3 native non-C |
 | Rust real-history backtests execute on language-diversity lane | **Proven** | G56 `RUST-BASE64-INVALID-LAST` + G71 `RUST-CRC32FAST-COMBINE-LEN0` |
 | `flow_composition` catches real-history incremental bugs | **Proven (Rust+Zig+Go)** | G57/G59 Wyhash + G58 Go streaming + G71 crc32fast; witness `hex=5` all three; [`FLOW-COMPOSITION-TRI-LANGUAGE.md`](FLOW-COMPOSITION-TRI-LANGUAGE.md) |
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
@@ -217,6 +217,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G73 | Blind probe generation on backtest corpus | #89 | n/a | **Done** (6/12 true_found, PROVEN bounded) |
 | G74 | Lang-pack contract + conformance gate (ADR-021) | #93 | n/a | **Done** (C + Zig retrofit green) |
 | G75 | Native Rust lang pack | #98 | n/a | **Done** (gate green, zero contract amendments) |
+| G76 | Native Go lang pack | #100 | n/a | **Done** (gate green, full Go runtime artifact) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
@@ -245,8 +246,8 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 | G65 | `size_monotone` second mined bug (broader power claim) | Real-history candidate beyond jemalloc overflow boundary | G49 done + mining |
 | G71 | Rust crc32fast `flow_composition` real-history backtest | G56 extraction spike passes + G69 done | G51 / #70 |
 | G72 | Tri-language `flow_composition` witness equivalence doc | G57 + G58 + G71 backtests done | G57/G58/G71 |
-| G75 | Native Rust lang pack through `check-lang-pack.sh` | G74 done (gate exists, C+Zig retrofit green) | G74 / #93 |
-| G76 | Native Go lang pack (TinyGo route) | G75 done without contract amendments | G74 / #93 |
+| ~~G75~~ | ~~Native Rust lang pack~~ | Triggered and **done** (#98) | G74 / #93 |
+| ~~G76~~ | ~~Native Go lang pack~~ | Triggered and **done** (#100, standard Go not TinyGo) | G74 / #93 |
 
 **G51** (done, #70). Rust mining shortlist in [`MINING-G51-G53.md`](MINING-G51-G53.md). Top FIT `rust-base64-invalid-last` (G56 survivor). Wolfram runner-up `rust-crc32fast-combine-len0` (G71). `linear_xor` PARKED on BE-only baseline.
 
@@ -267,6 +268,8 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 **G66** (done). [`RELATION-TAXONOMY.md`](RELATION-TAXONOMY.md), family column in METAMORPHIC-RELATIONS, BACKTEST stage-2 checklist. ADR-016. Gate `scripts/check-relation-taxonomy.sh`. Docs only.
 
 **G55** (done, #72; follow-on #85–#87). Candidate-ID sidecar spike. Verdict **skill-only** per ADR-015. H1 **PROVEN** (4/5 holdout `.req` recall), H2 **PROVEN** (verdict equivalence), H3 **PROVEN** under frozen sidecar (novel nibbles + 5/5 mined house-style; variant A fail-closed without relation prose), H4 **PROVEN** (boundary). Sidecar is a convention lint, not an authoring oracle. G63–G64 stay parked.
+
+**G76** (done, #100). Native Go lang pack. `scripts/mint-one-go.sh` (pinned `golang:1.22`, CGO_ENABLED=0, `-trimpath`, `-buildid=`) + `fixtures/metamorphic/go_native_bswap32.go` through `check-lang-pack.sh` under the existing `bswap32.req`. Heaviest contract test: the `.ngb` carries the full Go runtime (1.5MB vs 9.4KB C) and pack/parse/verify handled it unchanged. Zero contract amendments; language-blind claim now **Proven (Zig+Rust+Go)**, n=3.
 
 **G75** (done, #98). Native Rust lang pack. `scripts/mint-one-rust.sh` (pinned `rust:1.79`) + `fixtures/metamorphic/rust_native_bswap32.rs` (no_std, no_main, raw syscalls, G36 trampoline) through `check-lang-pack.sh` under the existing `bswap32.req`. Zero contract amendments; language-blind claim upgraded to **Proven (Zig+Rust)**, n=2 native non-C.
 
