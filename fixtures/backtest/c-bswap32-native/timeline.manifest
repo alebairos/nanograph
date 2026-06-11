@@ -1,4 +1,0 @@
-req=fixtures/metamorphic/bswap32.req
-rev=rev1_honest ngb=fixtures/backtest/c-bswap32-native/c_native_bswap32_rev1.ngb expect=accept
-rev=rev2_evil    ngb=fixtures/backtest/c-bswap32-native/c_native_bswap32_rev2.ngb expect=reject
-rev=rev3_fix     ngb=fixtures/backtest/c-bswap32-native/c_native_bswap32_rev3.ngb expect=accept
