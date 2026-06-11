@@ -33,8 +33,12 @@ while IFS= read -r line; do
     [[ -n "$verdict" ]] && break
   done
   hex="$(printf '%s' "$out" | sed -n 's/.*hex=\([0-9A-Fa-f]*\).*/\1/p')"
+  inv_x="$(printf '%s' "$out" | sed -n 's/.*witness x=\([^ ]*\).*/\1/p')"
 
-  if [[ -n "$hex" ]]; then witness="hex=$hex"; else witness="-"; fi
+  if [[ -n "$hex" ]]; then witness="hex=$hex"
+  elif [[ -n "$inv_x" ]]; then witness="x=$inv_x"
+  else witness="-"
+  fi
   printf "$fmt" "$rev" "${verdict:--}" "$expect" "$witness"
 
   [[ "$verdict" == "$expect" ]] || fail=1
