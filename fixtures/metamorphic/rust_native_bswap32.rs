@@ -88,6 +88,16 @@ extern "C" fn real_start(argc: i64, argv: *const *const u8) -> ! {
         sys_exit(2);
     }
     let x = unsafe { parse_u(*argv.add(1)) } as u32;
-    print_u(x.swap_bytes() as u64);
+    print_u(bswap32(x) as u64);
     sys_exit(0)
+}
+
+#[cfg(not(evil_bswap))]
+fn bswap32(x: u32) -> u32 {
+    x.swap_bytes()
+}
+
+#[cfg(evil_bswap)]
+fn bswap32(x: u32) -> u32 {
+    x.rotate_left(8)
 }

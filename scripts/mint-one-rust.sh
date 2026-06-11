@@ -5,8 +5,27 @@ cd "$ROOT"
 
 src="${1:-}"
 out="${2:-}"
-[[ -n "$src" && -n "$out" ]] || { echo "usage: mint-one-rust.sh <src.rs> <out.ngb>" >&2; exit 1; }
+shift 2 || true
+
+[[ -n "$src" && -n "$out" ]] || { echo "usage: mint-one-rust.sh <src.rs> <out.ngb> [--cfg name]..." >&2; exit 1; }
 [[ -f "$src" ]] || { echo "mint-one-rust: missing $src" >&2; exit 1; }
+
+cfg_args=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --cfg)
+      [[ -n "${2:-}" ]] || { echo "mint-one-rust: --cfg needs a name" >&2; exit 1; }
+      cfg_args+=(--cfg "$2")
+      shift 2
+      ;;
+    *) echo "mint-one-rust: unknown arg $1" >&2; exit 2 ;;
+  esac
+done
+
+cfg_clause=""
+if ((${#cfg_args[@]})); then
+  cfg_clause="${cfg_args[*]} "
+fi
 
 IMG="rust:1.79"
 
@@ -21,7 +40,7 @@ SRCBASE="$(basename "$src")"
 docker run --rm --platform linux/amd64 -v "$SRCDIR:/w" -w /w "$IMG" \
   sh -c "cp $SRCBASE __one.rs && rustc -O --edition 2021 -C panic=abort \
     -C relocation-model=static -C link-args='-nostartfiles -static -no-pie' \
-    -o __one.elf __one.rs"
+    $cfg_clause-o __one.elf __one.rs"
 tools/bin/ngb-pack "$SRCDIR/__one.elf" "$out"
 rm -f "$SRCDIR/__one.elf" "$SRCDIR/__one.rs"
 
