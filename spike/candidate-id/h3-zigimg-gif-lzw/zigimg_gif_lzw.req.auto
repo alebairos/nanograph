@@ -1,0 +1,8 @@
+relation=round_trip
+entry=argv_mode
+encode=enc
+decode=dec
+domain=zigimg_gif_lzw
+reject=REJECT
+eq=exact
+wire=hex
