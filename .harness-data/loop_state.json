@@ -1,9 +1,9 @@
 {
   "goal_id": "G55",
-  "current_issue": 85,
+  "current_issue": 87,
   "milestone": "G54-G55",
   "product_proof_step": "tri-language-flow-comp",
-  "phase": "complete",
+  "phase": "executing",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/CANDIDATE-ID-SPIKE.md",
