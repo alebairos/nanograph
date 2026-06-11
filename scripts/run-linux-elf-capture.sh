@@ -15,8 +15,11 @@ ELF="/tmp/nanograph-elf-capture-$$"
 TLIMIT="${ELF_TIMEOUT:-10}"
 ulimit -c 0 2>/dev/null || true
 
-make -C tools -s bin/ngb-extract
-tools/bin/ngb-extract "$NGb" "$ELF"
+NGB_EXTRACT="${NGB_EXTRACT:-tools/bin/ngb-extract}"
+if [[ "$NGB_EXTRACT" == tools/bin/ngb-extract ]]; then
+  make -C tools -s bin/ngb-extract
+fi
+"$NGB_EXTRACT" "$NGb" "$ELF"
 chmod +x "$ELF"
 
 host_to() {
