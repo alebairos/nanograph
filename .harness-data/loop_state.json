@@ -1,9 +1,9 @@
 {
-  "goal_id": "G74",
-  "current_issue": 93,
+  "goal_id": "G76",
+  "current_issue": 100,
   "milestone": "lang-packs",
   "product_proof_step": "lang-pack-contract",
-  "phase": "planning",
+  "phase": "done",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/LANG-PACKS.md",
@@ -12,8 +12,8 @@
     "eval_logs": []
   },
   "next_action": {
-    "type": "implement",
-    "note": "G74: check-lang-pack.sh + retrofit C/Zig minters through the gate"
+    "type": "idle",
+    "note": "Lang-pack ladder G74-G76 done (C, Zig, Rust, Go gate green); G73 hardened 8/13 true_found; next candidates: capnproto relation gap or budget-limited misses"
   },
   "history": [
     {
@@ -316,6 +316,30 @@
       "milestone": "G55",
       "closed": "2026-06-11",
       "note": "H3 tranche 3 four remaining mined specimens; 4/4 PROVEN; value_oracle spike verifier"
+    },
+    {
+      "issue": 89,
+      "milestone": "G73",
+      "closed": "2026-06-11",
+      "note": "Blind probe search; hardened via #96 to 8/13 true_found (61%) incl native Zig; PROBE-GENERATOR-SPIKE.md"
+    },
+    {
+      "issue": 93,
+      "milestone": "G74",
+      "closed": "2026-06-11",
+      "note": "Lang-pack contract + check-lang-pack.sh; C+Zig retrofit green; ADR-021"
+    },
+    {
+      "issue": 98,
+      "milestone": "G75",
+      "closed": "2026-06-11",
+      "note": "Native Rust pack (no_std bswap32, rust:1.79); zero contract amendments"
+    },
+    {
+      "issue": 100,
+      "milestone": "G76",
+      "closed": "2026-06-11",
+      "note": "Native Go pack (CGO_ENABLED=0 full runtime, golang:1.22); language-blind Proven Zig+Rust+Go n=3"
     }
   ]
 }
