@@ -218,6 +218,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G74 | Lang-pack contract + conformance gate (ADR-021) | #93 | n/a | **Done** (C + Zig retrofit green) |
 | G75 | Native Rust lang pack | #98 | n/a | **Done** (gate green, zero contract amendments) |
 | G76 | Native Go lang pack | #100 | n/a | **Done** (gate green, full Go runtime artifact) |
+| G77 | Lang-pack CI + native backtest per pack | #106 | n/a | **Done** (`check-lang-packs.sh` in all-proofs) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
@@ -273,7 +274,9 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G75** (done, #98). Native Rust lang pack. `scripts/mint-one-rust.sh` (pinned `rust:1.79`) + `fixtures/metamorphic/rust_native_bswap32.rs` (no_std, no_main, raw syscalls, G36 trampoline) through `check-lang-pack.sh` under the existing `bswap32.req`. Zero contract amendments; language-blind claim upgraded to **Proven (Zig+Rust)**, n=2 native non-C.
 
-**G74** (done, #93). Lang-pack contract per ADR-021: language support is a modular pack (one `mint-one-<lang>.sh` + one specimen) proven by `check-lang-pack.sh` (mint → I1–I6 parse → honest accept), not a plugin framework. C and Zig minters retrofit green with zero minter changes (`bswap32.req` involution, `zig_wyhash.req` flow_composition). Gate is manual, not CI (Zig toolchain download). Each later pack (G75 Rust, G76 Go) upgrades the language-blind claim by one native language. Spec [`LANG-PACKS.md`](LANG-PACKS.md).
+**G74** (done, #93). Lang-pack contract per ADR-021: language support is a modular pack (one `mint-one-<lang>.sh` + one specimen) proven by `check-lang-pack.sh` (mint → I1–I6 parse → honest accept), not a plugin framework. C and Zig minters retrofit green with zero minter changes (`bswap32.req` involution, `zig_wyhash.req` flow_composition). **G77** (#106) wired `check-lang-packs.sh` into CI on committed `.ngb` plus native backtest per pack. Spec [`LANG-PACKS.md`](LANG-PACKS.md).
+
+**G77** (done, #106). Lang-pack CI and native backtest per pack. `check-lang-packs.sh` in `check-all-proofs.sh`: four committed honest artifacts + C/Rust/Go `*-bswap32-native` timelines (witness `x=1` on rotl8 evil). Zig `zig-wyhash-native` unchanged in backtest suite. Mint leg stays manual (`check-lang-pack.sh`, `mint-lang-pack-bswap32-backtest.sh`).
 
 **G73** (done, #89; hardened #96). Blind probe generation eval. `blind-probe-search.sh` + `blind-probe-generators.sh`; after hardening, **8/13 true_found (61%)** with rev1 replay control (`METAMORPHIC_PROBES`), `.req`-declared generator hints, native Zig corpus case (blind true_found), and capture-level fault retry. One documented relation gap (capnproto WHATWG leniency). Misses documented (utf8/leb128/wabt/parseip budget). No CI gate (~207s wall). Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 

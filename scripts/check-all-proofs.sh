@@ -54,6 +54,7 @@ make -C tools -s all
 ./scripts/check-backtest.sh fixtures/backtest/zig-wyhash-native/timeline.manifest 5 ZIG-WYHASH-NATIVE
 ./scripts/check-backtest.sh fixtures/backtest/go-base64-streaming/timeline.manifest 5 GO-BASE64-STREAMING
 ./scripts/check-backtest.sh fixtures/backtest/rust-crc32fast-combine/timeline.manifest 5 RUST-CRC32FAST-COMBINE-LEN0
+./scripts/check-lang-packs.sh
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh
