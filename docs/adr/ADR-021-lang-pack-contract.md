@@ -31,7 +31,11 @@ A pack consists of:
 - Floor, `.req` schema, and `NGB-V0` are frozen with respect to language additions. A pack that needs a floor change is not a pack; it is a new ADR.
 - Existing C and Zig minters must pass the gate unchanged (retrofit proof). If they cannot, the contract is wrong, not the minters.
 - G75 (native Rust pack) and G76 (Go pack) are pre-registered conditionals in NANO-GOALS; each new pack that passes the gate upgrades the language-blind claim by one native language.
-- Contribution surface for external agents: read `LANG-PACKS.md`, write one script + one specimen, run one gate.
+- Contribution surface for external agents: read `LANG-PACKS.md`, write one script + one specimen + one native backtest timeline, run `check-lang-pack.sh` (mint) and `check-lang-packs.sh` (CI).
+
+## Addendum 2026-06-11 (G77, #106)
+
+CI runs `check-lang-packs.sh` inside `check-all-proofs.sh`. It verifies committed honest `.ngb` per pack and native backtest timelines (C/Rust/Go `*-bswap32-native`, Zig `zig-wyhash-native` in the general backtest suite). Docker mint stays manual at pack authoring time; CI never pulls toolchains.
 
 ## Kill trigger
 

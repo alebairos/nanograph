@@ -6,12 +6,12 @@ The floor consumes `.ngb` + `.req` and is language-blind (ADR-007, ADR-010). A *
 
 ## Pack inventory
 
-| Pack | Minter | Toolchain (pinned) | Status |
-| --- | --- | --- | --- |
-| C | `scripts/mint-one-elf.sh` | `gcc:13` Docker image | **Gate green** (G74, `bswap32.req` involution) |
-| Zig | `scripts/mint-one-zig.sh` | Zig 0.13.0, `ubuntu:24.04` Docker | **Gate green** (G74, `zig_wyhash.req` flow_composition) |
-| Rust | `scripts/mint-one-rust.sh` | `rust:1.79` Docker image | **Gate green** (G75, `bswap32.req` involution, native no_std specimen) |
-| Go | `scripts/mint-one-go.sh` | `golang:1.22` Docker image, CGO_ENABLED=0 | **Gate green** (G76, `bswap32.req` involution, full Go runtime in artifact) |
+| Pack | Minter | Toolchain (pinned) | Gate | Native backtest |
+| --- | --- | --- | --- | --- |
+| C | `scripts/mint-one-elf.sh` | `gcc:13` Docker image | **CI green** (`bswap32.req`) | `c-bswap32-native` (committed G24 mints) |
+| Zig | `scripts/mint-one-zig.sh` | Zig 0.13.0, `ubuntu:24.04` Docker | **CI green** (`zig_wyhash.req`) | `zig-wyhash-native` (mined wyhash) |
+| Rust | `scripts/mint-one-rust.sh` | `rust:1.79` Docker image | **CI green** (`bswap32.req`) | `rust-bswap32-native` (G77) |
+| Go | `scripts/mint-one-go.sh` | `golang:1.22` Docker image, CGO_ENABLED=0 | **CI green** (`bswap32.req`) | `go-bswap32-native` (G77) |
 
 ## Minter CLI contract
 
@@ -41,15 +41,29 @@ The minted ELF must be:
 
 ## Conformance gate
 
+Two legs. **CI** runs the committed-artifact leg only (no Docker mint). **Manual** adds the mint leg when authoring or refreshing a pack.
+
+### CI leg (wired in `check-all-proofs.sh`)
+
 ```
-scripts/check-lang-pack.sh <mint-cmd...> -- <specimen-out.ngb> <req>
+./scripts/check-lang-packs.sh
 ```
 
-Three legs, all required:
+For each pack: committed honest `.ngb` → `ngb-parse` (I1–I6) → `metamorphic-verify.sh` accept under the pack's `.req`, plus one native backtest timeline per pack (accept → reject → accept).
+
+### Manual mint leg (authoring)
+
+```
+./scripts/check-lang-pack.sh <out.ngb> <req> -- <mint command...>
+```
+
+Three steps, all required when minting fresh:
 
 1. **Mint.** The minter exits 0 and produces the `.ngb`.
 2. **Integrity.** `tools/bin/ngb-parse` accepts (invariants I1–I6).
 3. **Behavior.** `metamorphic-verify.sh <ngb> <req>` returns `verdict=accept` on the honest specimen.
+
+Native backtest timelines for involution packs use `scripts/mint-lang-pack-bswap32-backtest.sh <c|rust|go> <outdir>`. Zig uses `mint-one-zig.sh` on `fixtures/backtest/zig-wyhash-native/` (see CASE.md there).
 
 A reject leg (buggy revision rejected) is not part of the pack gate; it belongs to the backtest case the pack's specimens feed (see [`BACKTEST.md`](../BACKTEST.md)).
 
@@ -69,15 +83,16 @@ Retrofit proofs (2026-06-11, both unchanged minters):
 
 The Rust pack (G75) and Go pack (G76) both passed with zero contract amendments, two data points against the ADR-021 kill trigger. Go is the heaviest contract test so far: the artifact carries the full Go runtime (`.ngb` 1.5MB vs 9.4KB for the C pack), and pack/parse/verify handled it unchanged. The only Go-specific fact lives inside the minter (the go tool ignores `_`-prefixed files, so the canonical source name is `one.go`).
 
-The gate is not wired into `check-all-proofs.sh`; the Zig leg downloads its toolchain (~90s, network), which fails the CI determinism bar. Run it when adding or changing a pack.
+G77 (#106) wired `check-lang-packs.sh` into CI (`check-all-proofs.sh`). Mint remains manual; CI checks committed `.ngb` only. Each pack now has a native backtest timeline (C/Rust/Go bswap32 involution; Zig wyhash-native unchanged).
 
 ## Contribution checklist (for an external agent)
 
 1. Read this file and [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md). Do not read or modify `tools/**`.
 2. Write `scripts/mint-one-<lang>.sh` per the minter CLI.
 3. Write one honest specimen in the new language implementing an existing relation's driver ABI, plus its `.req`.
-4. Run `scripts/check-lang-pack.sh`. Green means in.
-5. Open a PR referencing the pack's pre-registered goal (G75, G76, or a new conditional row in [`NANO-GOALS.md`](NANO-GOALS.md)).
+4. Run `scripts/check-lang-pack.sh` (full mint leg) and `scripts/check-lang-packs.sh` after committing `.ngb` artifacts (CI leg).
+5. Add or refresh a native backtest timeline (`mint-lang-pack-bswap32-backtest.sh` for involution packs, or a mined case like Zig wyhash-native).
+6. Open a PR referencing the pack's pre-registered goal (G75, G76, or a new conditional row in [`NANO-GOALS.md`](NANO-GOALS.md)).
 
 ## What a pack must not do
 
