@@ -34,7 +34,8 @@ What the program has settled versus what still needs a goal.
 | `flow_composition` catches real-history incremental bugs | **Proven (Rust+Zig+Go)** | G57/G59 Wyhash + G58 Go streaming + G71 crc32fast; witness `hex=5` all three; [`FLOW-COMPOSITION-TRI-LANGUAGE.md`](FLOW-COMPOSITION-TRI-LANGUAGE.md) |
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
 | Cross-loader / APE target extension adds product value | **Refuted (G54)** | ADR-014 **reject**; H4 kill, H1/H2 blocked on cosmocc; [`APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md) |
-| Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Partial (G55)** | ADR-015 **skill-only**; H1 4/5 + H2 proven; H3 inconclusive; [`CANDIDATE-ID-SPIKE.md`](CANDIDATE-ID-SPIKE.md) |
+| Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Partial (G55)** | ADR-015 **skill-only**; H1 4/5 + H2 proven; H3 **PROVEN** under frozen sidecar on novel + 5/5 mined house-style specimens (#85–#87); recall is convention-lint (prose dependency); G63–G64 parked; [`CANDIDATE-ID-SPIKE-FOLLOWON.md`](CANDIDATE-ID-SPIKE-FOLLOWON.md) |
+| Verification floor discovers defects without curated probes | **Open (G73)** | Backtests prove **witness production** only; off-domain probe accepts buggy mint (e.g. adler32 `616263`); blind re-detection eval pre-registered [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md), ADR-020 |
 | Relation taxonomy guides mining before new MR branches | **Proven** | G66 RELATION-TAXONOMY + BACKTEST checklist; gated `check-relation-taxonomy.sh` |
 | Homomorphism family (`linear_xor`) catches non-linear CA rule | **Proven** | G67 rule 90 vs rule 30 imposter; gated `check-linear-xor.sh` |
 | Scalar conservation applies to Wolfram particle rule 184 | **Proven** | G68 `conserve_popcount` on rule 184 step; gated `check-rule184-conserve.sh` |
@@ -213,6 +214,16 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G67 | `linear_xor` homomorphism (rule 90 step) | n/a | n/a | **Done** |
 | G68 | Rule 184 `conserve_popcount` bridge | n/a | n/a | **Done** |
 | G69 | `flow_composition` on iterated CA | n/a | n/a | **Done** |
+| G73 | Blind probe generation on backtest corpus | #89 | n/a | **Open** |
+
+### ICP adoption gaps (priority order, ADR-020)
+
+| Gap | Status | Next action |
+| --- | --- | --- |
+| Probe generator (detection) | **Open (G73)** | Blind re-detection eval on rev2 mints; see [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
+| Extractor (freestanding specimen) | **Mitigated by agents** | Delegate transcription pattern (H3 tranches 2–3); productize only if paying candidate binds cost |
+| Fit conditionality | **Scoping** | `score-case-fit.sh`; say no to NOT-A-FIT |
+| Platform (x86_64 Linux ELF) | **Intentional** | APE rejected ADR-014; no reopen without new evidence |
 
 ### Conditional follow-ons (pre-registered)
 
@@ -251,9 +262,11 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G66** (done). [`RELATION-TAXONOMY.md`](RELATION-TAXONOMY.md), family column in METAMORPHIC-RELATIONS, BACKTEST stage-2 checklist. ADR-016. Gate `scripts/check-relation-taxonomy.sh`. Docs only.
 
-**G55** (done, #72). Candidate-ID sidecar spike. Verdict **skill-only** per ADR-015. H1 **PROVEN** (4/5 holdout `.req` recall), H2 **PROVEN** (verdict equivalence), H3 **INCONCLUSIVE**, H4 **PROVEN** (boundary). Prototype `spike/candidate-id/`. G63–G64 stay parked.
+**G55** (done, #72; follow-on #85–#87). Candidate-ID sidecar spike. Verdict **skill-only** per ADR-015. H1 **PROVEN** (4/5 holdout `.req` recall), H2 **PROVEN** (verdict equivalence), H3 **PROVEN** under frozen sidecar (novel nibbles + 5/5 mined house-style; variant A fail-closed without relation prose), H4 **PROVEN** (boundary). Sidecar is a convention lint, not an authoring oracle. G63–G64 stay parked.
 
-**G54** (done, #71). APE target extension spike. Verdict **reject** per ADR-014. H1/H2 **INCONCLUSIVE** (cosmocc absent), H3 **PARTIAL** (ELF parse only), H4 **REFUTED**. G60–G62 stay parked. Scorecard `ape-target-extension.fit` with `parked=1`.
+**G73** (open, #89). Blind probe generation eval. Tests detection vs confirmation on backtest rev2 corpus. Priority per ADR-020. Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
+
+**G54** (done, #71; tooling revisit #85). APE target extension spike. Verdict **reject** per ADR-014 for verification extension; H1 tooling tier **PROVEN** (#85). G60–G62 stay parked.
 
 **G56** (done, #79). First Rust real-history backtest on `marshallpierce/rust-base64` `decode_helper` (`rust-base64-invalid-last.fit`, parent `95edf364` → fix `f6915a3`). `round_trip` relation. Gated `RUST-BASE64-INVALID-LAST`. Witness `hex=6959563d` (`iYV=`).
 
@@ -365,5 +378,8 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #74 | G67 linear_xor homomorphism relation |
 | #75 | G68 rule 184 conserve_popcount bridge |
 | #76 | G69 flow_composition relation |
+| #85 | G55 H3 tranche 2 adversarial mined codec + G54 APE H1 tooling revisit |
+| #87 | G55 H3 tranche 3 four remaining mined specimens |
+| #89 | G73 blind probe generation eval (ADR-020) |
 | — | G56–G65 conditional follow-ons (pre-registered in Next goals; no issue until trigger) |
 | — | G40 llamafile-stack subcase mining + scorecards (shortlist) |
