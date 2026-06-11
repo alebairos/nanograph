@@ -336,7 +336,9 @@ void real_start(long argc, const char *mode, const char *operand) {
     else
       print_hex_bytes(outbuf, en);
   } else if (mode[0] == 'd') {
-    static unsigned char inbuf[4096];
+    /* A no-clear overflow stream needs ~5.5 KB of packed codes (3838
+     * insertions); 4096 would make the guarded path unreachable. */
+    static unsigned char inbuf[8192];
     static unsigned char outbuf[4096];
     int n = parse_hex(operand, inbuf, (int)sizeof(inbuf));
     int dn = lzw_decode(inbuf, n, outbuf, (int)sizeof(outbuf));
