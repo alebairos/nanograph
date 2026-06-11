@@ -90,6 +90,12 @@ H3 is now 5/5 on mined specimens under house-style prose. Every mapped scorecard
 
 **No change.** Five recalls under freeze sharpen the tranche 2 boundary but do not touch the original H1 holdout miss (cosmo_ljson `eq=exact`), and the prose dependency stands: recall is conditional on the source naming its relation in corpus convention. Wiring the sidecar into `check-all-proofs.sh` or un-parking G63–G64 remains unjustified by this evidence alone.
 
+## Witness production vs detection (ICP audit 2026-06-11)
+
+H3 tranches prove **witness production** under informed probes. They do not prove **detection**. Example: `zig_adler32_buggy.ngb` rejects on the curated 5553-byte vector but accepts on `616263` alone with the same defect armed.
+
+The top adoption gap is blind probe generation (G73, ADR-020). See [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
+
 ## Verification
 
 ```bash

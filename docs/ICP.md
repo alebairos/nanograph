@@ -33,14 +33,28 @@ The ICP is the who. [`CASE-FIT-RUBRIC.md`](CASE-FIT-RUBRIC.md) is the test for a
 
 ## Evidence so far
 
-- G24. A metamorphic relation verifies a binary with no external oracle, with an explicit ceiling (involution).
-- G25. The relation floor and the value-oracle floor compose, cheap pre-filter then expensive backstop.
-- G26. Both floors verify real, vendored, attributed upstream code (Bit Twiddling Hacks bit reversal).
-- G27. A passing unit test hides a bug a metamorphic relation catches, on a UTF-8 codec, with a byte witness. Run `scripts/demo-utf8.sh`.
+- G24–G27. Metamorphic relations, floor handoff, real vendored code, UTF-8 demo (`scripts/demo-utf8.sh`).
+- G30–G72. Fifteen real-history backtest timelines with byte witnesses (confirmation, not blind detection).
+- G55 follow-on (#85–#87). Frozen sidecar recalls `.req` on house-style specimens; skill-only; prose dependency documented.
 
 ## What is not yet proven
 
-One bug class, one codec, a hand-authored request. No candidate identification (finding round-trip pairs in real code automatically). No interview with a maintainer outside this project.
+Hand-authored request on one codec was the wedge. Backtests now cover fifteen real-history cases, but every witness probe was curated with fix-commit knowledge. **Detection** (finding the trigger domain without that knowledge) is open under G73.
+
+No maintainer outside this project has validated the pitch. Extraction remains an agent-prompt pattern, not a product.
+
+## Adoption today (honest pitch)
+
+NanoGraph is a **verification pattern**, not an installable tool. A maintainer transcribes one function into a freestanding specimen, writes or generates a `.req`, and runs the floor. Expect x86_64 Linux ELF via Docker on macOS. Expect a reject witness when probes hit the defect domain, not automatic bug discovery.
+
+Four gaps, priority order per ADR-020:
+
+1. **Probe generator** (G73, tackle first). Without it the floor confirms known defects; it does not find them.
+2. **Extractor** (agent delegates today; productize when a paying candidate binds cost).
+3. **Fit** (score with `score-case-fit.sh`; most code is NOT-A-FIT).
+4. **Platform** (narrow by design; APE rejected).
+
+Spec: [`specs/PROBE-GENERATOR-SPIKE.md`](specs/PROBE-GENERATOR-SPIKE.md). Decision: [`adr/ADR-020-adoption-gap-priority.md`](adr/ADR-020-adoption-gap-priority.md).
 
 ## The signal that would confirm or kill the bet
 

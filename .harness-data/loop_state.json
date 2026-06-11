@@ -1,21 +1,19 @@
 {
-  "goal_id": "G55",
-  "current_issue": 87,
-  "milestone": "G54-G55",
+  "goal_id": "G73",
+  "current_issue": 89,
+  "milestone": "adoption-gap",
   "product_proof_step": "tri-language-flow-comp",
-  "phase": "complete",
+  "phase": "planning",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/CANDIDATE-ID-SPIKE.md",
+    "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-019-flow-composition-relation.md",
-    "eval_logs": [
-      ".harness-data/agent-eval/conformance/run.jsonl"
-    ]
+    "verdict_adr": "docs/adr/ADR-020-adoption-gap-priority.md",
+    "eval_logs": []
   },
   "next_action": {
     "type": "issue",
-    "note": "G54 reject + G55 skill-only. Spikes closed. Next: G63-G64/G60-G62 parked until new triggers."
+    "note": "G73 #89: implement blind-probe-search.sh on backtest rev2 corpus; report re-detection rate."
   },
   "history": [
     {
@@ -245,7 +243,7 @@
       "issue": 67,
       "milestone": "G48",
       "closed": "2026-06-10",
-      "note": "LLVM BOLT cmp_order real-history backtest. Mined round 2 (Linux ORC parked GPL). Parent e8606ab compareSections omits identity guard; fix 5fe235b +3 lines. New cmp_order relation: irreflexivity cmp(i,i)==0, antisymmetry. llvm_bolt_cmp.c transcribes string ordering; rev2 -DCMP_IDENTITY_OK. Witness hex=00 pair (0,0) mover self buggy got_ij=1 honest 0. Timeline accept/reject/accept rev1==rev3 35433a9eed68. Gated LLVM-BOLT-CMP. ADR-011, METAMORPHIC-RELATIONS.md, THIRD-PARTY.md"
+      "note": "LLVM BOLT cmp_order real-history backtest. Mined round 2 (Linux ORC parked GPL). Parent e8606ab compareSections omits identity guard; fix 5fe235b +3 lines. New cmp_order relation: irreflexivity cmp(i,i)==0, antisymmetry. llvm_bolt_cmp.c transcribes string ordering logic; rev2 -DCMP_IDENTITY_OK. Witness hex=00 pair (0,0) mover self buggy got_ij=1 honest 0. Timeline accept/reject/accept rev1==rev3 35433a9eed68. Gated LLVM-BOLT-CMP. ADR-011, METAMORPHIC-RELATIONS.md, THIRD-PARTY.md"
     },
     {
       "issue": 73,
@@ -306,6 +304,18 @@
       "milestone": "G55",
       "closed": "2026-06-11",
       "note": "Candidate-ID sidecar skill-only; ADR-015; H1 4/5 H2 proven"
+    },
+    {
+      "issue": 85,
+      "milestone": "G55",
+      "closed": "2026-06-11",
+      "note": "H3 tranche 2 adversarial mined codec; G54 APE H1 tooling revisit PROVEN"
+    },
+    {
+      "issue": 87,
+      "milestone": "G55",
+      "closed": "2026-06-11",
+      "note": "H3 tranche 3 four remaining mined specimens; 4/4 PROVEN; value_oracle spike verifier"
     }
   ]
 }
