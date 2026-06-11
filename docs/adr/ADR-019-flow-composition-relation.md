@@ -25,7 +25,7 @@ No existing relation compares one-shot multi-step output to composed partial run
 
 ## Demonstrated power versus implemented checks
 
-G69 demonstrates rejection on pre-registered `(n,m,seed)` triple. No broader composition power claim until a second mined incremental-update bug exercises the branch.
+G69 demonstrates rejection on pre-registered `(n,m,seed)` triple. G71 (`rust-crc32fast-combine`) is the second mined incremental-update bug exercising the branch on real history (tri-language lane complete; see [`FLOW-COMPOSITION-TRI-LANGUAGE.md`](../specs/FLOW-COMPOSITION-TRI-LANGUAGE.md)). No broader composition power claim until a third distinct failure mode exercises a different arm.
 
 ## Kill trigger
 

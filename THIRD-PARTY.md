@@ -26,6 +26,14 @@ Cosmopolitan Libc by Justine Alexandra Roberts Tunney, https://github.com/jart/c
 
 Cap'n Proto, https://github.com/capnproto/capnproto . `fixtures/metamorphic/capnproto_base64.c` is a freestanding C transcription of libb64-derived base64 encode/decode from `c++/src/kj/encoding.c++` (public-domain libb64 core). Parent `9306bc0` silently skipped invalid and padding bytes; fix `f3e0ed2` (PR #595) reports `hadErrors`. The permissive skip-invalid loop and the strict WHATWG-aligned checks are capnproto's; `_start`, argv parse, and print are our trusted driver. See `fixtures/backtest/capnproto-base64/CASE.md`.
 
+## rust-base64 (G56)
+
+marshallpierce/rust-base64, https://github.com/marshallpierce/rust-base64 , Apache-2.0. `fixtures/metamorphic/rust_base64.c` is a freestanding C transcription of `decode_helper` stage 4 (InvalidLastSymbol) and STANDARD RFC4648 encode/decode from `src/decode.rs` and `src/tables.rs`. Parent `95edf364` accepted trailing symbols with unused encoded bits; fix `f6915a3` rejects `InvalidLastSymbol`. The stage-4 mask check and decode tables are rust-base64's; `_start`, argv parse, and print are our trusted driver. See `fixtures/backtest/rust-base64/CASE.md`.
+
+## rust-crc32fast (G71)
+
+srijs/rust-crc32fast, https://github.com/srijs/rust-crc32fast , Apache-2.0 / MIT. `fixtures/metamorphic/rust_crc32fast_combine.c` is a freestanding C transcription of `combine()` from `src/combine.rs`. Parent `cdbd51f` returned `crc1^crc2` when `len2=0`; fix `724ceb6` early-returns `crc1`. The `X2N_TABLE`, `multiply`, and combine loop are rust-crc32fast's; `_start`, argv parse, and print are our trusted driver. See `fixtures/backtest/rust-crc32fast-combine/CASE.md`.
+
 ## LLVM BOLT (G48)
 
 LLVM Project, https://github.com/llvm/llvm-project , Apache-2.0 WITH LLVM-exception. `fixtures/metamorphic/llvm_bolt_cmp.c` is a freestanding C transcription of the `getCodeSections` `compareSections` lambda from `bolt/lib/Rewrite/RewriteInstance.cpp`. Parent `e8606ab` omits the identity guard; fix `5fe235b` adds `if (A == B) return false`. The ordering logic is LLVM's; `_start` and argv parse are our trusted driver. See `fixtures/backtest/llvm-bolt-cmp/CASE.md`.

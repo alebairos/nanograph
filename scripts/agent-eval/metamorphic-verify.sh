@@ -68,6 +68,10 @@ gen_capnproto_base64() {
   printf '%s\n' Zm9v Y29yZ2U= Zm9v@ Y29yZ2U==
 }
 
+gen_rust_base64() {
+  printf '%s\n' iYU= iYV= /w== /x== Zm9v
+}
+
 gen_cosmo_parseip() {
   printf '%s\n' \
     '0.0.0.0 0' \
@@ -149,6 +153,10 @@ gen_go_base64_streaming() {
   printf '%s\n' '4 2 5'
 }
 
+gen_rust_crc32fast_combine() {
+  printf '%s\n' '0 0 5' '0 0 7' '0 0 13'
+}
+
 popcount_u() {
   local v="$1" c=0
   while ((v > 0)); do
@@ -169,6 +177,7 @@ gen_probes() {
     knuth_sgb) gen_knuth_sgb ;;
     wabt_leb128) gen_wabt_leb128 ;;
     capnproto_base64) gen_capnproto_base64 ;;
+    rust_base64) gen_rust_base64 ;;
     cosmo_parseip) gen_cosmo_parseip ;;
     cosmo_ljson) gen_cosmo_ljson ;;
     knuth_rand_len) gen_knuth_rand_len ;;
@@ -180,6 +189,7 @@ gen_probes() {
     ca_flow90) gen_ca_flow90 ;;
     zig_wyhash) gen_zig_wyhash ;;
     go_base64_streaming) gen_go_base64_streaming ;;
+    rust_crc32fast_combine) gen_rust_crc32fast_combine ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }

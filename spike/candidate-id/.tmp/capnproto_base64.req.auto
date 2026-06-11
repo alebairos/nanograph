@@ -1,0 +1,8 @@
+relation=round_trip
+entry=argv_mode
+encode=enc
+decode=dec
+domain=capnproto_base64
+reject=REJECT
+eq=exact
+wire=ascii

@@ -44,6 +44,7 @@ make -C tools -s all
 ./scripts/check-backtest.sh fixtures/backtest/wabt-leb128/timeline.manifest ffffffffffffffffff02 WABT-LEB128
 ./scripts/check-backtest.sh fixtures/backtest/knuth-rand-len/timeline.manifest 02 KNUTH-RAND-LEN
 ./scripts/check-backtest.sh fixtures/backtest/capnproto-base64/timeline.manifest 5a6d397640 CAPNPROTO-BASE64
+./scripts/check-backtest.sh fixtures/backtest/rust-base64/timeline.manifest 6959563d RUST-BASE64-INVALID-LAST
 ./scripts/check-backtest.sh fixtures/backtest/cosmo-parseip/timeline.manifest 3235352e3235352e3235352e323536 COSMO-PARSEIP
 ./scripts/check-backtest.sh fixtures/backtest/cosmo-ljson/timeline.manifest c080 COSMO-LJSON
 ./scripts/check-backtest.sh fixtures/backtest/llvm-bolt-cmp/timeline.manifest 00 LLVM-BOLT-CMP
@@ -52,6 +53,7 @@ make -C tools -s all
 ./scripts/check-backtest.sh fixtures/backtest/zig-wyhash/timeline.manifest 5 ZIG-WYHASH
 ./scripts/check-backtest.sh fixtures/backtest/zig-wyhash-native/timeline.manifest 5 ZIG-WYHASH-NATIVE
 ./scripts/check-backtest.sh fixtures/backtest/go-base64-streaming/timeline.manifest 5 GO-BASE64-STREAMING
+./scripts/check-backtest.sh fixtures/backtest/rust-crc32fast-combine/timeline.manifest 5 RUST-CRC32FAST-COMBINE-LEN0
 ./scripts/check-ca-author-sandbox.sh
 ./scripts/check-ca-live-scripted-loop.sh
 ./scripts/check-microop-floor.sh

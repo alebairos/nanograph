@@ -32,13 +32,19 @@ rows=(
   "ca_step184.ngb|fixtures/metamorphic/ca_step90.req|fixtures/metamorphic/ca_step184.req|fixtures/metamorphic/ca_flow90.req|fixtures/metamorphic/utf8.req"
   "ca_step184_evil.ngb|fixtures/metamorphic/ca_step90.req|fixtures/metamorphic/ca_step184.req|fixtures/metamorphic/ca_flow90.req|fixtures/metamorphic/utf8.req"
   "ca_flow90_evil.ngb|fixtures/metamorphic/ca_step90.req|fixtures/metamorphic/ca_step184.req|fixtures/metamorphic/ca_flow90.req|fixtures/metamorphic/utf8.req"
+  "fixtures/backtest/rust-crc32fast-combine/rust_crc32fast_combine_rev2.ngb|fixtures/metamorphic/ca_step90.req|fixtures/metamorphic/ca_step184.req|fixtures/metamorphic/rust_crc32fast_combine.req|fixtures/metamorphic/rust_base64.req"
 )
 
 for row in "${rows[@]}"; do
   IFS='|' read -r spec lx cp fc rt <<<"$row"
-  ngb="fixtures/metamorphic/$spec"
+  if [[ "$spec" == fixtures/* ]]; then
+    ngb="$spec"
+  else
+    ngb="fixtures/metamorphic/$spec"
+  fi
+  label="$(basename "$spec")"
   [[ -f "$ngb" ]] || { echo "missing $ngb"; continue; }
-  printf "%-28s %-14s %-14s %-14s %-14s\n" "$spec" \
+  printf "%-28s %-14s %-14s %-14s %-14s\n" "$label" \
     "$(probe "$ngb" "$lx")" \
     "$(probe "$ngb" "$cp")" \
     "$(probe "$ngb" "$fc")" \
@@ -52,4 +58,5 @@ echo "  ca_step184.ngb: conserve_pc=accept"
 echo "  ca_step90_evil: linear_xor=reject"
 echo "  ca_step184_evil: conserve_pc=reject"
 echo "  ca_flow90_evil: flow_comp=reject"
+echo "  rust_crc32fast_combine_rev2: flow_comp=reject; round_trip=error"
 echo "MEASURE-RELATION-IMPACT OK"

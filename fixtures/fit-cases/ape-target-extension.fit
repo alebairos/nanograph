@@ -1,0 +1,9 @@
+name=ape-target-extension
+oracle_hardness=1
+property_checkable=2
+observable=2
+silent_survival=1
+criticality=1
+relation=flow_composition
+parked=1
+note=G54 APE cross-loader witness invariance extension (not a codec bug). parked=1 until H2 completes or spike closes.

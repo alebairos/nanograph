@@ -1,0 +1,5 @@
+# The cosmocc toolchain unpacks here; never commit it (multi-100MB binaries).
+*
+!.gitignore
+!run-g54-followon.sh
+!utf8_cosmo.c

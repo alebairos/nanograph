@@ -50,7 +50,7 @@ G69 modeled `flow_composition` gains a real-history exercise path in all three l
 
 ## Stretch G59
 
-No native Rust/Zig/Go specimen minted in this pass. Mining-only deliverable per #70 scope. G59 opens when G56–G58 extraction spikes pass.
+Done. Native Zig Wyhash via G59 (`ZIG-WYHASH-NATIVE`); same witness as G57.
 
 ## Verification
 

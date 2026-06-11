@@ -1,0 +1,3 @@
+# G55 H3 sidecar freeze (2026-06-11). Do not edit propose-req.py for H3 reruns.
+# Recompute after any intentional sidecar revision and start a new follow-on tranche.
+SHA256(propose-req.py)=c406528b8da4a1ecf8a495d15eba666dd417e2191149ef152b5585cc6574a8ef

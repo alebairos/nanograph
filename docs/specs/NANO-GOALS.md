@@ -30,10 +30,11 @@ What the program has settled versus what still needs a goal.
 | `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
 | Language-diversity mining yields FIT candidates (Rust, Zig, Go) | **Proven** | G51–G53 (#70); scorecards + [`MINING-G51-G53.md`](MINING-G51-G53.md) |
 | Verification floor is language-blind in practice (not only in docs) | **Proven (Zig)** | G59 `ZIG-WYHASH-NATIVE`; native Zig `.ngb` through unchanged verifier |
-| `flow_composition` catches real-history incremental bugs | **Proven (Zig+Go)** | G57/G59 Wyhash + G58 Go streaming; witness `hex=5` both |
+| Rust real-history backtests execute on language-diversity lane | **Proven** | G56 `RUST-BASE64-INVALID-LAST` + G71 `RUST-CRC32FAST-COMBINE-LEN0` |
+| `flow_composition` catches real-history incremental bugs | **Proven (Rust+Zig+Go)** | G57/G59 Wyhash + G58 Go streaming + G71 crc32fast; witness `hex=5` all three; [`FLOW-COMPOSITION-TRI-LANGUAGE.md`](FLOW-COMPOSITION-TRI-LANGUAGE.md) |
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
-| Cross-loader / APE target extension adds product value | **Unproven** | G54 (#71) falsification spike |
-| Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Unproven** | G55 (#72) falsification spike |
+| Cross-loader / APE target extension adds product value | **Refuted (G54)** | ADR-014 **reject**; H4 kill, H1/H2 blocked on cosmocc; [`APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md) |
+| Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Partial (G55)** | ADR-015 **skill-only**; H1 4/5 + H2 proven; H3 inconclusive; [`CANDIDATE-ID-SPIKE.md`](CANDIDATE-ID-SPIKE.md) |
 | Relation taxonomy guides mining before new MR branches | **Proven** | G66 RELATION-TAXONOMY + BACKTEST checklist; gated `check-relation-taxonomy.sh` |
 | Homomorphism family (`linear_xor`) catches non-linear CA rule | **Proven** | G67 rule 90 vs rule 30 imposter; gated `check-linear-xor.sh` |
 | Scalar conservation applies to Wolfram particle rule 184 | **Proven** | G68 `conserve_popcount` on rule 184 step; gated `check-rule184-conserve.sh` |
@@ -109,6 +110,9 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G57 | Zig Wyhash flow_composition real-history backtest | #80 | Done |
 | G58 | Go base64 streaming flow_composition backtest | #81 | Done |
 | G59 | Native Zig specimen through existing gate | G57 | Done |
+| G56 | Rust base64 round_trip real-history backtest | #79 | Done |
+| G71 | Rust crc32fast flow_composition real-history backtest | #82 | Done |
+| G72 | Tri-language flow_composition witness equivalence doc | G57+G58+G71 | Done |
 
 G49 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-012-size-monotone-relation.md`](../adr/ADR-012-size-monotone-relation.md). **In progress** (#68); see Next goals.
 
@@ -203,8 +207,8 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G51 | Mine Rust backtest candidates (language diversity) | `rust-base64-invalid-last.fit` 8/8 | **8** | **Done** (#70) |
 | G52 | Mine Zig backtest candidates (language diversity) | `zig-std-wyhash-iterative.fit` 8/8 | **8** | **Done** (#70) |
 | G53 | Mine Go backtest candidates (language diversity) | `go-base64-streaming.fit` 7/8 | **7** | **Done** (#70) |
-| G54 | Falsify Cosmopolitan APE as target extension | `ape-target-extension.fit` | n/a | **Open** (#71) |
-| G55 | Falsify candidate-ID sidecar at `.req` seam | n/a | n/a | **Open** (#72) |
+| G54 | Falsify Cosmopolitan APE as target extension | `ape-target-extension.fit` parked | n/a | **Done** (#71, reject) |
+| G55 | Falsify candidate-ID sidecar at `.req` seam | H1 4/5 + H2 | n/a | **Done** (#72, skill-only) |
 | G66 | Relation taxonomy for mining + catalog | n/a | n/a | **Done** |
 | G67 | `linear_xor` homomorphism (rule 90 step) | n/a | n/a | **Done** |
 | G68 | Rule 184 `conserve_popcount` bridge | n/a | n/a | **Done** |
@@ -226,8 +230,8 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 | G63 | Candidate-ID sidecar contract + `*.req.auto` gate | G55 H1+H2 **PROVEN** | G55 / #72 |
 | G64 | Agent build→sidecar→verify loop harness | G55 verdict **adopt sidecar** + G63 done | G55 / #72 |
 | G65 | `size_monotone` second mined bug (broader power claim) | Real-history candidate beyond jemalloc overflow boundary | G49 done + mining |
-| G71 | Rust crc32fast `flow_composition` real-history backtest (G69 mined proof) | G51 runner-up + G69 done | G51 / #70 |
-| G72 | Tri-language `flow_composition` witness equivalence (Rust/Zig/Go vs modeled G69) | G57 + G58 backtests done | G57/G58 |
+| G71 | Rust crc32fast `flow_composition` real-history backtest | G56 extraction spike passes + G69 done | G51 / #70 |
+| G72 | Tri-language `flow_composition` witness equivalence doc | G57 + G58 + G71 backtests done | G57/G58/G71 |
 
 **G51** (done, #70). Rust mining shortlist in [`MINING-G51-G53.md`](MINING-G51-G53.md). Top FIT `rust-base64-invalid-last` (G56 survivor). Wolfram runner-up `rust-crc32fast-combine-len0` (G71). `linear_xor` PARKED on BE-only baseline.
 
@@ -247,11 +251,11 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G66** (done). [`RELATION-TAXONOMY.md`](RELATION-TAXONOMY.md), family column in METAMORPHIC-RELATIONS, BACKTEST stage-2 checklist. ADR-016. Gate `scripts/check-relation-taxonomy.sh`. Docs only.
 
-**G55** (open, #72). Explores the **parked ADR-007 seam** without breaking language-blind verify. A language-aware **sidecar** (outside `metamorphic-verify.sh`) proposes `VerificationRequest` files after an agent build; NanoGraph consumes `.req` + `.ngb` only. Product hypothesis: sidecar to code/build/verify loops for correctness-critical codecs. Pre-registered H1–H4 in #72: round-trip pair recall on ≥5 known fixtures (H1), verdict equivalence vs hand `.req` (H2), agent-loop latency (H3), boundary independence from `tools/` (H4). Deliverables: [`docs/specs/CANDIDATE-ID-SPIKE.md`](CANDIDATE-ID-SPIKE.md), ADR-015, prototype under `spike/candidate-id/`, optional `*.req.auto` diffs. Verdict **adopt sidecar**, **skill-only**, or **reject**. Follow-on **G63–G64** if adopt. Composes with G51–G53 (mining) and G54 (target); does not ingest zerolang/MIR.
+**G55** (done, #72). Candidate-ID sidecar spike. Verdict **skill-only** per ADR-015. H1 **PROVEN** (4/5 holdout `.req` recall), H2 **PROVEN** (verdict equivalence), H3 **INCONCLUSIVE**, H4 **PROVEN** (boundary). Prototype `spike/candidate-id/`. G63–G64 stay parked.
 
-**G54** (open, #71). Scientific spike on **target-bound, not language-bound** extensions (ADR-010). Cosmopolitan APE promises one x86_64 binary loadable on Linux, macOS, Windows, and BSD. Pre-registered hypotheses H1–H4 in #71: harness tooling without qemu on macOS (H1), metamorphic witness invariance Linux-ELF-vs-APE (H2), `ngb-pack`/`ngb-parse` on APE polyglot slice (H3), real portability bug observability beyond G33's modeled shim (H4). Deliverables: [`docs/specs/APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md), ADR-014 with PROVEN/REFUTED/INCONCLUSIVE per hypothesis, `fixtures/fit-cases/ape-target-extension.fit`. Final verdict **adopt**, **tooling-only**, or **reject**. Follow-on **G60–G62** if adopt. No `.ngb` format change unless H3 kill opens a separate ADR.
+**G54** (done, #71). APE target extension spike. Verdict **reject** per ADR-014. H1/H2 **INCONCLUSIVE** (cosmocc absent), H3 **PARTIAL** (ELF parse only), H4 **REFUTED**. G60–G62 stay parked. Scorecard `ape-target-extension.fit` with `parked=1`.
 
-**G56** (open, #79). First Rust real-history backtest on `marshallpierce/rust-base64` `decode_helper` (`rust-base64-invalid-last.fit`, parent `95edf364` → fix `f6915a3`). `round_trip` relation.
+**G56** (done, #79). First Rust real-history backtest on `marshallpierce/rust-base64` `decode_helper` (`rust-base64-invalid-last.fit`, parent `95edf364` → fix `f6915a3`). `round_trip` relation. Gated `RUST-BASE64-INVALID-LAST`. Witness `hex=6959563d` (`iYV=`).
 
 **G57** (done, #80). Zig Wyhash iterative tail backtest gated `ZIG-WYHASH`. `flow_composition` on mined history; witness `hex=5` (seed 5, triple 48+10). Validates G69 beyond modeled CA.
 
@@ -259,7 +263,9 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G59** (done). Native Zig Wyhash via `mint-one-zig.sh`; gated `ZIG-WYHASH-NATIVE`. Same witness as G57; proves language-blind floor for one non-C language.
 
-**G71** (open, #82). Rust crc32fast `flow_composition` runner-up after G56 extraction proves Rust path.
+**G71** (done, #82). Rust crc32fast `flow_composition` on `combine(len2=0)` (parent `cdbd51f` → fix `724ceb6`). Gated `RUST-CRC32FAST-COMBINE-LEN0`. Witness `hex=5` (triple `0 0 5`). Completes tri-language `flow_composition` mined lane.
+
+**G72** (done). Tri-language witness equivalence doc [`FLOW-COMPOSITION-TRI-LANGUAGE.md`](FLOW-COMPOSITION-TRI-LANGUAGE.md). Verdict **PROVEN (bounded)**. Shared primary witness seed `hex=5` across Zig, Go, Rust.
 
 **G40** (shortlist). Follow-through from G32 mining on the Justine/llamafile ICP thread ([`docs/icps/justine-tunney.md`](../icps/justine-tunney.md)). Six scorecards, anti-fabrication SHAs verified via `gh api`. Active FIT survivor executed as G41. `parked=1` scorecards (`cosmo-decodebase64`, `cosmo-isutf8`, `cosmo-uleb64`) score `gate=PARKED` and are excluded from the queue. NOT-A-FIT: `llamafile-inference` (`observable=0`). Score with `scripts/score-case-fit.sh fixtures/fit-cases/<name>.fit`. No floor or format change.
 
