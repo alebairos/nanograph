@@ -39,7 +39,7 @@ The ICP is the who. [`CASE-FIT-RUBRIC.md`](CASE-FIT-RUBRIC.md) is the test for a
 
 ## What is not yet proven
 
-Hand-authored request on one codec was the wedge. Backtests now cover fifteen real-history cases, but every witness probe was curated with fix-commit knowledge. **Detection** (finding the trigger domain without that knowledge) is open under G73.
+Hand-authored request on one codec was the wedge. Backtests now cover fifteen real-history cases. G73 blind search re-detects 8/12 known rev2 defects at default budget without CASE.md witnesses. Four misses remain budget-limited (utf8 overlong, leb128 non-minimal, wabt 10-byte, parseip wrap).
 
 No maintainer outside this project has validated the pitch. Extraction remains an agent-prompt pattern, not a product.
 
@@ -49,7 +49,7 @@ NanoGraph is a **verification pattern**, not an installable tool. A maintainer t
 
 Four gaps, priority order per ADR-020:
 
-1. **Probe generator** (G73, tackle first). Without it the floor confirms known defects; it does not find them.
+1. **Probe generator** (G73, **done bounded**). Blind search finds 8/12 known defects at default budget; misses are domain-size/budget, not confirmation-only on those cases.
 2. **Extractor** (agent delegates today; productize when a paying candidate binds cost).
 3. **Fit** (score with `score-case-fit.sh`; most code is NOT-A-FIT).
 4. **Platform** (narrow by design; APE rejected).

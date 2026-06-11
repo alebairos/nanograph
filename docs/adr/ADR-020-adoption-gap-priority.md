@@ -42,3 +42,5 @@ Backtests through G72 prove witness production. G73 tests detection.
 ## Kill trigger
 
 If G73 is **REFUTED** at declared budget, keep the honest ICP line: "regression harness for properties you already named; detection is your fuzzer or our future generator work."
+
+**Addendum 2026-06-11 (#89):** G73 **PROVEN (bounded)** at default budget. 8/12 backtest rev2 cases re-detected without CASE.md witnesses. ICP may claim bounded blind detection on the committed corpus; misses (utf8 overlong, wabt 10-byte, parseip wrap) remain budget-limited, not wired into CI (220s wall).

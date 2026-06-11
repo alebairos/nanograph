@@ -35,7 +35,7 @@ What the program has settled versus what still needs a goal.
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
 | Cross-loader / APE target extension adds product value | **Refuted (G54)** | ADR-014 **reject**; H4 kill, H1/H2 blocked on cosmocc; [`APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md) |
 | Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Partial (G55)** | ADR-015 **skill-only**; H1 4/5 + H2 proven; H3 **PROVEN** under frozen sidecar on novel + 5/5 mined house-style specimens (#85–#87); recall is convention-lint (prose dependency); G63–G64 parked; [`CANDIDATE-ID-SPIKE-FOLLOWON.md`](CANDIDATE-ID-SPIKE-FOLLOWON.md) |
-| Verification floor discovers defects without curated probes | **Open (G73)** | Backtests prove **witness production** only; off-domain probe accepts buggy mint (e.g. adler32 `616263`); blind re-detection eval pre-registered [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md), ADR-020 |
+| Verification floor discovers defects without curated probes | **Proven (bounded, G73)** | Blind search 8/12 rev2 re-detection at default budget; [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md); `blind-probe-search.sh`; misses are budget/domain-size (utf8 C080, wabt ff02, parseip 256) |
 | Relation taxonomy guides mining before new MR branches | **Proven** | G66 RELATION-TAXONOMY + BACKTEST checklist; gated `check-relation-taxonomy.sh` |
 | Homomorphism family (`linear_xor`) catches non-linear CA rule | **Proven** | G67 rule 90 vs rule 30 imposter; gated `check-linear-xor.sh` |
 | Scalar conservation applies to Wolfram particle rule 184 | **Proven** | G68 `conserve_popcount` on rule 184 step; gated `check-rule184-conserve.sh` |
@@ -214,13 +214,13 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G67 | `linear_xor` homomorphism (rule 90 step) | n/a | n/a | **Done** |
 | G68 | Rule 184 `conserve_popcount` bridge | n/a | n/a | **Done** |
 | G69 | `flow_composition` on iterated CA | n/a | n/a | **Done** |
-| G73 | Blind probe generation on backtest corpus | #89 | n/a | **Open** |
+| G73 | Blind probe generation on backtest corpus | #89 | n/a | **Done** (8/12 PROVEN bounded) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
 | Gap | Status | Next action |
 | --- | --- | --- |
-| Probe generator (detection) | **Open (G73)** | Blind re-detection eval on rev2 mints; see [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
+| Probe generator (detection) | **Done bounded (G73)** | 8/12 blind re-detection; see [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
 | Extractor (freestanding specimen) | **Mitigated by agents** | Delegate transcription pattern (H3 tranches 2–3); productize only if paying candidate binds cost |
 | Fit conditionality | **Scoping** | `score-case-fit.sh`; say no to NOT-A-FIT |
 | Platform (x86_64 Linux ELF) | **Intentional** | APE rejected ADR-014; no reopen without new evidence |
@@ -264,7 +264,7 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G55** (done, #72; follow-on #85–#87). Candidate-ID sidecar spike. Verdict **skill-only** per ADR-015. H1 **PROVEN** (4/5 holdout `.req` recall), H2 **PROVEN** (verdict equivalence), H3 **PROVEN** under frozen sidecar (novel nibbles + 5/5 mined house-style; variant A fail-closed without relation prose), H4 **PROVEN** (boundary). Sidecar is a convention lint, not an authoring oracle. G63–G64 stay parked.
 
-**G73** (open, #89). Blind probe generation eval. Tests detection vs confirmation on backtest rev2 corpus. Priority per ADR-020. Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
+**G73** (done, #89). Blind probe generation eval. `blind-probe-search.sh` + `blind-probe-generators.sh`; 8/12 rev2 re-detection at default budget (**PROVEN bounded**). Misses documented (utf8/leb128/wabt/parseip budget). No CI gate (220s wall). Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 
 **G54** (done, #71; tooling revisit #85). APE target extension spike. Verdict **reject** per ADR-014 for verification extension; H1 tooling tier **PROVEN** (#85). G60–G62 stay parked.
 
