@@ -1,19 +1,19 @@
 {
-  "goal_id": "G73",
-  "current_issue": 89,
-  "milestone": "adoption-gap",
-  "product_proof_step": "tri-language-flow-comp",
-  "phase": "complete",
+  "goal_id": "G74",
+  "current_issue": 93,
+  "milestone": "lang-packs",
+  "product_proof_step": "lang-pack-contract",
+  "phase": "planning",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
+    "spec_path": "docs/specs/LANG-PACKS.md",
     "queue_path": ".harness-data/product_proof_queue.json",
-    "verdict_adr": "docs/adr/ADR-020-adoption-gap-priority.md",
+    "verdict_adr": "docs/adr/ADR-021-lang-pack-contract.md",
     "eval_logs": []
   },
   "next_action": {
-    "type": "none",
-    "note": "G73 done: 8/12 PROVEN bounded"
+    "type": "implement",
+    "note": "G74: check-lang-pack.sh + retrofit C/Zig minters through the gate"
   },
   "history": [
     {

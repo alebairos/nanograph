@@ -15,6 +15,7 @@
 | **Implementation map** | [`docs/specs/ARCHITECTURE.md`](specs/ARCHITECTURE.md) | Layer → path in this repo |
 | **Agent harness** | [`docs/specs/AGENT-HARNESS.md`](specs/AGENT-HARNESS.md) | How agents run work here |
 | **Probe generator spike** | [`docs/specs/PROBE-GENERATOR-SPIKE.md`](specs/PROBE-GENERATOR-SPIKE.md) | G73 blind detection eval (ADR-020) |
+| **Lang packs** | [`docs/specs/LANG-PACKS.md`](specs/LANG-PACKS.md) | Modular language support contract (ADR-021) |
 | **Issue labels** | [`docs/specs/ISSUE-LABELS.md`](specs/ISSUE-LABELS.md) | GitHub label taxonomy |
 
 ## Change protocol
