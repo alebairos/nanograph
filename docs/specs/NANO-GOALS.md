@@ -215,7 +215,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G68 | Rule 184 `conserve_popcount` bridge | n/a | n/a | **Done** |
 | G69 | `flow_composition` on iterated CA | n/a | n/a | **Done** |
 | G73 | Blind probe generation on backtest corpus | #89 | n/a | **Done** (6/12 true_found, PROVEN bounded) |
-| G74 | Lang-pack contract + conformance gate (ADR-021) | #93 | n/a | **Open** |
+| G74 | Lang-pack contract + conformance gate (ADR-021) | #93 | n/a | **Done** (C + Zig retrofit green) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
@@ -267,7 +267,7 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G55** (done, #72; follow-on #85–#87). Candidate-ID sidecar spike. Verdict **skill-only** per ADR-015. H1 **PROVEN** (4/5 holdout `.req` recall), H2 **PROVEN** (verdict equivalence), H3 **PROVEN** under frozen sidecar (novel nibbles + 5/5 mined house-style; variant A fail-closed without relation prose), H4 **PROVEN** (boundary). Sidecar is a convention lint, not an authoring oracle. G63–G64 stay parked.
 
-**G74** (open, #93). Lang-pack contract per ADR-021: language support is a modular pack (one `mint-one-<lang>.sh` + one specimen) proven by `check-lang-pack.sh` (mint → I1–I6 parse → honest accept), not a plugin framework. C and Zig minters retrofit as packs 1 and 2. Each later pack (G75 Rust, G76 Go) upgrades the language-blind claim by one native language. Spec [`LANG-PACKS.md`](LANG-PACKS.md).
+**G74** (done, #93). Lang-pack contract per ADR-021: language support is a modular pack (one `mint-one-<lang>.sh` + one specimen) proven by `check-lang-pack.sh` (mint → I1–I6 parse → honest accept), not a plugin framework. C and Zig minters retrofit green with zero minter changes (`bswap32.req` involution, `zig_wyhash.req` flow_composition). Gate is manual, not CI (Zig toolchain download). Each later pack (G75 Rust, G76 Go) upgrades the language-blind claim by one native language. Spec [`LANG-PACKS.md`](LANG-PACKS.md).
 
 **G73** (done, #89). Blind probe generation eval. `blind-probe-search.sh` + `blind-probe-generators.sh`; **6/12 true_found** (8/12 rev2 reject, 2 both_reject) at default budget with rev1 specificity control (**PROVEN bounded**, exactly at 50% margin). Misses documented (utf8/leb128/wabt/parseip budget). No CI gate (~198s wall). Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 

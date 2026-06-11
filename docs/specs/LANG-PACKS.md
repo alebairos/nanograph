@@ -8,8 +8,8 @@ The floor consumes `.ngb` + `.req` and is language-blind (ADR-007, ADR-010). A *
 
 | Pack | Minter | Toolchain (pinned) | Status |
 | --- | --- | --- | --- |
-| C | `scripts/mint-one-elf.sh` | `gcc:13` Docker image | Founding pack; gate retrofit pending (G74) |
-| Zig | `scripts/mint-one-zig.sh` | Zig 0.13.0, `ubuntu:24.04` Docker | G59 native proof; gate retrofit pending (G74) |
+| C | `scripts/mint-one-elf.sh` | `gcc:13` Docker image | **Gate green** (G74, `bswap32.req` involution) |
+| Zig | `scripts/mint-one-zig.sh` | Zig 0.13.0, `ubuntu:24.04` Docker | **Gate green** (G74, `zig_wyhash.req` flow_composition) |
 | Rust | `scripts/mint-one-rust.sh` | TBD (pin exact rustc) | Pre-registered (G75) |
 | Go | `scripts/mint-one-go.sh` | TBD (TinyGo route) | Pre-registered (G76) |
 
@@ -52,6 +52,18 @@ Three legs, all required:
 3. **Behavior.** `metamorphic-verify.sh <ngb> <req>` returns `verdict=accept` on the honest specimen.
 
 A reject leg (buggy revision rejected) is not part of the pack gate; it belongs to the backtest case the pack's specimens feed (see [`BACKTEST.md`](../BACKTEST.md)).
+
+Retrofit proofs (2026-06-11, both unchanged minters):
+
+```bash
+./scripts/check-lang-pack.sh /tmp/lp_c.ngb fixtures/metamorphic/bswap32.req \
+  -- ./scripts/mint-one-elf.sh fixtures/metamorphic/bswap32.c /tmp/lp_c.ngb
+./scripts/check-lang-pack.sh /tmp/lp_zig.ngb fixtures/metamorphic/zig_wyhash.req \
+  -- ./scripts/mint-one-zig.sh fixtures/backtest/zig-wyhash-native \
+     fixtures/backtest/zig-wyhash-native/wyhash_fix.zig /tmp/lp_zig.ngb
+```
+
+The gate is not wired into `check-all-proofs.sh`; the Zig leg downloads its toolchain (~90s, network), which fails the CI determinism bar. Run it when adding or changing a pack.
 
 ## Contribution checklist (for an external agent)
 
