@@ -17,7 +17,6 @@ mkdir -p "$dir"
 req="fixtures/metamorphic/bswap32.req"
 honest_src="fixtures/metamorphic/rust_native_bswap32.rs"
 go_honest="fixtures/metamorphic/go_native_bswap32.go"
-go_evil="fixtures/metamorphic/go_native_bswap32_evil.go"
 
 case "$lang" in
   c)
@@ -35,7 +34,7 @@ case "$lang" in
   go)
     stem="go_native_bswap32"
     ./scripts/mint-one-go.sh "$go_honest" "$dir/${stem}_rev1.ngb"
-    ./scripts/mint-one-go.sh "$go_evil" "$dir/${stem}_rev2.ngb"
+    ./scripts/mint-one-go.sh "$go_honest" "$dir/${stem}_rev2.ngb" --tags evil
     ./scripts/mint-one-go.sh "$go_honest" "$dir/${stem}_rev3.ngb"
     ;;
   *)

@@ -18,7 +18,7 @@ func main() {
 		n = n*10 + uint64(c-'0')
 	}
 	x := uint32(n)
-	y := x>>24 | x>>8&0xff00 | x<<8&0xff0000 | x<<24
+	y := mapU32(x)
 	buf := make([]byte, 0, 16)
 	if y == 0 {
 		buf = append(buf, '0')
