@@ -46,18 +46,36 @@ run_docker() {
   fi
 }
 
+# qemu/docker under load occasionally returns empty stdout for a specimen that
+# deterministically prints; one bounded retry filters that backend fault.
+# Byte-exact passthrough via a temp file (no newline normalization).
+run_retry() {
+  local attempts=$((${NGB_CAPTURE_RETRIES:-1} + 1)) i rc=0 tmp="/tmp/nanograph-cap-out-$$"
+  for ((i = 1; i <= attempts; i++)); do
+    set +e
+    "$@" >"$tmp"
+    rc=$?
+    set -e
+    [[ -s "$tmp" ]] && break
+    [[ $i -lt $attempts ]] && sleep 1
+  done
+  cat "$tmp"
+  rm -f "$tmp"
+  return $rc
+}
+
 if [[ "$(uname -s)" == "Linux" ]]; then
-  run_native
+  run_retry run_native
   exit $?
 fi
 
 if command -v qemu-x86_64 >/dev/null 2>&1; then
-  run_qemu
+  run_retry run_qemu
   exit $?
 fi
 
 if command -v docker >/dev/null 2>&1; then
-  run_docker
+  run_retry run_docker
   exit $?
 fi
 
