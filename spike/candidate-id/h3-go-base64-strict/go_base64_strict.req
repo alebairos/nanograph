@@ -1,0 +1,8 @@
+relation=round_trip
+entry=argv_mode
+encode=enc
+decode=dec
+domain=go_base64_strict
+reject=REJECT
+eq=exact
+wire=ascii
