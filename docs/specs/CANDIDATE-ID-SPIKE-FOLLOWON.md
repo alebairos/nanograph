@@ -39,16 +39,18 @@ Supporting scripts (spike-only, no `tools/` changes):
 
 ### H3 — Agent-loop latency
 
-**PROVEN (one run, frozen sidecar).**
+**PROVEN (frozen sidecar, corrected criterion).**
 
-| Path | Wall ms | Verdict |
-| --- | ---: | --- |
-| Hand `.req` | 2383 | `verdict=reject … witness bytes=F hex=46 decode=496 reencode=F0` |
-| Sidecar `.req.auto` | 1968 | identical verdict line |
+The first protocol gated on end-to-end wall time (hand vs sidecar verify path). A rerun on identical committed inputs flipped that clause PROVEN → REFUTED (1968 ms vs 2383 ms, then 2367 ms vs 2224 ms). Docker runner startup noise dominates both paths, so wall-time comparison cannot gate. The protocol now gates on verdict equivalence plus bounded authoring cost (`propose-req.py` ≤ 1000 ms).
 
-Sidecar recalled `wire=ascii` from the source comment (`wire=ascii` in header). No change to `propose-req.py`.
+| Run | Verdicts | Authoring ms |
+| --- | --- | ---: |
+| 1 | identical reject `bytes=F hex=46 decode=496 reencode=F0` | 40 |
+| 2 | identical reject, same witness | 38 |
 
-Both paths dominated by docker Linux runner startup (~2 s), not `.req` authoring. The pass is structural (matching reject + not slower), not a latency win for production agent loops.
+Sidecar recalled `wire=ascii` from the source comment header. No change to `propose-req.py` (freeze hash held across all runs).
+
+Pre-registration is enforced by `run-h3.sh`. It aborts unless the freeze record, sidecar, and hand `.req` are committed and clean, and it prints the commit hashes in the run log.
 
 ### H1 / H2 / H4
 
