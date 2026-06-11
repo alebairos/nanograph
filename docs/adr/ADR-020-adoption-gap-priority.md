@@ -43,4 +43,6 @@ Backtests through G72 prove witness production. G73 tests detection.
 
 If G73 is **REFUTED** at declared budget, keep the honest ICP line: "regression harness for properties you already named; detection is your fuzzer or our future generator work."
 
-**Addendum 2026-06-11 (#89):** G73 **PROVEN (bounded)** at default budget. 8/12 backtest rev2 cases re-detected without CASE.md witnesses. ICP may claim bounded blind detection on the committed corpus; misses (utf8 overlong, wabt 10-byte, parseip wrap) remain budget-limited, not wired into CI (220s wall).
+**Addendum 2026-06-11 (#89):** G73 **PROVEN (bounded)** at default budget. **6/12 true_found** (honest rev1 passes the same blind witness; value_oracle uses rev1 vs rev2 differential). 8/12 rev2 reject total; 2/12 **both_reject** (capnproto-base64, rust-base64 round_trip relation-declaration gaps on unpadded input). ICP may claim bounded blind detection on the committed corpus at exactly the 50% margin; misses (utf8 overlong, wabt 10-byte, parseip wrap) remain budget-limited, not wired into CI (~198s wall).
+
+**Addendum 2026-06-11 (audit):** `blind-probe-search.sh` now reports `true_found` vs `both_reject` per case; verdict uses `true_found` rate only.

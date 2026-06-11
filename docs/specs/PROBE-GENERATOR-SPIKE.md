@@ -75,9 +75,11 @@ Document wall time per case. Raise budget only in a labeled follow-on tranche.
 
 | Outcome | Meaning |
 | --- | --- |
-| **PROVEN (bounded)** | ≥50% of corpus cases get a reject witness within budget; misses documented with reason |
-| **PARTIAL** | 20–49% re-detection; generator useful only with relation-specific tuning |
-| **REFUTED** | <20% without cheating; floor remains confirmation-only for ICP pitch |
+| **PROVEN (bounded)** | ≥50% of corpus cases get a **true_found** reject within budget (rev1 passes the same witness; value_oracle uses rev1 vs rev2 differential); misses documented with reason |
+| **PARTIAL** | 20–49% true_found; generator useful only with relation-specific tuning |
+| **REFUTED** | <20% true_found without cheating; floor remains confirmation-only for ICP pitch |
+
+**Specificity control (2026-06-11 follow-on).** A blind `found` on rev2 alone is insufficient. The driver re-checks honest rev1 on the same witness. `both_reject` means both builds fail the declared relation for the same probe (relation-declaration gap, not mined-defect separation). Verdict uses `true_found` rate only.
 
 Either outcome is publishable. Do not tune budget post hoc to pass.
 
@@ -90,26 +92,28 @@ Either outcome is publishable. Do not tune budget post hoc to pass.
 
 ## Results
 
-Run: 2026-06-11, `./scripts/agent-eval/blind-probe-search.sh --corpus backtest-rev2 --budget default`, wall ~220s (Docker runner).
+Run: 2026-06-11 (audit re-run), `./scripts/agent-eval/blind-probe-search.sh --corpus backtest-rev2 --budget default`, wall ~198s (Docker runner).
 
 Budget: byte/hex/ascii/u32=256, flow seeds=64 (go skips seed 0; flow blind mode skips non-numeric outputs).
 
-| Case | Relation | Result | wall ms | Notes |
-| --- | --- | --- | ---: | --- |
-| utf8 | round_trip | miss | 5877 | blind decimal singles 256..511 only; overlong `C080` not in budget |
-| leb128 | round_trip | miss | 5665 | non-minimal `8000` not in first 256 decimal probes |
-| wabt-leb128 | round_trip | miss | 6583 | 10-byte witness `…ff02` not in first 256 hex strings |
-| capnproto-base64 | round_trip | **found** | 6578 | witness `AA` (differs from curated `@` probe; still valid) |
-| cosmo-ljson | value_oracle | **found** | 56449 | differential vs rev1; witness `80` (not curated `c080`) |
-| cosmo-parseip | value_oracle | miss | 124859 | `255.255.255.256` not in ascii budget |
-| knuth-rand-len | range_coverage | **found** | 226 | endpoint lo seed=22 hex=02 (matches curated) |
-| llvm-bolt-cmp | cmp_order | **found** | 441 | pair 0,0 hex=00 (matches curated) |
-| rust-base64 | round_trip | **found** | 6371 | witness `AA` (curated `iYV=` not in ascii budget) |
-| zig-wyhash | flow_composition | **found** | 744 | seed=0 hex=0 (curated witness uses seed=5) |
-| go-base64-streaming | flow_composition | **found** | ~3000 | seed=5 hex=5 (matches curated; needs blind flow skip on non-numeric seeds) |
-| rust-crc32fast | flow_composition | **found** | 4881 | seed=5 hex=5 (matches curated) |
+| Case | Relation | Result | Specificity | wall ms | Notes |
+| --- | --- | --- | --- | ---: | --- |
+| utf8 | round_trip | miss | — | 4978 | blind decimal singles 256..511 only; overlong `C080` not in budget |
+| leb128 | round_trip | miss | — | 4957 | non-minimal `8000` not in first 256 decimal probes |
+| wabt-leb128 | round_trip | miss | — | 4695 | 10-byte witness `…ff02` not in first 256 hex strings |
+| capnproto-base64 | round_trip | found | **both_reject** | 5608 | witness `AA`; rev1 also rejects (unpadded decode/re-encode); relation-declaration gap |
+| cosmo-ljson | value_oracle | found | true_found | 48467 | differential vs rev1; witness `80` (not curated `c080`) |
+| cosmo-parseip | value_oracle | miss | — | 103248 | `255.255.255.256` not in ascii budget |
+| knuth-rand-len | range_coverage | found | true_found | 260 | endpoint lo seed=22 hex=02 (matches curated) |
+| llvm-bolt-cmp | cmp_order | found | true_found | 418 | pair 0,0 hex=00 (matches curated) |
+| rust-base64 | round_trip | found | **both_reject** | 6619 | witness `AA`; rev1 also rejects; same relation gap as capnproto |
+| zig-wyhash | flow_composition | found | true_found | 1347 | seed=0 hex=0 (curated witness uses seed=5) |
+| go-base64-streaming | flow_composition | found | true_found | 2896 | seed=5 hex=5 (matches curated) |
+| rust-crc32fast | flow_composition | found | true_found | 4454 | seed=5 hex=5 (matches curated) |
 
-**Summary:** 8/12 found (67%), 4 miss, 0 error after go flow fix. **Verdict: PROVEN (bounded)** per pre-registered ≥50% threshold.
+**Summary:** 8/12 rev2 reject (`found`), **6/12 true defect separators (`true_found`)**, 2/12 `both_reject`, 4 miss, 0 error. **Verdict: PROVEN (bounded)** per pre-registered ≥50% **true_found** threshold (exactly at margin).
+
+**Precision gap.** Two `both_reject` cases are lenient base64 decoders failing `encode∘decode == id` on unpadded input in both honest and buggy builds. Curated probes used padded inputs and masked the relation mismatch. Blind search surfaced it. Fix is relation tightening (canonical-input domain or `decode∘encode∘decode == decode`), not generator tuning.
 
 Misses are honest budget/domain-size failures, not confirmation-only on those relations. utf8/leb128/wabt need longer hex/decimal enumeration or structured fuzz, not fix-commit hints.
 
