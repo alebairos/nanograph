@@ -3,3 +3,4 @@ entry=argv_mode
 mode=flow
 domain=rust_crc32fast_combine
 max_total=64
+flow_nm=0 0

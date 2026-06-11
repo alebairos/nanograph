@@ -3,3 +3,5 @@ entry=argv_mode
 mode=flow
 domain=go_base64_streaming
 max_total=64
+flow_nm=4 2
+seed_start=1

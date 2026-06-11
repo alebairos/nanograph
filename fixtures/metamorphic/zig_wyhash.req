@@ -3,3 +3,4 @@ entry=argv_mode
 mode=flow
 domain=zig_wyhash
 max_total=64
+flow_nm=48 10

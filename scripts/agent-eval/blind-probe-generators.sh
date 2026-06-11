@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# G73 blind probe generators. Use only .req fields (relation, domain, wire, max_total).
-# No CASE.md witnesses, no timeline reject lines, no hand PROBES=.
+# G73 blind probe generators. Inputs are .req fields only (relation, wire,
+# max_total, and declared hints flow_nm / seed_start / cmp_max / probe_style /
+# probe_block). No CASE.md witnesses, no timeline reject lines, no hand
+# PROBES=, no domain-keyed switches.
 
 BLIND_BYTE_BUDGET="${METAMORPHIC_BLIND_BYTE:-256}"
 BLIND_FLOW_BUDGET="${METAMORPHIC_BLIND_FLOW:-64}"
@@ -8,14 +10,9 @@ BLIND_U32_BUDGET="${METAMORPHIC_BLIND_U32:-256}"
 BLIND_ASCII_BUDGET="${METAMORPHIC_BLIND_ASCII:-256}"
 BLIND_HEX_BUDGET="${METAMORPHIC_BLIND_HEX:-256}"
 
-blind_flow_nm() {
-  case "${DOMAIN:-}" in
-    zig_wyhash) printf '%s %s' 48 10 ;;
-    go_base64_streaming) printf '%s %s' 4 2 ;;
-    rust_crc32fast_combine) printf '%s %s' 0 0 ;;
-    ca_flow90) printf '%s %s' 1 2 ;;
-    *) printf '%s %s' 1 1 ;;
-  esac
+blind_req_hint() {
+  [[ -n "${REQ:-}" && -f "${REQ:-}" ]] || return 0
+  sed -n "s/^$1=//p" "$REQ" | head -1
 }
 
 blind_gen_u32() {
@@ -33,8 +30,9 @@ blind_gen_seeds_256() {
 }
 
 blind_gen_cmp_pairs() {
-  local i j max=3
-  [[ "${DOMAIN:-}" == llvm_bolt_cmp ]] || max=1
+  local i j max
+  max="$(blind_req_hint cmp_max)"
+  max="${max:-1}"
   for ((i = 0; i <= max; i++)); do
     for ((j = 0; j <= max; j++)); do
       printf '%s %s\n' "$i" "$j"
@@ -43,9 +41,12 @@ blind_gen_cmp_pairs() {
 }
 
 blind_gen_flow_triples() {
-  local n m seed start=0
-  read -r n m <<<"$(blind_flow_nm)"
-  [[ "${DOMAIN:-}" == go_base64_streaming ]] && start=1
+  local n m seed start nm
+  nm="$(blind_req_hint flow_nm)"
+  nm="${nm:-1 1}"
+  read -r n m <<<"$nm"
+  start="$(blind_req_hint seed_start)"
+  start="${start:-0}"
   for ((seed = start; seed < start + BLIND_FLOW_BUDGET; seed++)); do
     printf '%s %s %s\n' "$n" "$m" "$seed"
   done
@@ -91,13 +92,17 @@ PY
 }
 
 blind_gen_ascii_tokens() {
-  python3 - "$BLIND_ASCII_BUDGET" <<'PY'
+  local block
+  block="$(blind_req_hint probe_block)"
+  python3 - "$BLIND_ASCII_BUDGET" "${block:-0}" <<'PY'
 import itertools
 import sys
 budget = int(sys.argv[1])
+block = int(sys.argv[2])
 chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+lengths = range(block, 3 * block + 1, block) if block else range(1, 6)
 count = 0
-for n in range(1, 6):
+for n in lengths:
     if count >= budget:
         break
     for tup in itertools.product(chars, repeat=n):
@@ -108,7 +113,7 @@ for n in range(1, 6):
 PY
 }
 
-blind_gen_parseip_ascii() {
+blind_gen_ipv4_ascii() {
   python3 - "$BLIND_ASCII_BUDGET" <<'PY'
 import sys
 budget = int(sys.argv[1])
@@ -143,8 +148,8 @@ blind_gen_probes() {
       case "${WIRE:-}" in
         hex) blind_gen_hex_bytes ;;
         ascii)
-          if [[ "${DOMAIN:-}" == cosmo_parseip ]]; then
-            blind_gen_parseip_ascii
+          if [[ "$(blind_req_hint probe_style)" == ipv4 ]]; then
+            blind_gen_ipv4_ascii
           else
             blind_gen_ascii_tokens
           fi
