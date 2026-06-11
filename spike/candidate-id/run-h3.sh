@@ -3,12 +3,17 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
+TRANCHE="${1:-h3-nibbles}"
+STEM="${2:-h3_nibbles}"
+DEFINE="${DEFINE:--DODD_LEN_OK}"
+export PROBES="${PROBES:-00 41 FF F}"
+
 PROPOSE="$ROOT/spike/candidate-id/propose-req.py"
 FROZEN="$ROOT/spike/candidate-id/FROZEN.sha256"
-SRC="$ROOT/spike/candidate-id/h3-nibbles/h3_nibbles.c"
-HAND="$ROOT/spike/candidate-id/h3-nibbles/h3_nibbles.req"
-BUG_NGB="$ROOT/spike/candidate-id/h3-nibbles/h3_nibbles_oddlen.ngb"
-AUTO="$ROOT/spike/candidate-id/h3-nibbles/h3_nibbles.req.auto"
+SRC="$ROOT/spike/candidate-id/$TRANCHE/$STEM.c"
+HAND="$ROOT/spike/candidate-id/$TRANCHE/$STEM.req"
+BUG_NGB="$ROOT/spike/candidate-id/$TRANCHE/${STEM}_buggy.ngb"
+AUTO="$ROOT/spike/candidate-id/$TRANCHE/$STEM.req.auto"
 VERIFY="$ROOT/spike/candidate-id/h3-roundtrip-verify.sh"
 
 want="$(sed -n 's/^SHA256(propose-req.py)=//p' "$FROZEN" | head -1)"
@@ -20,7 +25,7 @@ got="$(shasum -a 256 "$PROPOSE" | awk '{print $1}')"
 
 # Pre-registration is only auditable if the freeze and the hand .req are in
 # git history before the run, with no working-copy drift.
-for f in "$PROPOSE" "$FROZEN" "$HAND"; do
+for f in "$PROPOSE" "$FROZEN" "$HAND" "$SRC"; do
   rel="${f#"$ROOT"/}"
   git ls-files --error-unmatch "$rel" >/dev/null 2>&1 || {
     echo "H3 ABORT: $rel not committed; commit freeze + hand .req before running" >&2
@@ -33,11 +38,13 @@ for f in "$PROPOSE" "$FROZEN" "$HAND"; do
 done
 
 echo "== G55 H3 novel-codec follow-on (frozen sidecar $got) =="
+echo "tranche=$TRANCHE stem=$STEM define=$DEFINE"
 echo "pre_registered_hand_req=$HAND"
 echo "hand_req_commit=$(git log -1 --format=%h -- "${HAND#"$ROOT"/}")"
+echo "source_commit=$(git log -1 --format=%h -- "${SRC#"$ROOT"/}")"
 echo "freeze_commit=$(git log -1 --format=%h -- "${FROZEN#"$ROOT"/}")"
 
-./scripts/mint-one-elf.sh "$SRC" "$BUG_NGB" -DODD_LEN_OK
+./scripts/mint-one-elf.sh "$SRC" "$BUG_NGB" "$DEFINE"
 
 hand_ms=0
 sidecar_ms=0

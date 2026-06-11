@@ -11,7 +11,13 @@ if ! ./scripts/check-linux-runner.sh --quiet; then
   exit 0
 fi
 
-make -C tools -s bin/conf-eval bin/ngb-extract bin/ngb-parse >/dev/null
+# CONF_EVAL / NGB_PARSE override the native tools so an APE-built harness can
+# run this gate without a local C toolchain (G54 H1 seam).
+CONF_EVAL="${CONF_EVAL:-tools/bin/conf-eval}"
+NGB_PARSE="${NGB_PARSE:-tools/bin/ngb-parse}"
+if [[ "$CONF_EVAL" == tools/bin/conf-eval ]]; then
+  make -C tools -s bin/conf-eval bin/ngb-extract bin/ngb-parse >/dev/null
+fi
 
 SPEC="fixtures/input-math/gcd.spec"
 CASES="fixtures/input-math/gcd.cases"
@@ -26,7 +32,7 @@ for f in "$SPEC" "$CASES" "$V1" "$V2" "$NEARMISS"; do
   [[ -f "$f" ]] || fail "missing $f (run scripts/mint-input-math-fixtures.sh)"
 done
 
-hash_of() { tools/bin/ngb-parse "$1" | sed -n 's/.*graph_root_hash=//p'; }
+hash_of() { "$NGB_PARSE" "$1" | sed -n 's/.*graph_root_hash=//p'; }
 
 h1="$(hash_of "$V1")"
 h2="$(hash_of "$V2")"
@@ -54,7 +60,7 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   line="${line#"${line%%[![:space:]]*}"}"
   [[ -z "$line" ]] && continue
   read -r a b _expected <<<"$line"
-  expected="$(tools/bin/conf-eval "$SPEC" "$a" "$b")"
+  expected="$("$CONF_EVAL" "$SPEC" "$a" "$b")"
 
   echo "-- gcd($a,$b): accept v1 (O0) --"
   [[ "$(verdict "$V1" "$a" "$b" "$expected")" == "accept" ]] || fail "v1 reject on ($a,$b)"

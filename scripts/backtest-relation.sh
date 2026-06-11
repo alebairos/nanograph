@@ -23,8 +23,15 @@ while IFS= read -r line; do
   ngb="$(printf '%s' "$line" | sed -n 's/.*ngb=\([^ ]*\).*/\1/p')"
   expect="$(printf '%s' "$line" | sed -n 's/.*expect=\([^ ]*\).*/\1/p')"
 
-  out="$("$VERIFY" "$ngb" "$req" 2>/dev/null || true)"
-  verdict="$(printf '%s' "$out" | sed -n 's/.*verdict=\([a-z]*\).*/\1/p')"
+  # An empty verdict is a backend fault (qemu/docker under load), not a
+  # relation outcome; retry those like the witness re-run policy. A parsed
+  # accept/reject is never retried.
+  verdict=""
+  for attempt in 1 2 3; do
+    out="$("$VERIFY" "$ngb" "$req" 2>/dev/null || true)"
+    verdict="$(printf '%s' "$out" | sed -n 's/.*verdict=\([a-z]*\).*/\1/p')"
+    [[ -n "$verdict" ]] && break
+  done
   hex="$(printf '%s' "$out" | sed -n 's/.*hex=\([0-9A-Fa-f]*\).*/\1/p')"
 
   if [[ -n "$hex" ]]; then witness="hex=$hex"; else witness="-"; fi

@@ -56,6 +56,19 @@ Pre-registration is enforced by `run-h3.sh`. It aborts unless the freeze record,
 
 Unchanged from [`CANDIDATE-ID-SPIKE.md`](CANDIDATE-ID-SPIKE.md).
 
+## Tranche 2: adversarial H3 on a mined codec (#85)
+
+Setup removed the two weaknesses of tranche 1. The codec is mined (`fixtures/fit-cases/go-base64-strict-padding.fit`, golang/go #15656, parent `56b5546b` / fix `87b1aaa3`). The hand `.req` was authored from the scorecard and the base64 driver contract only, and committed (`9b60fde`) before any specimen source existed. The specimen was transcribed by a separate delegate that never read the hand `.req` and was barred from key=value comment hints. Sidecar freeze hash unchanged throughout.
+
+Pre-declared two-variant protocol (in the variant A commit message, before any run):
+
+| Variant | Source | Result |
+| --- | --- | --- |
+| A (blind) | No relation named anywhere in prose | **REFUTED.** `propose-req.py` raises `no relation inferred`; sidecar cannot propose at all |
+| B (house style) | One capnproto-style oracle line added (`round_trip: enc(dec(b)) == b …`) | **PROVEN.** Auto `.req` byte-exact vs hand (field order included); verdicts identical: `reject … bytes=iYV= hex=6959563d decode=8985 reencode=iYU=`; authoring 39 ms |
+
+The boundary is now sharp. The frozen sidecar recalls a separately-authored mined specimen exactly when the source names its relation in prose, which every committed specimen in `fixtures/metamorphic/` does. On a source that does not, it fails closed (error, not a wrong `.req`).
+
 ## Verdict impact on ADR-015
 
 **No change.** One novel codec under freeze does not justify wiring the sidecar into `check-all-proofs.sh` or un-parking G63–G64. It refutes the claim that H3 was untestable. It does not refute the H1 overfit concern on the original holdout (cosmo_ljson `eq=exact` miss).

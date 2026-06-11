@@ -1,4 +1,4 @@
-{"ts":"2026-06-11T17:38:58Z","case":"oob_offset","ngb":"caught","ngb_detail":"I3:node_range","elf":"shipped","elf_detail":"dd exit 0 wrote past code"}
-{"ts":"2026-06-11T17:38:58Z","case":"corrupt_header","ngb":"caught","ngb_detail":"I1:magic","elf":"shipped","elf_detail":"dd accepted e_ident write; loader fails only at runtime"}
-{"ts":"2026-06-11T17:38:58Z","case":"silent_code_tamper","ngb":"caught","ngb_detail":"root_hash","elf":"shipped","elf_detail":"dd accepted opcode overwrite; no integrity check"}
-{"ts":"2026-06-11T17:38:58Z","summary":true,"total_bad_edits":3,"ngb_caught_at_author_time":3,"elf_caught_at_author_time":0}
+{"ts":"2026-06-11T18:06:29Z","case":"oob_offset","ngb":"caught","ngb_detail":"I3:node_range","elf":"shipped","elf_detail":"dd exit 0 wrote past code"}
+{"ts":"2026-06-11T18:06:29Z","case":"corrupt_header","ngb":"caught","ngb_detail":"I1:magic","elf":"shipped","elf_detail":"dd accepted e_ident write; loader fails only at runtime"}
+{"ts":"2026-06-11T18:06:29Z","case":"silent_code_tamper","ngb":"caught","ngb_detail":"root_hash","elf":"shipped","elf_detail":"dd accepted opcode overwrite; no integrity check"}
+{"ts":"2026-06-11T18:06:29Z","summary":true,"total_bad_edits":3,"ngb_caught_at_author_time":3,"elf_caught_at_author_time":0}

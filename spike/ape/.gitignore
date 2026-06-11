@@ -2,4 +2,5 @@
 *
 !.gitignore
 !run-g54-followon.sh
+!run-h1-ape-rubric.sh
 !utf8_cosmo.c
