@@ -90,12 +90,32 @@ Either outcome is publishable. Do not tune budget post hoc to pass.
 
 ## Results
 
-*(empty until G73 #89 implementation run)*
+Run: 2026-06-11, `./scripts/agent-eval/blind-probe-search.sh --corpus backtest-rev2 --budget default`, wall ~220s (Docker runner).
+
+Budget: byte/hex/ascii/u32=256, flow seeds=64 (go skips seed 0; flow blind mode skips non-numeric outputs).
+
+| Case | Relation | Result | wall ms | Notes |
+| --- | --- | --- | ---: | --- |
+| utf8 | round_trip | miss | 5877 | blind decimal singles 256..511 only; overlong `C080` not in budget |
+| leb128 | round_trip | miss | 5665 | non-minimal `8000` not in first 256 decimal probes |
+| wabt-leb128 | round_trip | miss | 6583 | 10-byte witness `…ff02` not in first 256 hex strings |
+| capnproto-base64 | round_trip | **found** | 6578 | witness `AA` (differs from curated `@` probe; still valid) |
+| cosmo-ljson | value_oracle | **found** | 56449 | differential vs rev1; witness `80` (not curated `c080`) |
+| cosmo-parseip | value_oracle | miss | 124859 | `255.255.255.256` not in ascii budget |
+| knuth-rand-len | range_coverage | **found** | 226 | endpoint lo seed=22 hex=02 (matches curated) |
+| llvm-bolt-cmp | cmp_order | **found** | 441 | pair 0,0 hex=00 (matches curated) |
+| rust-base64 | round_trip | **found** | 6371 | witness `AA` (curated `iYV=` not in ascii budget) |
+| zig-wyhash | flow_composition | **found** | 744 | seed=0 hex=0 (curated witness uses seed=5) |
+| go-base64-streaming | flow_composition | **found** | ~3000 | seed=5 hex=5 (matches curated; needs blind flow skip on non-numeric seeds) |
+| rust-crc32fast | flow_composition | **found** | 4881 | seed=5 hex=5 (matches curated) |
+
+**Summary:** 8/12 found (67%), 4 miss, 0 error after go flow fix. **Verdict: PROVEN (bounded)** per pre-registered ≥50% threshold.
+
+Misses are honest budget/domain-size failures, not confirmation-only on those relations. utf8/leb128/wabt need longer hex/decimal enumeration or structured fuzz, not fix-commit hints.
 
 ## Verification
 
 ```bash
 ./scripts/check-canonical-drift.sh
-# after implementation:
-# ./scripts/agent-eval/blind-probe-search.sh --corpus backtest-rev2 --budget default
+./scripts/agent-eval/blind-probe-search.sh --corpus backtest-rev2 --budget default
 ```

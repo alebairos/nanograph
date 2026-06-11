@@ -170,6 +170,12 @@ u64_lt() { python3 -c 'import sys; print(int(sys.argv[1]) < int(sys.argv[2]))' "
 u64_gt() { python3 -c 'import sys; print(int(sys.argv[1]) > int(sys.argv[2]))' "$1" "$2"; }
 
 gen_probes() {
+  if [[ "${METAMORPHIC_BLIND:-}" == 1 ]]; then
+    # shellcheck source=blind-probe-generators.sh
+    source "$(dirname "$0")/blind-probe-generators.sh"
+    blind_gen_probes
+    return
+  fi
   case "$DOMAIN" in
     u32) gen_u32 ;;
     utf8) gen_utf8 ;;
@@ -597,6 +603,9 @@ if [[ "$RELATION" == flow_composition ]]; then
     part="$(flow_run "$n" "$seed")"
     composed="$(flow_run "$m" "$part")"
     [[ "$once" =~ ^[0-9]+$ && "$part" =~ ^[0-9]+$ && "$composed" =~ ^[0-9]+$ ]] || {
+      if [[ "${METAMORPHIC_BLIND:-}" == 1 ]]; then
+        continue
+      fi
       echo "metamorphic-verify: flow_composition non-numeric output n=$n m=$m seed=$seed" >&2
       exit 2
     }

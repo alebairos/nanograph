@@ -3,7 +3,7 @@
   "current_issue": 89,
   "milestone": "adoption-gap",
   "product_proof_step": "tri-language-flow-comp",
-  "phase": "planning",
+  "phase": "complete",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
@@ -12,8 +12,8 @@
     "eval_logs": []
   },
   "next_action": {
-    "type": "issue",
-    "note": "G73 #89: implement blind-probe-search.sh on backtest rev2 corpus; report re-detection rate."
+    "type": "none",
+    "note": "G73 done: 8/12 PROVEN bounded"
   },
   "history": [
     {
