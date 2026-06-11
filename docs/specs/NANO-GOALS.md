@@ -29,7 +29,7 @@ What the program has settled versus what still needs a goal.
 | `size_monotone` catches a real allocator sizing bug | **Proven** | G49 jemalloc backtest gated `JEMALLOC-S2U` (#68) |
 | `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
 | Language-diversity mining yields FIT candidates (Rust, Zig, Go) | **Proven** | G51–G53 (#70); scorecards + [`MINING-G51-G53.md`](MINING-G51-G53.md) |
-| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig)** | G59 `ZIG-WYHASH-NATIVE`; native Zig `.ngb` through unchanged verifier |
+| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig)** | G59 `ZIG-WYHASH-NATIVE`; native Zig `.ngb` through unchanged verifier; n=1 native non-C; upgrade path is lang packs (ADR-021, G74→G75/G76) |
 | Rust real-history backtests execute on language-diversity lane | **Proven** | G56 `RUST-BASE64-INVALID-LAST` + G71 `RUST-CRC32FAST-COMBINE-LEN0` |
 | `flow_composition` catches real-history incremental bugs | **Proven (Rust+Zig+Go)** | G57/G59 Wyhash + G58 Go streaming + G71 crc32fast; witness `hex=5` all three; [`FLOW-COMPOSITION-TRI-LANGUAGE.md`](FLOW-COMPOSITION-TRI-LANGUAGE.md) |
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
@@ -215,6 +215,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G68 | Rule 184 `conserve_popcount` bridge | n/a | n/a | **Done** |
 | G69 | `flow_composition` on iterated CA | n/a | n/a | **Done** |
 | G73 | Blind probe generation on backtest corpus | #89 | n/a | **Done** (6/12 true_found, PROVEN bounded) |
+| G74 | Lang-pack contract + conformance gate (ADR-021) | #93 | n/a | **Open** |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
@@ -243,6 +244,8 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 | G65 | `size_monotone` second mined bug (broader power claim) | Real-history candidate beyond jemalloc overflow boundary | G49 done + mining |
 | G71 | Rust crc32fast `flow_composition` real-history backtest | G56 extraction spike passes + G69 done | G51 / #70 |
 | G72 | Tri-language `flow_composition` witness equivalence doc | G57 + G58 + G71 backtests done | G57/G58/G71 |
+| G75 | Native Rust lang pack through `check-lang-pack.sh` | G74 done (gate exists, C+Zig retrofit green) | G74 / #93 |
+| G76 | Native Go lang pack (TinyGo route) | G75 done without contract amendments | G74 / #93 |
 
 **G51** (done, #70). Rust mining shortlist in [`MINING-G51-G53.md`](MINING-G51-G53.md). Top FIT `rust-base64-invalid-last` (G56 survivor). Wolfram runner-up `rust-crc32fast-combine-len0` (G71). `linear_xor` PARKED on BE-only baseline.
 
@@ -263,6 +266,8 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 **G66** (done). [`RELATION-TAXONOMY.md`](RELATION-TAXONOMY.md), family column in METAMORPHIC-RELATIONS, BACKTEST stage-2 checklist. ADR-016. Gate `scripts/check-relation-taxonomy.sh`. Docs only.
 
 **G55** (done, #72; follow-on #85–#87). Candidate-ID sidecar spike. Verdict **skill-only** per ADR-015. H1 **PROVEN** (4/5 holdout `.req` recall), H2 **PROVEN** (verdict equivalence), H3 **PROVEN** under frozen sidecar (novel nibbles + 5/5 mined house-style; variant A fail-closed without relation prose), H4 **PROVEN** (boundary). Sidecar is a convention lint, not an authoring oracle. G63–G64 stay parked.
+
+**G74** (open, #93). Lang-pack contract per ADR-021: language support is a modular pack (one `mint-one-<lang>.sh` + one specimen) proven by `check-lang-pack.sh` (mint → I1–I6 parse → honest accept), not a plugin framework. C and Zig minters retrofit as packs 1 and 2. Each later pack (G75 Rust, G76 Go) upgrades the language-blind claim by one native language. Spec [`LANG-PACKS.md`](LANG-PACKS.md).
 
 **G73** (done, #89). Blind probe generation eval. `blind-probe-search.sh` + `blind-probe-generators.sh`; **6/12 true_found** (8/12 rev2 reject, 2 both_reject) at default budget with rev1 specificity control (**PROVEN bounded**, exactly at 50% margin). Misses documented (utf8/leb128/wabt/parseip budget). No CI gate (~198s wall). Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 
