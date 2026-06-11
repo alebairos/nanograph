@@ -23,3 +23,7 @@ Witness `hex=5`.
 ## Result
 
 Catch. Timeline accept → reject (`hex=5`) → accept.
+
+## Git history note
+
+These `.ngb` files are fresh mints, not renames from prior synthetic bswap32 timelines. Go revisions are ~1.5MB each (full runtime). Witness fidelity vs the C-mined case is checked by `check-native-port-fidelity.sh`.

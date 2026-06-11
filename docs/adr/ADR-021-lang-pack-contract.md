@@ -41,6 +41,10 @@ CI runs `check-lang-packs.sh` inside `check-all-proofs.sh`. It verifies committe
 
 Removed synthetic `*-bswap32-native` CI timelines. Lang-pack gate honest specimens for Rust/Go now use the mined-case `.req`. `check-backtest.sh` witness match requires `(hex|x)=<value>` at field boundary. Go evil bswap uses build tags, not a duplicate source file.
 
+## Addendum 2026-06-11 (G77c, docs + fidelity)
+
+`NANO-GOALS.md` G75/G76 retro notes distinguish initial bswap32 contract proof from current CI gate. `LANG-PACKS.md` documents native port epistemology (C transcription port, not upstream repo mint), C backtest asymmetry, and Go artifact size. `check-native-port-fidelity.sh` asserts native rev2 witnesses match C-mined siblings on the same `.req`.
+
 ## Kill trigger
 
 If two consecutive pack attempts (e.g. Rust then Go) require contract amendments to pass, the contract is mis-specified; reopen this ADR before a third attempt.
