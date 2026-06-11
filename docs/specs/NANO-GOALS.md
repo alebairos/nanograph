@@ -29,7 +29,7 @@ What the program has settled versus what still needs a goal.
 | `size_monotone` catches a real allocator sizing bug | **Proven** | G49 jemalloc backtest gated `JEMALLOC-S2U` (#68) |
 | `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
 | Language-diversity mining yields FIT candidates (Rust, Zig, Go) | **Proven** | G51–G53 (#70); scorecards + [`MINING-G51-G53.md`](MINING-G51-G53.md) |
-| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig)** | G59 `ZIG-WYHASH-NATIVE`; native Zig `.ngb` through unchanged verifier; blind search also re-detects the native artifact (true_found, #96), so language-blind and blind-detection claims intersect; still n=1 native non-C; upgrade path is lang packs (ADR-021, G74→G75/G76) |
+| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig+Rust)** | G59 `ZIG-WYHASH-NATIVE` + G75 native no_std Rust `bswap32` through the unchanged verifier (`check-lang-pack.sh`, #98); blind search re-detects the native Zig artifact (true_found, #96); n=2 native non-C; Go (G76) pending |
 | Rust real-history backtests execute on language-diversity lane | **Proven** | G56 `RUST-BASE64-INVALID-LAST` + G71 `RUST-CRC32FAST-COMBINE-LEN0` |
 | `flow_composition` catches real-history incremental bugs | **Proven (Rust+Zig+Go)** | G57/G59 Wyhash + G58 Go streaming + G71 crc32fast; witness `hex=5` all three; [`FLOW-COMPOSITION-TRI-LANGUAGE.md`](FLOW-COMPOSITION-TRI-LANGUAGE.md) |
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
@@ -216,6 +216,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G69 | `flow_composition` on iterated CA | n/a | n/a | **Done** |
 | G73 | Blind probe generation on backtest corpus | #89 | n/a | **Done** (6/12 true_found, PROVEN bounded) |
 | G74 | Lang-pack contract + conformance gate (ADR-021) | #93 | n/a | **Done** (C + Zig retrofit green) |
+| G75 | Native Rust lang pack | #98 | n/a | **Done** (gate green, zero contract amendments) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
@@ -266,6 +267,8 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 **G66** (done). [`RELATION-TAXONOMY.md`](RELATION-TAXONOMY.md), family column in METAMORPHIC-RELATIONS, BACKTEST stage-2 checklist. ADR-016. Gate `scripts/check-relation-taxonomy.sh`. Docs only.
 
 **G55** (done, #72; follow-on #85–#87). Candidate-ID sidecar spike. Verdict **skill-only** per ADR-015. H1 **PROVEN** (4/5 holdout `.req` recall), H2 **PROVEN** (verdict equivalence), H3 **PROVEN** under frozen sidecar (novel nibbles + 5/5 mined house-style; variant A fail-closed without relation prose), H4 **PROVEN** (boundary). Sidecar is a convention lint, not an authoring oracle. G63–G64 stay parked.
+
+**G75** (done, #98). Native Rust lang pack. `scripts/mint-one-rust.sh` (pinned `rust:1.79`) + `fixtures/metamorphic/rust_native_bswap32.rs` (no_std, no_main, raw syscalls, G36 trampoline) through `check-lang-pack.sh` under the existing `bswap32.req`. Zero contract amendments; language-blind claim upgraded to **Proven (Zig+Rust)**, n=2 native non-C.
 
 **G74** (done, #93). Lang-pack contract per ADR-021: language support is a modular pack (one `mint-one-<lang>.sh` + one specimen) proven by `check-lang-pack.sh` (mint → I1–I6 parse → honest accept), not a plugin framework. C and Zig minters retrofit green with zero minter changes (`bswap32.req` involution, `zig_wyhash.req` flow_composition). Gate is manual, not CI (Zig toolchain download). Each later pack (G75 Rust, G76 Go) upgrades the language-blind claim by one native language. Spec [`LANG-PACKS.md`](LANG-PACKS.md).
 

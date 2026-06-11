@@ -10,7 +10,7 @@ The floor consumes `.ngb` + `.req` and is language-blind (ADR-007, ADR-010). A *
 | --- | --- | --- | --- |
 | C | `scripts/mint-one-elf.sh` | `gcc:13` Docker image | **Gate green** (G74, `bswap32.req` involution) |
 | Zig | `scripts/mint-one-zig.sh` | Zig 0.13.0, `ubuntu:24.04` Docker | **Gate green** (G74, `zig_wyhash.req` flow_composition) |
-| Rust | `scripts/mint-one-rust.sh` | TBD (pin exact rustc) | Pre-registered (G75) |
+| Rust | `scripts/mint-one-rust.sh` | `rust:1.79` Docker image | **Gate green** (G75, `bswap32.req` involution, native no_std specimen) |
 | Go | `scripts/mint-one-go.sh` | TBD (TinyGo route) | Pre-registered (G76) |
 
 ## Minter CLI contract
@@ -61,7 +61,11 @@ Retrofit proofs (2026-06-11, both unchanged minters):
 ./scripts/check-lang-pack.sh /tmp/lp_zig.ngb fixtures/metamorphic/zig_wyhash.req \
   -- ./scripts/mint-one-zig.sh fixtures/backtest/zig-wyhash-native \
      fixtures/backtest/zig-wyhash-native/wyhash_fix.zig /tmp/lp_zig.ngb
+./scripts/check-lang-pack.sh /tmp/lp_rust.ngb fixtures/metamorphic/bswap32.req \
+  -- ./scripts/mint-one-rust.sh fixtures/metamorphic/rust_native_bswap32.rs /tmp/lp_rust.ngb
 ```
+
+The Rust pack (G75) passed with zero contract amendments, the first data point against the ADR-021 kill trigger.
 
 The gate is not wired into `check-all-proofs.sh`; the Zig leg downloads its toolchain (~90s, network), which fails the CI determinism bar. Run it when adding or changing a pack.
 
