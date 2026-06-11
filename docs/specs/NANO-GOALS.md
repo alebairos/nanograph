@@ -29,8 +29,8 @@ What the program has settled versus what still needs a goal.
 | `size_monotone` catches a real allocator sizing bug | **Proven** | G49 jemalloc backtest gated `JEMALLOC-S2U` (#68) |
 | `conserve_popcount` names scalar conservation for permutations | **Proven** | G50 reverse32 backtest gated `CONSERVE-POPCOUNT` (#69); G68 rule 184 bridge |
 | Language-diversity mining yields FIT candidates (Rust, Zig, Go) | **Proven** | G51–G53 (#70); scorecards + [`MINING-G51-G53.md`](MINING-G51-G53.md) |
-| Verification floor is language-blind in practice (not only in docs) | **Unproven** | FIT survivors scored; no non-C gated specimen yet (G59 stretch deferred) |
-| `flow_composition` catches real-history incremental bugs | **Partially proven** | G57 ZIG-WYHASH (#80); Go/Rust execution still open (#81, #82) |
+| Verification floor is language-blind in practice (not only in docs) | **Proven (Zig)** | G59 `ZIG-WYHASH-NATIVE`; native Zig `.ngb` through unchanged verifier |
+| `flow_composition` catches real-history incremental bugs | **Proven (Zig+Go)** | G57/G59 Wyhash + G58 Go streaming; witness `hex=5` both |
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
 | Cross-loader / APE target extension adds product value | **Unproven** | G54 (#71) falsification spike |
 | Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Unproven** | G55 (#72) falsification spike |
@@ -107,6 +107,8 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G68 | Rule 184 conserve_popcount bridge | #75 | Done |
 | G69 | flow_composition on iterated CA | #76 | Done |
 | G57 | Zig Wyhash flow_composition real-history backtest | #80 | Done |
+| G58 | Go base64 streaming flow_composition backtest | #81 | Done |
+| G59 | Native Zig specimen through existing gate | G57 | Done |
 
 G49 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-012-size-monotone-relation.md`](../adr/ADR-012-size-monotone-relation.md). **In progress** (#68); see Next goals.
 
@@ -253,7 +255,9 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G57** (done, #80). Zig Wyhash iterative tail backtest gated `ZIG-WYHASH`. `flow_composition` on mined history; witness `hex=5` (seed 5, triple 48+10). Validates G69 beyond modeled CA.
 
-**G58** (open, #81). First Go real-history backtest on `golang/go` base64 streaming (`go-base64-streaming.fit`, parent `8971d618` → fix `20d745c`). `flow_composition` relation.
+**G58** (done, #81). Go base64 streaming backtest gated `GO-BASE64-STREAMING`. `flow_composition` on mined history; witness `hex=5` (seed 5, probe `AAAAAA`).
+
+**G59** (done). Native Zig Wyhash via `mint-one-zig.sh`; gated `ZIG-WYHASH-NATIVE`. Same witness as G57; proves language-blind floor for one non-C language.
 
 **G71** (open, #82). Rust crc32fast `flow_composition` runner-up after G56 extraction proves Rust path.
 

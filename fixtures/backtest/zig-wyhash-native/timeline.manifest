@@ -1,0 +1,4 @@
+req=fixtures/metamorphic/zig_wyhash.req
+rev=rev1_honest ngb=fixtures/backtest/zig-wyhash-native/zig_native_wyhash_rev1.ngb   expect=accept
+rev=rev2_parent ngb=fixtures/backtest/zig-wyhash-native/zig_native_wyhash_rev2.ngb   expect=reject
+rev=rev3_fix    ngb=fixtures/backtest/zig-wyhash-native/zig_native_wyhash_rev3.ngb   expect=accept

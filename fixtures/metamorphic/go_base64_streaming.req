@@ -1,0 +1,5 @@
+relation=flow_composition
+entry=argv_mode
+mode=flow
+domain=go_base64_streaming
+max_total=64

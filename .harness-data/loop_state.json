@@ -1,12 +1,12 @@
 {
-  "goal_id": "G58",
+  "goal_id": "G59",
   "current_issue": 81,
-  "milestone": "G57",
-  "product_proof_step": "language-diversity-execution",
+  "milestone": "G58-G59",
+  "product_proof_step": "language-blind-native",
   "phase": "complete",
   "iteration": 1,
   "artifacts": {
-    "spec_path": "fixtures/backtest/zig-wyhash/CASE.md",
+    "spec_path": "fixtures/backtest/zig-wyhash-native/CASE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-019-flow-composition-relation.md",
     "eval_logs": [
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "issue",
-    "note": "G57 complete (#80): ZIG-WYHASH flow_composition on mined Zig Wyhash. Next G58 #81 Go streaming, G56 #79 Rust base64."
+    "note": "G57/G58/G59 complete. G59 native Zig + G58 Go streaming + G57 transcription. Next: G56 #79 Rust base64 or G72 tri-language doc."
   },
   "history": [
     {
