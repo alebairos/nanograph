@@ -1,0 +1,4 @@
+req=fixtures/metamorphic/rust_crc32fast_combine.req
+rev=rev1_honest   ngb=fixtures/backtest/rust-crc32fast-combine/rust_crc32fast_combine_rev1.ngb   expect=accept
+rev=rev2_len2zero ngb=fixtures/backtest/rust-crc32fast-combine/rust_crc32fast_combine_rev2.ngb   expect=reject
+rev=rev3_fix      ngb=fixtures/backtest/rust-crc32fast-combine/rust_crc32fast_combine_rev3.ngb   expect=accept

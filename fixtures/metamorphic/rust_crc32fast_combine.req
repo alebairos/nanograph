@@ -1,0 +1,5 @@
+relation=flow_composition
+entry=argv_mode
+mode=flow
+domain=rust_crc32fast_combine
+max_total=64
