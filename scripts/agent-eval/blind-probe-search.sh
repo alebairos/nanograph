@@ -38,84 +38,29 @@ witness_field() {
   sed -n "s/.* ${2}=\([^ ]*\).*/\1/p" <<<"$1" | head -1
 }
 
-# Returns 0 when rev1 passes the same witness rev2 rejected (true defect separator).
+# True defect separator check: replay the witness probe through the one
+# relation implementation in metamorphic-verify.sh against honest rev1.
+# range_coverage witnesses are endpoint checks, not probes; rerun the full
+# (cheap) blind check instead.
 rev1_passes_witness() {
-  local rev1="$1" req="$2" relation="$3" witness_line="$4"
-  local mode encode decode reject draw lo hi
-
+  local rev1="$1" req="$2" relation="$3" witness_line="$4" probe=""
   case "$relation" in
-    round_trip)
-      local b cp2 b3
-      b="$(witness_field "$witness_line" bytes)"
-      [[ -n "$b" ]] || return 1
-      encode="$(sed -n 's/^encode=//p' "$req" | head -1)"
-      decode="$(sed -n 's/^decode=//p' "$req" | head -1)"
-      reject="$(sed -n 's/^reject=//p' "$req" | head -1)"
-      cp2="$(./scripts/run-linux-elf-capture.sh "$rev1" "$decode" "$b" 2>/dev/null | tr -d '\n\r' || true)"
-      [[ -n "$cp2" && "$cp2" != "$reject" ]] || return 1
-      b3="$(./scripts/run-linux-elf-capture.sh "$rev1" "$encode" "$cp2" 2>/dev/null | tr -d '\n\r' || true)"
-      [[ "$b3" == "$b" ]]
-      ;;
+    round_trip) probe="$(witness_field "$witness_line" bytes)" ;;
+    involution | conserve_popcount) probe="$(witness_field "$witness_line" x)" ;;
     flow_composition)
-      local n m seed once part composed max_total
-      n="$(witness_field "$witness_line" n)"
-      m="$(witness_field "$witness_line" m)"
-      seed="$(witness_field "$witness_line" seed)"
-      [[ -n "$n" && -n "$m" && -n "$seed" ]] || return 1
-      mode="$(sed -n 's/^mode=//p' "$req" | head -1)"
-      max_total="$(sed -n 's/^max_total=//p' "$req" | head -1)"
-      if [[ "$((n + m))" -gt "$max_total" ]]; then
-        return 1
-      fi
-      once="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$((n + m))" "$seed" 2>/dev/null | tr -d '\n\r' || true)"
-      part="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$n" "$seed" 2>/dev/null | tr -d '\n\r' || true)"
-      composed="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$m" "$part" 2>/dev/null | tr -d '\n\r' || true)"
-      [[ "$once" =~ ^[0-9]+$ && "$part" =~ ^[0-9]+$ && "$composed" =~ ^[0-9]+$ && "$once" == "$composed" ]]
+      probe="$(witness_field "$witness_line" n) $(witness_field "$witness_line" m) $(witness_field "$witness_line" seed)"
       ;;
-    cmp_order)
-      local i j ij ji pair
-      pair="$(witness_field "$witness_line" pair)"
-      [[ -n "$pair" ]] || return 1
-      i="${pair%%,*}"
-      j="${pair#*,}"
-      mode="$(sed -n 's/^mode=//p' "$req" | head -1)"
-      ij="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$i" "$j" 2>/dev/null | tr -d '\n\r' || true)"
-      [[ "$ij" == 0 || "$ij" == 1 ]] || return 1
-      if [[ "$i" == "$j" ]]; then
-        [[ "$ij" == "0" ]]
-      else
-        ji="$(./scripts/run-linux-elf-capture.sh "$rev1" "$mode" "$j" "$i" 2>/dev/null | tr -d '\n\r' || true)"
-        [[ "$ji" == 0 || "$ji" == 1 ]] && [[ ! ("$ij" == "1" && "$ji" != "0") ]]
-      fi
-      ;;
+    cmp_order) probe="$(witness_field "$witness_line" pair | tr ',' ' ')" ;;
     range_coverage)
-      local seed endpoint want got lo_seed hi_seed
-      seed="$(witness_field "$witness_line" seed)"
-      endpoint="$(witness_field "$witness_line" endpoint)"
-      want="$(witness_field "$witness_line" want)"
-      draw="$(sed -n 's/^draw=//p' "$req" | head -1)"
-      lo="$(sed -n 's/^lo=//p' "$req" | head -1)"
-      hi="$(sed -n 's/^hi=//p' "$req" | head -1)"
-      lo_seed="$(sed -n 's/^lo_seed=//p' "$req" | head -1)"
-      hi_seed="$(sed -n 's/^hi_seed=//p' "$req" | head -1)"
-      got="$(./scripts/run-linux-elf-capture.sh "$rev1" "$draw" "$seed" 2>/dev/null | tr -d '\n\r' || true)"
-      if [[ "$endpoint" == lo ]]; then
-        [[ "$got" == "$lo" ]]
-      elif [[ "$endpoint" == hi ]]; then
-        [[ "$got" == "$hi" ]]
-      elif [[ -n "$want" ]]; then
-        [[ "$got" == "$want" ]]
-      else
-        [[ "$got" =~ ^[0-9]+$ && "$got" -ge "$lo" && "$got" -le "$hi" ]]
-      fi
+      METAMORPHIC_BLIND=1 ./scripts/agent-eval/metamorphic-verify.sh "$rev1" "$req" 2>/dev/null \
+        | grep -q '^verdict=accept'
+      return $?
       ;;
-    value_oracle)
-      return 0
-      ;;
-    *)
-      return 1
-      ;;
+    *) return 1 ;;
   esac
+  [[ -n "${probe// /}" ]] || return 1
+  METAMORPHIC_PROBES="$probe" ./scripts/agent-eval/metamorphic-verify.sh "$rev1" "$req" 2>/dev/null \
+    | grep -q '^verdict=accept'
 }
 
 search_self_oracle() {
@@ -177,6 +122,7 @@ run_case() {
   export DOMAIN="$(sed -n 's/^domain=//p' "$req" | head -1)"
   export WIRE="$(sed -n 's/^wire=//p' "$req" | head -1)"
   export RELATION="$relation"
+  export REQ="$req"
 
   t0=$(python3 -c 'import time; print(int(time.time()*1000))')
   if [[ "$relation" == value_oracle ]]; then
@@ -194,12 +140,7 @@ run_case() {
     elif rev1_passes_witness "$rev1" "$req" "$relation" "$witness"; then
       spec=true_found
     else
-      sleep 1
-      if rev1_passes_witness "$rev1" "$req" "$relation" "$witness"; then
-        spec=true_found
-      else
-        spec=both_reject
-      fi
+      spec=both_reject
     fi
     echo "case=$label relation=$relation result=found specificity=$spec wall_ms=$wall $witness"
   elif grep -q '^verdict=accept' <<<"$out"; then
@@ -227,6 +168,7 @@ if [[ "$CORPUS" == backtest-rev2 ]]; then
     "llvm-bolt-cmp:fixtures/backtest/llvm-bolt-cmp/timeline.manifest"
     "rust-base64:fixtures/backtest/rust-base64/timeline.manifest"
     "zig-wyhash:fixtures/backtest/zig-wyhash/timeline.manifest"
+    "zig-wyhash-native:fixtures/backtest/zig-wyhash-native/timeline.manifest"
     "go-base64-streaming:fixtures/backtest/go-base64-streaming/timeline.manifest"
     "rust-crc32fast:fixtures/backtest/rust-crc32fast-combine/timeline.manifest"
   )
