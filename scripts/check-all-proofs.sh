@@ -37,6 +37,7 @@ make -C tools -s all
 ./scripts/check-bswap-value-oracle.sh
 ./scripts/check-reverse32-real.sh
 ./scripts/check-utf8-roundtrip.sh
+./scripts/check-icp-cli.sh
 ./scripts/check-case-fit-rubric.sh
 ./scripts/check-backtest.sh fixtures/backtest/utf8/timeline.manifest C080 UTF8
 ./scripts/check-backtest.sh fixtures/backtest/leb128/timeline.manifest 8000 LEB128

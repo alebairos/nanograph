@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+usage() {
+  cat <<'EOF'
+usage: scripts/nanograph <command> [args...]
+
+Commands:
+  doctor
+      Validate runner + core binaries on this host.
+
+  demo utf8
+      Run the ICP UTF-8 demo.
+
+  fit <case.fit>
+      Score a candidate with the case-fit rubric.
+
+  verify [--expect accept|reject] <candidate.ngb> <request.req>
+      Run metamorphic verification. Prints the verifier output line.
+      Without --expect, exits with verifier exit code (accept=0, reject=1).
+      With --expect, exits 0 only if verdict matches expected.
+
+  mint c <src.c> <out.ngb>
+  mint rust <src.rs> <out.ngb> [--cfg name...]
+  mint go <src.go> <out.ngb> [--tags tag,...]
+  mint zig <srcdir> <src.zig> <out.ngb>
+      Mint a language specimen into .ngb via existing minter scripts.
+
+  help
+      Print this message.
+EOF
+}
+
+require_runner() {
+  if ! ./scripts/check-linux-runner.sh --quiet; then
+    echo "nanograph doctor: no Linux ELF runner (native Linux, qemu-x86_64, or Docker)." >&2
+    exit 1
+  fi
+}
+
+cmd_doctor() {
+  require_runner
+  make -C tools -s bin/ngb-pack bin/ngb-parse bin/ngb-extract >/dev/null
+  echo "nanograph doctor OK"
+}
+
+cmd_demo() {
+  local name="${1:-}"
+  case "$name" in
+    utf8) ./scripts/demo-utf8.sh ;;
+    *) echo "nanograph demo: expected 'utf8'" >&2; exit 2 ;;
+  esac
+}
+
+cmd_fit() {
+  local file="${1:-}"
+  [[ -n "$file" ]] || { echo "nanograph fit: missing <case.fit>" >&2; exit 2; }
+  ./scripts/score-case-fit.sh "$file"
+}
+
+cmd_verify() {
+  local expected=""
+  if [[ "${1:-}" == "--expect" ]]; then
+    expected="${2:-}"
+    [[ "$expected" == "accept" || "$expected" == "reject" ]] || {
+      echo "nanograph verify: --expect must be accept|reject" >&2
+      exit 2
+    }
+    shift 2
+  fi
+
+  local cand="${1:-}" req="${2:-}"
+  [[ -n "$cand" && -n "$req" ]] || {
+    echo "nanograph verify: usage verify [--expect accept|reject] <candidate.ngb> <request.req>" >&2
+    exit 2
+  }
+
+  set +e
+  local output rc verdict
+  output="$(./scripts/agent-eval/metamorphic-verify.sh "$cand" "$req" 2>&1)"
+  rc=$?
+  set -e
+  printf '%s\n' "$output"
+  verdict="$(printf '%s\n' "$output" | sed -n 's/^verdict=\([^ ]*\).*/\1/p' | tail -1)"
+
+  if [[ -z "$expected" ]]; then
+    exit "$rc"
+  fi
+
+  [[ "$verdict" == "$expected" ]] || {
+    echo "nanograph verify: expected $expected got ${verdict:-unknown}" >&2
+    exit 1
+  }
+}
+
+cmd_mint() {
+  local lang="${1:-}"
+  shift || true
+  case "$lang" in
+    c) ./scripts/mint-one-elf.sh "$@" ;;
+    rust) ./scripts/mint-one-rust.sh "$@" ;;
+    go) ./scripts/mint-one-go.sh "$@" ;;
+    zig) ./scripts/mint-one-zig.sh "$@" ;;
+    *) echo "nanograph mint: expected one of c|rust|go|zig" >&2; exit 2 ;;
+  esac
+}
+
+cmd="${1:-help}"
+shift || true
+case "$cmd" in
+  doctor) cmd_doctor "$@" ;;
+  demo) cmd_demo "$@" ;;
+  fit) cmd_fit "$@" ;;
+  verify) cmd_verify "$@" ;;
+  mint) cmd_mint "$@" ;;
+  help|-h|--help) usage ;;
+  *) echo "nanograph: unknown command '$cmd'" >&2; usage; exit 2 ;;
+esac

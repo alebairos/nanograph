@@ -214,11 +214,12 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G67 | `linear_xor` homomorphism (rule 90 step) | n/a | n/a | **Done** |
 | G68 | Rule 184 `conserve_popcount` bridge | n/a | n/a | **Done** |
 | G69 | `flow_composition` on iterated CA | n/a | n/a | **Done** |
-| G73 | Blind probe generation on backtest corpus | #89 | n/a | **Done** (6/12 true_found, PROVEN bounded) |
+| G73 | Blind probe generation on backtest corpus | #89 | n/a | **Done** (8/13 true_found, PROVEN bounded) |
 | G74 | Lang-pack contract + conformance gate (ADR-021) | #93 | n/a | **Done** (C + Zig retrofit green) |
 | G75 | Native Rust lang pack | #98 | n/a | **Done** (gate green, zero contract amendments) |
 | G76 | Native Go lang pack | #100 | n/a | **Done** (gate green, full Go runtime artifact) |
 | G77 | Lang-pack CI + native backtest per pack | #106 | n/a | **Done** (`check-lang-packs.sh` in all-proofs) |
+| G78 | ICP CLI facade + callsite refactor | #110 | n/a | **In progress** (M7) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
@@ -277,6 +278,8 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 **G74** (done, #93). Lang-pack contract per ADR-021: language support is a modular pack (one `mint-one-<lang>.sh` + one specimen) proven by `check-lang-pack.sh` (mint → I1–I6 parse → honest accept), not a plugin framework. C and Zig minters retrofit green with zero minter changes (`bswap32.req` involution, `zig_wyhash.req` flow_composition). **G77** (#106) wired `check-lang-packs.sh` into CI on committed `.ngb` plus real-history native backtest per non-C pack (C covered by the general 15-case C backtest suite). Spec [`LANG-PACKS.md`](LANG-PACKS.md).
 
 **G77** (done, #106). Lang-pack CI and native backtest per pack. `check-lang-packs.sh` in `check-all-proofs.sh`. **Follow-on:** mined native backtests `rust-base64-native` (G56 InvalidLastSymbol) and `go-base64-streaming-native` (G58 tail fix) replace synthetic bswap32 timelines; `check-backtest.sh` witness regex tightened; Go build tags for evil bswap.
+
+**G78** (in progress, #110). ICP-facing CLI facade (`scripts/nanograph`) that routes `doctor`, `demo`, `fit`, `verify`, and `mint` to existing floor scripts without changing floor semantics. Follow-on refactors migrate onboarding-facing callsites to the CLI and add a dedicated CLI regression gate (`check-icp-cli.sh`).
 
 **G73** (done, #89; hardened #96). Blind probe generation eval. `blind-probe-search.sh` + `blind-probe-generators.sh`; after hardening, **8/13 true_found (61%)** with rev1 replay control (`METAMORPHIC_PROBES`), `.req`-declared generator hints, native Zig corpus case (blind true_found), and capture-level fault retry. One documented relation gap (capnproto WHATWG leniency). Misses documented (utf8/leb128/wabt/parseip budget). No CI gate (~207s wall). Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 

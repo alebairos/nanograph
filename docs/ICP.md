@@ -45,7 +45,15 @@ No maintainer outside this project has validated the pitch. Extraction remains a
 
 ## Adoption today (honest pitch)
 
-NanoGraph is a **verification pattern**, not an installable tool. A maintainer transcribes one function into a freestanding specimen, writes or generates a `.req`, and runs the floor. Expect x86_64 Linux ELF via Docker on macOS. Expect a reject witness when probes hit the defect domain, not automatic bug discovery.
+NanoGraph is still a **verification pattern** first, now with a repo-local ICP CLI facade: `scripts/nanograph`. A maintainer transcribes one function into a freestanding specimen, writes or generates a `.req`, and runs the floor through `nanograph verify`. Expect x86_64 Linux ELF via Docker on macOS. Expect a reject witness when probes hit the defect domain, not automatic bug discovery.
+
+Minimal path:
+
+```bash
+./scripts/nanograph doctor
+./scripts/nanograph fit fixtures/fit-cases/rust-base64-invalid-last.fit
+./scripts/nanograph verify fixtures/metamorphic/utf8_overlong.ngb fixtures/metamorphic/utf8.req
+```
 
 Four gaps, priority order per ADR-020:
 

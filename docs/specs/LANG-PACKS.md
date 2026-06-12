@@ -65,6 +65,13 @@ Three steps, all required when minting fresh:
 2. **Integrity.** `tools/bin/ngb-parse` accepts (invariants I1–I6).
 3. **Behavior.** `metamorphic-verify.sh <ngb> <req>` returns `verdict=accept` on the honest specimen.
 
+Equivalent ICP facade commands:
+
+```bash
+./scripts/nanograph mint <c|rust|go|zig> ...
+./scripts/nanograph verify --expect accept <ngb> <req>
+```
+
 Native mined backtests use `scripts/mint-lang-pack-native-backtest.sh <rust-base64|go-base64-streaming> <outdir>`. Zig uses `mint-one-zig.sh` on `fixtures/backtest/zig-wyhash-native/` (see CASE.md there). Optional synthetic involution smoke uses `mint-lang-pack-bswap32-backtest.sh` (not in CI).
 
 A reject leg (buggy revision rejected) is not part of the pack gate; it belongs to the backtest case the pack's specimens feed (see [`BACKTEST.md`](../BACKTEST.md)).
