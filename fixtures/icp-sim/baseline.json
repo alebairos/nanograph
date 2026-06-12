@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "model": "composer-2.5",
+  "note": "Pinned after run-20260612T031330Z (#118/#119 landed). first_stall=16 friction=4. Target completed=yes after maintainer finds fixtures/templates/ in ADOPTION.",
+  "expect": {
+    "completed": "no",
+    "first_stall_not_before": 6,
+    "friction_max": 4
+  }
+}

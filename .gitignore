@@ -1,4 +1,5 @@
 .harness-data/logs/
+.env
 *.o
 *.a
 /tools/bin/*
