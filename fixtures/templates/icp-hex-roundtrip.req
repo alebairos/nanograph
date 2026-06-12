@@ -1,0 +1,8 @@
+relation=round_trip
+entry=argv_mode
+encode=enc
+decode=dec
+domain=bytes
+reject=REJECT
+eq=exact
+wire=hex

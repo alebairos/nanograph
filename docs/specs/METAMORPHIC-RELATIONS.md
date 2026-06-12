@@ -117,6 +117,10 @@ The same `round_trip` relation, unchanged, catches a second codec's bug. `fixtur
 
 The same `round_trip` relation catches capnproto's libb64-derived `decodeBase64` bug. `fixtures/metamorphic/capnproto_base64.c` vendors encode/decode from capnproto `encoding.c++` into freestanding C. Pre-fix decode skipped invalid bytes; fix `f3e0ed2` reports `hadErrors`. `capnproto_base64.req` declares `domain=capnproto_base64` and `wire=ascii` so probes are base64 strings and witness hex is the ASCII byte encoding (`Zm9v@` → `5a6d397640`). The relation rejects the buggy revision: `Zm9v@` decodes to `foo` and re-encodes to `Zm9v`. See `fixtures/backtest/capnproto-base64/CASE.md`.
 
+## Generic byte domain (`domain=bytes`, G81)
+
+Maintainer codecs whose wire is even-length hex can use `domain=bytes` with `wire=hex` instead of adding a new hard-coded domain name. `gen_bytes` in `metamorphic-verify.sh` enumerates bounded hex strings (same enumeration as blind `wire=hex` probes). Template specimen and request live under `fixtures/templates/icp-hex-specimen.c` and `fixtures/templates/icp-hex-roundtrip.req`. See `docs/ADOPTION.md` (section "Bring your own codec").
+
 ## Value oracle on ParseIp (G41, cosmopolitan)
 
 `value_oracle` checks `parse(s) == expected` over a fixed probe table with no computed oracle. `fixtures/metamorphic/cosmo_parseip.c` transcribes cosmopolitan `ParseIp`. `cosmo_parseip.req` declares `mode=dec`, `wire=ascii`, and `gen_cosmo_parseip` supplies six `ip expected` pairs. Witness `255.255.255.256` (`hex=3235352e3235352e3235352e323536`). Buggy rev returns `4294967040`; honest rev returns `REJECT`. See `fixtures/backtest/cosmo-parseip/CASE.md`.

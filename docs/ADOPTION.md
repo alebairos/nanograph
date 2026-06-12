@@ -70,10 +70,39 @@ Current commands:
 
 5) Use reject witness output to refine the fix and replay.
 
+## Bring your own codec
+
+NanoGraph verifies a **freestanding x86_64 Linux ELF**, not your hosted library source as-is. If your codec lives in normal application C (with libc, no `_start`, no argv driver), you must **transcribe** it into a small freestanding specimen before `mint`.
+
+**Do not** `./nanograph mint c maintainer-home/hex.c` (or your hosted tree path) and expect verify to work. **Start from** `fixtures/templates/icp-hex-specimen.c`, adapt the encode/decode logic, then mint the adapted file.
+
+What that means in practice:
+
+1. Copy your encode/decode logic into a freestanding driver with `enc` and `dec` argv modes (see the templates below).
+2. Write a `.req` declaring `relation=round_trip` (or another supported relation), `encode`, `decode`, `reject`, and `wire`.
+3. Use `domain=bytes` with `wire=hex` when your wire format is even-length hex strings. You do not need a new hard-coded domain name in the verifier.
+4. Mint and verify:
+
+```bash
+./nanograph mint c fixtures/templates/icp-hex-specimen.c /tmp/my-hex.ngb
+./nanograph verify /tmp/my-hex.ngb fixtures/templates/icp-hex-roundtrip.req
+```
+
+Templates (start here, adapt to your codec):
+
+| File | Purpose |
+| --- | --- |
+| `fixtures/templates/icp-hex-specimen.c` | Freestanding hex codec driver (ICP persona shape) |
+| `fixtures/templates/icp-hex-roundtrip.req` | `domain=bytes`, `wire=hex` round_trip request |
+| `fixtures/metamorphic/utf8.c` + `utf8.req` | Larger worked example with packed integer wire |
+
+For the full `.req` field list see `docs/specs/METAMORPHIC-RELATIONS.md`. For mint contract details see `docs/specs/LANG-PACKS.md`.
+
 ## Verification commands for contributors
 
 ```bash
 ./scripts/check-icp-cli.sh
+./scripts/check-icp-adoption-sandbox.sh
 ./scripts/check-canonical-drift.sh
 ```
 

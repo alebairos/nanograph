@@ -35,7 +35,7 @@ What the program has settled versus what still needs a goal.
 | `linear_xor` catches real-history bugs on current x86 floor | **Parked** | Zero FIT across Rust/Zig/Go mining (#70); BE-only and -race cases |
 | Cross-loader / APE target extension adds product value | **Refuted (G54)** | ADR-014 **reject**; H4 kill, H1/H2 blocked on cosmocc; [`APE-TARGET-SPIKE.md`](APE-TARGET-SPIKE.md) |
 | Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Partial (G55)** | ADR-015 **skill-only**; H1 4/5 + H2 proven; H3 **PROVEN** under frozen sidecar on novel + 5/5 mined house-style specimens (#85–#87); recall is convention-lint (prose dependency); G63–G64 parked; [`CANDIDATE-ID-SPIKE-FOLLOWON.md`](CANDIDATE-ID-SPIKE-FOLLOWON.md) |
-| Verification floor discovers defects without curated probes | **Proven (bounded, G73)** | Blind search **8/13 true_found (61%)** after hardening (#96): hints declared in `.req`, native Zig case true_found, rust-base64 converted to true separator via `probe_block=4`; 1 both_reject (capnproto WHATWG leniency, documented relation gap); [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
+| Verification floor discovers defects without curated probes | **Proven (bounded, G73)** | Frozen default tier **8/13 true_found (61%)** (#96); format-aware hint tier **12/13 true_found (92%)** (#102–#105, separate row); one documented relation gap (capnproto); [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
 | Relation taxonomy guides mining before new MR branches | **Proven** | G66 RELATION-TAXONOMY + BACKTEST checklist; gated `check-relation-taxonomy.sh` |
 | Homomorphism family (`linear_xor`) catches non-linear CA rule | **Proven** | G67 rule 90 vs rule 30 imposter; gated `check-linear-xor.sh` |
 | Scalar conservation applies to Wolfram particle rule 184 | **Proven** | G68 `conserve_popcount` on rule 184 step; gated `check-rule184-conserve.sh` |
@@ -115,9 +115,9 @@ ADR-001 re-open trigger *"A live-agent eval shows NanoGraph's typed errors cut r
 | G71 | Rust crc32fast flow_composition real-history backtest | #82 | Done |
 | G72 | Tri-language flow_composition witness equivalence doc | G57+G58+G71 | Done |
 
-G49 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-012-size-monotone-relation.md`](../adr/ADR-012-size-monotone-relation.md). **In progress** (#68); see Next goals.
+G49 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-012-size-monotone-relation.md`](../adr/ADR-012-size-monotone-relation.md). **Done** (#68); see Next goals.
 
-G50 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-013-conserve-popcount-relation.md`](../adr/ADR-013-conserve-popcount-relation.md). **In progress** (#69); see Next goals.
+G50 spec: [`METAMORPHIC-RELATIONS.md`](METAMORPHIC-RELATIONS.md), decision [`../adr/ADR-013-conserve-popcount-relation.md`](../adr/ADR-013-conserve-popcount-relation.md). **Done** (#69); see Next goals.
 
 G8 spec: [`TWO-AGENT-PROBE-PROTOCOL.md`](TWO-AGENT-PROBE-PROTOCOL.md). Harness `scripts/agent-eval/run-two-agent-loop.sh`, gated by `scripts/check-two-agent-loop.sh`.
 
@@ -222,6 +222,9 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G78 | ICP CLI facade + callsite refactor | #110 | n/a | **Done** |
 | G79 | Root README for product, ICP, and adoption path | #112 | n/a | **Done** |
 | G80 | Complete CLI surface (`./nanograph` entrypoint + adoption guide) | #113 | n/a | **Done** |
+| G81 | ICP maintainer simulation (cold-start adoption eval) | #115, #122 | n/a | **In progress** (sim baseline: stall=16 friction=4; templates shipped) |
+| G82 | Verifier-hash gate (language-blind floor as machine invariant) | #120 | n/a | **Done** |
+| G83 | Pre-registered holdout eval (blind detection generalization) | #121 | n/a | Open (after #102–#105) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
@@ -281,7 +284,15 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G77** (done, #106). Lang-pack CI and native backtest per pack. `check-lang-packs.sh` in `check-all-proofs.sh`. **Follow-on:** mined native backtests `rust-base64-native` (G56 InvalidLastSymbol) and `go-base64-streaming-native` (G58 tail fix) replace synthetic bswap32 timelines; `check-backtest.sh` witness regex tightened; Go build tags for evil bswap.
 
-**G78** (in progress, #110). ICP-facing CLI facade (`scripts/nanograph`) that routes `doctor`, `demo`, `fit`, `verify`, and `mint` to existing floor scripts without changing floor semantics. Follow-on refactors migrate onboarding-facing callsites to the CLI and add a dedicated CLI regression gate (`check-icp-cli.sh`).
+**G78** (done, #110). ICP-facing CLI facade (`scripts/nanograph`) that routes `doctor`, `demo`, `fit`, `verify`, and `mint` to existing floor scripts without changing floor semantics. Follow-on refactors migrated onboarding-facing callsites to the CLI and added dedicated CLI regression gating (`check-icp-cli.sh`).
+
+**G81** (in progress, #115, #122). ICP maintainer simulation. #118 adoption docs + templates; #119 `domain=bytes`. Live re-run `run-20260612T031330Z`: `completed=no first_stall=16 friction=4` (was 19/7). Next sim target `completed=yes` via `fixtures/templates/icp-hex-*`.
+
+**G82** (done, #120). Verifier-hash gate. `fixtures/lang-packs/VERIFIER.sha256` pins `metamorphic-verify.sh`; `check-verifier-frozen.sh` wired into lang-pack CI.
+
+**G83** (open, #121). Pre-registered holdout eval for blind detection. Freeze generator + hint grammar at a commit hash, mine K≥5 fresh bugs via a separate session, run once at declared budgets, report against pre-registered thresholds (≥50% generalizes bounded, <25% overfit verdict). Hint legality rule lives in [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md). Sequenced after #102–#105 (done).
+
+**G73 follow-on** (done, #102–#105). Four frozen-tier blind misses closed under legal format-aware hints. Full corpus with hints: 12/13 true_found; curated backtests unchanged. Separate spike row preserves the original 8/13 headline.
 
 **G73** (done, #89; hardened #96). Blind probe generation eval. `blind-probe-search.sh` + `blind-probe-generators.sh`; after hardening, **8/13 true_found (61%)** with rev1 replay control (`METAMORPHIC_PROBES`), `.req`-declared generator hints, native Zig corpus case (blind true_found), and capture-level fault retry. One documented relation gap (capnproto WHATWG leniency). Misses documented (utf8/leb128/wabt/parseip budget). No CI gate (~207s wall). Spec [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 
@@ -400,5 +411,18 @@ Spec: [`PRODUCT-PROOF.md`](PRODUCT-PROOF.md)
 | #85 | G55 H3 tranche 2 adversarial mined codec + G54 APE H1 tooling revisit |
 | #87 | G55 H3 tranche 3 four remaining mined specimens |
 | #89 | G73 blind probe generation eval (ADR-020) |
+| #93 | G74 lang-pack contract + conformance gate |
+| #96 | G73 hardening follow-on (hints, native case, replay control) |
+| #98 | G75 native Rust lang pack |
+| #100 | G76 native Go lang pack |
+| #102–#105 | G73 blind misses follow-up strategies (utf8, leb128, wabt, parseip) |
+| #106 | G77 lang-pack CI gate + native backtest per pack |
+| #110 | G78 ICP CLI facade + callsite refactor |
+| #112 | G79 root README for product, ICP, adoption |
+| #113 | G80 CLI surface completion (`./nanograph` + adoption guide) |
+| #115 | G81 ICP maintainer simulation (cold-start adoption eval) |
+| #116–#119 | G81 first-run findings (doctor probe, fail-fast, transcription docs, generic domain) |
+| #120 | G82 verifier-hash gate (language-blind machine invariant) |
+| #121 | G83 pre-registered holdout eval (blind detection generalization) |
 | — | G56–G65 conditional follow-ons (pre-registered in Next goals; no issue until trigger) |
 | — | G40 llamafile-stack subcase mining + scorecards (shortlist) |
