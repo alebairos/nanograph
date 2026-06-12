@@ -6,3 +6,4 @@ domain=wabt_leb128
 reject=REJECT
 eq=exact
 wire=hex
+probe_style=leb128_u64_overflow

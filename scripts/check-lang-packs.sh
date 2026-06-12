@@ -15,6 +15,11 @@ fi
 
 make -C tools -s bin/ngb-parse >/dev/null
 
+./scripts/check-verifier-frozen.sh >/dev/null || {
+  echo "LANG-PACKS FAIL: language-blind verify surface drift (see fixtures/lang-packs/VERIFIER.sha256)" >&2
+  exit 1
+}
+
 check_pack() {
   local name="$1" ngb="$2" req="$3"
   [[ -f "$ngb" ]] || fail "$name missing committed $ngb"

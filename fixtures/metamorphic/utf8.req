@@ -5,3 +5,4 @@ decode=dec
 domain=utf8
 reject=1114112
 eq=exact
+probe_style=overlong_utf8
