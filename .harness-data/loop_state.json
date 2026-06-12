@@ -1,19 +1,19 @@
 {
-  "goal_id": "G76",
-  "current_issue": 100,
-  "milestone": "lang-packs",
-  "product_proof_step": "lang-pack-contract",
-  "phase": "done",
-  "iteration": 1,
+  "goal_id": "G78",
+  "current_issue": 110,
+  "milestone": "M7",
+  "product_proof_step": "post-P20",
+  "phase": "planning",
+  "iteration": 0,
   "artifacts": {
-    "spec_path": "docs/specs/LANG-PACKS.md",
+    "spec_path": "docs/specs/NANO-GOALS.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "verdict_adr": "docs/adr/ADR-021-lang-pack-contract.md",
     "eval_logs": []
   },
   "next_action": {
-    "type": "idle",
-    "note": "Lang-pack ladder G74-G76 done (C, Zig, Rust, Go gate green); G73 hardened 8/13 true_found; next candidates: capnproto relation gap or budget-limited misses"
+    "type": "issue-intake",
+    "note": "Plan ICP CLI facade and refactor callsites to use it without changing floor boundaries; decide ADR necessity for structure/spec adoption layer."
   },
   "history": [
     {

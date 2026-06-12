@@ -14,7 +14,6 @@ if ! ./scripts/check-linux-runner.sh --quiet; then
 fi
 
 make -C tools -s bin/ngb-parse >/dev/null
-VERIFY="./scripts/agent-eval/metamorphic-verify.sh"
 
 check_pack() {
   local name="$1" ngb="$2" req="$3"
@@ -22,7 +21,7 @@ check_pack() {
   [[ -f "$req" ]] || fail "$name missing $req"
   tools/bin/ngb-parse "$ngb" >/dev/null || fail "$name ngb-parse rejected $ngb"
   local verdict
-  verdict="$("$VERIFY" "$ngb" "$req" 2>/dev/null | tail -1)"
+  verdict="$(./scripts/nanograph verify --expect accept "$ngb" "$req" 2>/dev/null | tail -1)"
   grep -q '^verdict=accept' <<<"$verdict" || fail "$name behavior: $verdict"
   echo "LANG-PACK $name OK $verdict"
 }

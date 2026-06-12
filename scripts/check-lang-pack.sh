@@ -37,7 +37,7 @@ tools/bin/ngb-parse "$OUT" >/dev/null || {
   exit 1
 }
 
-verdict="$(./scripts/agent-eval/metamorphic-verify.sh "$OUT" "$REQ" | tail -1)"
+verdict="$(./scripts/nanograph verify --expect accept "$OUT" "$REQ" | tail -1)"
 grep -q '^verdict=accept' <<<"$verdict" || {
   echo "LANG-PACK FAIL leg=behavior: $verdict" >&2
   exit 1

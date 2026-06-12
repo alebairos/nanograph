@@ -10,12 +10,10 @@ if ! ./scripts/check-linux-runner.sh --quiet; then
   exit 0
 fi
 
-VERIFY="./scripts/agent-eval/metamorphic-verify.sh"
-
 reject_witness_hex() {
   local ngb="$1" req="$2"
   local line hex
-  line="$("$VERIFY" "$ngb" "$req" 2>/dev/null | tail -1)" || true
+  line="$(./scripts/nanograph verify --expect reject "$ngb" "$req" 2>/dev/null | tail -1)" || true
   grep -q '^verdict=reject' <<<"$line" || fail "$ngb expected reject: $line"
   hex="$(grep -Eo 'hex=[0-9a-f]+' <<<"$line" | head -1 | cut -d= -f2)"
   [[ -n "$hex" ]] || fail "$ngb reject line missing hex=: $line"
