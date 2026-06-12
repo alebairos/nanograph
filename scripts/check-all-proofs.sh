@@ -38,6 +38,11 @@ make -C tools -s all
 ./scripts/check-reverse32-real.sh
 ./scripts/check-utf8-roundtrip.sh
 ./scripts/check-icp-cli.sh
+./scripts/check-icp-sim-sandbox.sh
+./scripts/check-icp-adoption-sandbox.sh
+./scripts/check-icp-stall-report.sh fixtures/icp-sim/stall-report-minimal.md
+./scripts/check-verifier-frozen.sh --self-test-negative
+./scripts/check-verifier-frozen.sh
 ./scripts/check-case-fit-rubric.sh
 ./scripts/check-backtest.sh fixtures/backtest/utf8/timeline.manifest C080 UTF8
 ./scripts/check-backtest.sh fixtures/backtest/leb128/timeline.manifest 8000 LEB128

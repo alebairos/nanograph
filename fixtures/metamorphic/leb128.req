@@ -5,3 +5,4 @@ decode=dec
 domain=leb128
 reject=4294967295
 eq=exact
+probe_style=nonminimal_leb128

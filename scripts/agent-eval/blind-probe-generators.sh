@@ -131,14 +131,100 @@ for a in range(256):
 PY
 }
 
+blind_gen_ipv4_overflow() {
+  python3 - "$BLIND_ASCII_BUDGET" <<'PY'
+import sys
+budget = int(sys.argv[1])
+count = 0
+for last in range(256, 512):
+    if count >= budget:
+        break
+    print(f"255.255.255.{last}")
+    count += 1
+for n in range(4294967296, 4294967296 + budget):
+    if count >= budget:
+        break
+    print(f"{n}")
+    count += 1
+PY
+}
+
+blind_gen_overlong_utf8() {
+  python3 - "$BLIND_BYTE_BUDGET" <<'PY'
+import sys
+budget = int(sys.argv[1])
+count = 0
+for lead in range(0xC0, 0xC2):
+    for cont in range(0x80, 0xC0):
+        if count >= budget:
+            break
+        print(256 * 256 + 256 * lead + cont)
+        count += 1
+for lead in range(0xE0, 0xF0):
+    for b2 in range(0x80, 0x90):
+        for b3 in range(0x80, 0x90):
+            if count >= budget:
+                break
+            print(256 * 256 * 256 + 256 * 256 * lead + 256 * b2 + b3)
+            count += 1
+PY
+}
+
+blind_gen_nonminimal_leb128() {
+  python3 - "$BLIND_BYTE_BUDGET" <<'PY'
+import sys
+budget = int(sys.argv[1])
+count = 0
+for hi in range(0x80, 0x90):
+    for lo in range(256):
+        if count >= budget:
+            break
+        print(256 * 256 + 256 * hi + lo)
+        count += 1
+PY
+}
+
+blind_gen_leb128_u64_overflow() {
+  python3 - "$BLIND_HEX_BUDGET" <<'PY'
+import sys
+budget = int(sys.argv[1])
+count = 0
+prefix = "ff" * 9
+for last in range(0x02, 0x10):
+    if count >= budget:
+        break
+    print(prefix + format(last, "02x"))
+    count += 1
+for last in range(0x02, 0x100):
+    if count >= budget:
+        break
+    print(prefix + format(last, "02x"))
+    count += 1
+PY
+}
+
 blind_gen_probes() {
+  local style
+  style="$(blind_req_hint probe_style)"
   case "${RELATION:-}" in
     involution) blind_gen_u32 ;;
     round_trip)
       case "${WIRE:-}" in
-        hex) blind_gen_hex_bytes ;;
+        hex)
+          if [[ "$style" == leb128_u64_overflow ]]; then
+            blind_gen_leb128_u64_overflow
+          else
+            blind_gen_hex_bytes
+          fi
+          ;;
         ascii) blind_gen_ascii_tokens ;;
-        *) blind_gen_utf8_decimal ;;
+        *)
+          case "$style" in
+            overlong_utf8) blind_gen_overlong_utf8 ;;
+            nonminimal_leb128) blind_gen_nonminimal_leb128 ;;
+            *) blind_gen_utf8_decimal ;;
+          esac
+          ;;
       esac
       ;;
     flow_composition) blind_gen_flow_triples ;;
@@ -148,11 +234,11 @@ blind_gen_probes() {
       case "${WIRE:-}" in
         hex) blind_gen_hex_bytes ;;
         ascii)
-          if [[ "$(blind_req_hint probe_style)" == ipv4 ]]; then
-            blind_gen_ipv4_ascii
-          else
-            blind_gen_ascii_tokens
-          fi
+          case "$style" in
+            ipv4_overflow) blind_gen_ipv4_overflow ;;
+            ipv4) blind_gen_ipv4_ascii ;;
+            *) blind_gen_ascii_tokens ;;
+          esac
           ;;
         *) blind_gen_hex_bytes ;;
       esac

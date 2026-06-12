@@ -53,6 +53,10 @@ canon=(0 65 233 8364 128512)
 names=("U+0000 NUL" "U+0041 A" "U+00E9 e-acute" "U+20AC euro" "U+1F600 emoji")
 packed=()
 while read -r p; do packed+=("$p"); done < <(printf '%s\n' "${canon[@]}" | batch_mode "$BUGGY" enc)
+if ((${#packed[@]} == 0)); then
+  say "demo-utf8: runner returned no output; run ./nanograph doctor" >&2
+  exit 1
+fi
 decoded=()
 while read -r d; do decoded+=("$d"); done < <(printf '%s\n' "${packed[@]}" | batch_mode "$BUGGY" dec)
 pass=0

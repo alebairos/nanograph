@@ -157,6 +157,14 @@ gen_rust_crc32fast_combine() {
   printf '%s\n' '0 0 5' '0 0 7' '0 0 13'
 }
 
+gen_bytes() {
+  local budget="${METAMORPHIC_BYTES_BUDGET:-64}"
+  METAMORPHIC_BLIND_HEX="$budget"
+  # shellcheck source=blind-probe-generators.sh
+  source "$(dirname "$0")/blind-probe-generators.sh"
+  blind_gen_hex_bytes
+}
+
 popcount_u() {
   local v="$1" c=0
   while ((v > 0)); do
@@ -164,6 +172,11 @@ popcount_u() {
     v=$((v / 2))
   done
   printf '%s' "$c"
+}
+
+runner_empty_fail() {
+  echo "metamorphic-verify: runner returned no output; run ./nanograph doctor" >&2
+  exit 2
 }
 
 u64_lt() { python3 -c 'import sys; print(int(sys.argv[1]) < int(sys.argv[2]))' "$1" "$2"; }
@@ -200,6 +213,7 @@ gen_probes() {
     zig_wyhash) gen_zig_wyhash ;;
     go_base64_streaming) gen_go_base64_streaming ;;
     rust_crc32fast_combine) gen_rust_crc32fast_combine ;;
+    bytes) gen_bytes ;;
     *) echo "metamorphic-verify: unsupported domain=$DOMAIN" >&2; exit 2 ;;
   esac
 }
@@ -672,12 +686,13 @@ fi
 
 probes=()
 while read -r p; do probes+=("$p"); done < <(gen_probes)
+((${#probes[@]} > 0)) || runner_empty_fail
 
 ys=()
 while read -r y; do ys+=("$y"); done < <(printf '%s\n' "${probes[@]}" | apply_once)
 
 ys_filled=()
-for y in "${ys[@]}"; do ys_filled+=("${y:-0}"); done
+for y in ${ys[@]+"${ys[@]}"}; do ys_filled+=("${y:-0}"); done
 
 zs=()
 while read -r z; do zs+=("$z"); done < <(printf '%s\n' "${ys_filled[@]}" | apply_once)

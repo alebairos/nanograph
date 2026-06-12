@@ -74,10 +74,11 @@ Mint an artifact through a language pack:
 ## Adoption path
 
 1. Confirm fit with `nanograph fit`.
-2. Define a property in `.req`.
-3. Mint a specimen (`nanograph mint ...`).
-4. Run `nanograph verify`.
-5. Use reject witnesses to drive fixes and backtests.
+2. **Transcribe** your codec into a freestanding specimen if it is not already one (see `docs/ADOPTION.md`, section "Bring your own codec").
+3. Define a property in `.req` (templates under `fixtures/templates/`).
+4. Mint a specimen (`nanograph mint ...`).
+5. Run `nanograph verify`.
+6. Use reject witnesses to drive fixes and backtests.
 
 For language-pack details see `docs/specs/LANG-PACKS.md`.
 For onboarding flow details see `docs/ADOPTION.md`.

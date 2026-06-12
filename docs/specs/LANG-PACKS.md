@@ -2,7 +2,7 @@
 
 How a new source language joins NanoGraph without touching the verify floor. Decision record: [`../adr/ADR-021-lang-pack-contract.md`](../adr/ADR-021-lang-pack-contract.md).
 
-The floor consumes `.ngb` + `.req` and is language-blind (ADR-007, ADR-010). A **lang pack** is the language-aware layer above that seam: one minter script plus one specimen, proven by one gate. Contributors (human or agent) never modify `tools/**`, `NGB-V0.md`, or `metamorphic-verify.sh`.
+The floor consumes `.ngb` + `.req` and is language-blind (ADR-007, ADR-010). A **lang pack** is the language-aware layer above that seam: one minter script plus one specimen, proven by one gate. Contributors (human or agent) never modify `tools/**`, `NGB-V0.md`, or `metamorphic-verify.sh`. CI enforces this via `fixtures/lang-packs/VERIFIER.sha256` and `scripts/check-verifier-frozen.sh` (G82). A deliberate verifier change requires updating the manifest in the same commit with justification; a lang-pack PR that drifts the verify surface without a manifest update fails the gate.
 
 ## Pack inventory
 
@@ -111,6 +111,7 @@ Go pack `.ngb` files carry the full Go runtime (~1.5MB per revision). That weigh
 
 ## What a pack must not do
 
-- Change `NGB-V0.md`, `tools/**`, the `.req` schema, or `metamorphic-verify.sh`. A pack needing any of those is a new ADR, not a pack.
+- Change `NGB-V0.md`, `tools/**`, or the `.req` schema. A pack needing any of those is a new ADR, not a pack.
+- Change `metamorphic-verify.sh` except through a deliberate verifier-hash bump (see `fixtures/lang-packs/VERIFIER.sha256`). The generic maintainer domain `domain=bytes` is the supported path for new wire formats without new hard-coded domain names.
 - Vendor an unpinned toolchain.
 - Embed source-language metadata in the `.ngb`. The artifact stays language-blind.
