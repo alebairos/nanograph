@@ -1,9 +1,9 @@
 {
-  "goal_id": "G78",
-  "current_issue": 110,
+  "goal_id": "G80",
+  "current_issue": 113,
   "milestone": "M7",
   "product_proof_step": "post-P20",
-  "phase": "planning",
+  "phase": "done",
   "iteration": 0,
   "artifacts": {
     "spec_path": "docs/specs/NANO-GOALS.md",
@@ -12,8 +12,8 @@
     "eval_logs": []
   },
   "next_action": {
-    "type": "issue-intake",
-    "note": "Plan ICP CLI facade and refactor callsites to use it without changing floor boundaries; decide ADR necessity for structure/spec adoption layer."
+    "type": "idle",
+    "note": "CLI surface complete for current v1 scope (root entrypoint + adoption doc + regression checks)."
   },
   "history": [
     {

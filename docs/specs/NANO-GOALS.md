@@ -219,7 +219,9 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G75 | Native Rust lang pack | #98 | n/a | **Done** (gate green, zero contract amendments) |
 | G76 | Native Go lang pack | #100 | n/a | **Done** (gate green, full Go runtime artifact) |
 | G77 | Lang-pack CI + native backtest per pack | #106 | n/a | **Done** (`check-lang-packs.sh` in all-proofs) |
-| G78 | ICP CLI facade + callsite refactor | #110 | n/a | **In progress** (M7) |
+| G78 | ICP CLI facade + callsite refactor | #110 | n/a | **Done** |
+| G79 | Root README for product, ICP, and adoption path | #112 | n/a | **Done** |
+| G80 | Complete CLI surface (`./nanograph` entrypoint + adoption guide) | #113 | n/a | **Done** |
 
 ### ICP adoption gaps (priority order, ADR-020)
 

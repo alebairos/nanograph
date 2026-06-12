@@ -5,7 +5,7 @@ cd "$ROOT"
 
 usage() {
   cat <<'EOF'
-usage: scripts/nanograph <command> [args...]
+usage: nanograph <command> [args...]
 
 Commands:
   doctor
