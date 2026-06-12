@@ -40,10 +40,37 @@ require_runner() {
   fi
 }
 
+runner_name() {
+  if [[ "$(uname -s)" == "Linux" ]]; then
+    printf '%s\n' native-linux
+  elif command -v qemu-x86_64 >/dev/null 2>&1; then
+    printf '%s\n' qemu-x86_64
+  elif command -v docker >/dev/null 2>&1; then
+    printf '%s\n' docker
+  else
+    printf '%s\n' unknown
+  fi
+}
+
 cmd_doctor() {
   require_runner
   make -C tools -s bin/ngb-pack bin/ngb-parse bin/ngb-extract >/dev/null
-  echo "nanograph doctor OK"
+  local runner probe out rc
+  runner="$(runner_name)"
+  probe="fixtures/metamorphic/bswap32.ngb"
+  [[ -f "$probe" ]] || {
+    echo "nanograph doctor: missing $probe" >&2
+    exit 1
+  }
+  set +e
+  out="$(./scripts/run-linux-elf-capture.sh "$probe" 256 2>/dev/null)"
+  rc=$?
+  set -e
+  if [[ "$rc" -ne 0 || -z "$out" ]]; then
+    echo "nanograph doctor: runner probe failed (runner=$runner). Start docker/colima, install qemu-x86_64, or use native Linux." >&2
+    exit 1
+  fi
+  echo "nanograph doctor OK runner=$runner"
 }
 
 cmd_demo() {

@@ -5,7 +5,7 @@ cd "$ROOT"
 
 fail() { echo "ICP-CLI FAIL: $1" >&2; exit 1; }
 
-./nanograph doctor >/dev/null || fail "doctor failed"
+./nanograph doctor 2>&1 | grep -q 'runner=' || fail "doctor missing runner="
 
 tmp_fit="$(mktemp)"
 cat >"$tmp_fit" <<'EOF'
