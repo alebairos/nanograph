@@ -1,5 +1,5 @@
-{"ts":"2026-06-11T18:06:29Z","surface":"ngb","step":1,"note":"nano-probe disassemble fixtures/add_two.ngb"}
-{"ts":"2026-06-11T18:06:29Z","surface":"ngb","step":2,"note":"ngb-patch off=127 pair=01:02 (genesis -> exit 3)"}
-{"ts":"2026-06-11T18:06:29Z","surface":"ngb","step":3,"note":"ngb-patch off=121 pair=01:02 (exit 3 -> exit 4)"}
-{"ts":"2026-06-11T18:06:29Z","surface":"ngb","step":4,"note":"graph hash matches docker-proven exit-4 fixture 59a65e674d72a633ebd85004a9a0622896be4cf668163c4861f503028b17abf2"}
-{"ts":"2026-06-11T18:06:29Z","surface":"ngb","control":"exit4","success":true,"steps":4,"behavioral_proof":"hash-equiv to check-add-two-chain-proof.sh"}
+{"ts":"2026-06-12T00:39:27Z","surface":"ngb","step":1,"note":"nano-probe disassemble fixtures/add_two.ngb"}
+{"ts":"2026-06-12T00:39:27Z","surface":"ngb","step":2,"note":"ngb-patch off=127 pair=01:02 (genesis -> exit 3)"}
+{"ts":"2026-06-12T00:39:27Z","surface":"ngb","step":3,"note":"ngb-patch off=121 pair=01:02 (exit 3 -> exit 4)"}
+{"ts":"2026-06-12T00:39:27Z","surface":"ngb","step":4,"note":"graph hash matches docker-proven exit-4 fixture 59a65e674d72a633ebd85004a9a0622896be4cf668163c4861f503028b17abf2"}
+{"ts":"2026-06-12T00:39:27Z","surface":"ngb","control":"exit4","success":true,"steps":4,"behavioral_proof":"hash-equiv to check-add-two-chain-proof.sh"}
