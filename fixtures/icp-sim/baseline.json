@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "model": "composer-2.5",
-  "note": "Pinned after run-20260612T031330Z (#118/#119 landed). first_stall=16 friction=4. Target completed=yes after maintainer finds fixtures/templates/ in ADOPTION.",
+  "note": "Reference run run-20260613T023339Z on main@8e73da3 (completed=yes friction=3). n=2 run-20260614T011931Z stalled at step 16 (persona contract). Threshold guards only; live eval is stochastic.",
   "expect": {
-    "completed": "no",
+    "completed": "yes",
     "first_stall_not_before": 6,
     "friction_max": 4
   }
