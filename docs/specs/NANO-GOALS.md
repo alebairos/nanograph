@@ -222,7 +222,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G78 | ICP CLI facade + callsite refactor | #110 | n/a | **Done** |
 | G79 | Root README for product, ICP, and adoption path | #112 | n/a | **Done** |
 | G80 | Complete CLI surface (`./nanograph` entrypoint + adoption guide) | #113 | n/a | **Done** |
-| G81 | ICP maintainer simulation (cold-start adoption eval) | #115, #122 | n/a | **In progress** (sim baseline: stall=16 friction=4; templates shipped) |
+| G81 | ICP maintainer simulation (cold-start adoption eval) | #115, #122 | n/a | **Done** (ref run completed=yes; n=2 stall=16; CI adoption gate) |
 | G82 | Verifier-hash gate (language-blind floor as machine invariant) | #120 | n/a | **Done** |
 | G83 | Pre-registered holdout eval (blind detection generalization) | #121 | n/a | Open (after #102–#105) |
 
@@ -286,7 +286,7 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G78** (done, #110). ICP-facing CLI facade (`scripts/nanograph`) that routes `doctor`, `demo`, `fit`, `verify`, and `mint` to existing floor scripts without changing floor semantics. Follow-on refactors migrated onboarding-facing callsites to the CLI and added dedicated CLI regression gating (`check-icp-cli.sh`).
 
-**G81** (in progress, #115, #122). ICP maintainer simulation. #118 adoption docs + templates; #119 `domain=bytes`. Live re-run `run-20260612T031330Z`: `completed=no first_stall=16 friction=4` (was 19/7). Next sim target `completed=yes` via `fixtures/templates/icp-hex-*`.
+**G81** (done, #115, #122). ICP maintainer simulation. Reference live run `run-20260613T023339Z`: `completed=yes first_stall=none friction=3`. n=2 check `run-20260614T011931Z`: `completed=no first_stall=16 friction=4` (persona wants hosted `hex.c` proof, not template-only). Deterministic adoption gate is CI truth; live sim is stochastic telemetry.
 
 **G82** (done, #120). Verifier-hash gate. `fixtures/lang-packs/VERIFIER.sha256` pins `metamorphic-verify.sh`; `check-verifier-frozen.sh` wired into lang-pack CI.
 
