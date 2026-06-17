@@ -1,6 +1,6 @@
 {
   "run_timestamp": "2026-06-17T20:34:28Z",
-  "freeze_commit": "PLACEHOLDER",
+  "freeze_commit": "51a2d7699ac2864e3aa03e0bf86292a55987fa89",
   "corpus": "holdout-rev1",
   "case_lines": [
     "case=jemalloc-s2u relation=size_monotone result=found specificity=true_found wall_ms=14261 verdict=reject hash=440158983fb3 relation=size_monotone phase=overflow size=8070450532247929089 got=9223372036854775808 want=0 hex=7000000000000101",

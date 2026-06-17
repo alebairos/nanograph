@@ -1,5 +1,5 @@
 {
-  "freeze_commit": "PLACEHOLDER",
+  "freeze_commit": "51a2d7699ac2864e3aa03e0bf86292a55987fa89",
   "generator_sha256": {
     "scripts/agent-eval/blind-probe-generators.sh": "6065d3df6481fbfd4afb04deb3a92433b87f4fdb873898692f53255a7edc03d0",
     "scripts/agent-eval/blind-probe-search.sh": "fa1fc24b0f9722a6731a6e980fe8bc4e2ee1296d818f9e4785c513e73bd32ed7"
