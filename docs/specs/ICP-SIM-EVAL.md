@@ -34,6 +34,10 @@ ICP-SIM RESULT completed=<yes|no> first_stall=<step number|none> friction=<count
 
 Bump baseline only when the adoption contract intentionally changes (for example after #118/#119 land and `completed=yes` becomes the target).
 
+Prefer threshold guards over exact pins for stochastic live eval. Pin `expect.completed` and `expect.friction_max`. Use `expect.first_stall_not_before` to catch mechanical regressions (steps 1–5). Avoid exact `expect.first_stall` unless reproducing a fixed scripted run.
+
+Reference live run artifact: `fixtures/icp-sim/stall-report-completed-yes.md` (from `run-20260613T023339Z` on main@8e73da3).
+
 `prepare-icp-sim-sandbox.sh` uses `git archive HEAD` then overlays working-tree ICP scripts so acceptance gates match the tree under edit. External clones at a commit see only committed bytes.
 
 ## Roles
