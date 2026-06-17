@@ -1,0 +1,22 @@
+{
+  "run_timestamp": "2026-06-17T20:34:28Z",
+  "freeze_commit": "PLACEHOLDER",
+  "corpus": "holdout-rev1",
+  "case_lines": [
+    "case=jemalloc-s2u relation=size_monotone result=found specificity=true_found wall_ms=14261 verdict=reject hash=440158983fb3 relation=size_monotone phase=overflow size=8070450532247929089 got=9223372036854775808 want=0 hex=7000000000000101",
+    "case=conserve-popcount relation=conserve_popcount result=found specificity=true_found wall_ms=503 verdict=reject hash=1935a93d7149 relation=conserve_popcount witness x=1 hex=1 pop_in=1 pop_out=0 got=0",
+    "case=knuth-sgb relation=round_trip result=miss wall_ms=3848 reason=budget-exhausted",
+    "case=go-base64-streaming-native relation=flow_composition result=found specificity=true_found wall_ms=24235 verdict=reject hash=7fe6ac68baab relation=flow_composition witness n=4 m=2 seed=5 once=4 composed=3 hex=5",
+    "case=rust-base64-native relation=round_trip result=found specificity=true_found wall_ms=9590 verdict=reject hash=5942f1063076 relation=round_trip witness bytes=AAB= hex=4141423d decode=0000 reencode=AAA="
+  ],
+  "summary": {
+    "true_found": 4,
+    "total": 5,
+    "found": 4,
+    "both_reject": 0,
+    "miss": 1,
+    "error": 0,
+    "true_rate_pct": 80
+  },
+  "verdict": "generalizes_bounded"
+}

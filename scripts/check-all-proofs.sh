@@ -43,6 +43,7 @@ make -C tools -s all
 ./scripts/check-icp-stall-report.sh fixtures/icp-sim/stall-report-minimal.md
 ./scripts/check-verifier-frozen.sh --self-test-negative
 ./scripts/check-verifier-frozen.sh
+./scripts/check-holdout-prereg.sh
 ./scripts/check-case-fit-rubric.sh
 ./scripts/check-backtest.sh fixtures/backtest/utf8/timeline.manifest C080 UTF8
 ./scripts/check-backtest.sh fixtures/backtest/leb128/timeline.manifest 8000 LEB128

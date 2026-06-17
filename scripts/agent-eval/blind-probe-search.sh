@@ -7,17 +7,19 @@ cd "$ROOT"
 # fields and relation-native enumeration (no CASE.md, no timeline reject hex).
 
 usage() {
-  echo "usage: blind-probe-search.sh [--corpus backtest-rev2] [--budget default]" >&2
+  echo "usage: blind-probe-search.sh [--corpus backtest-rev2|holdout-rev1] [--budget default] [--verdict backtest|holdout]" >&2
   exit 2
 }
 
 CORPUS=backtest-rev2
 BUDGET=default
+VERDICT=backtest
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --corpus) CORPUS="${2:-}"; shift 2 ;;
     --budget) BUDGET="${2:-}"; shift 2 ;;
+    --verdict) VERDICT="${2:-}"; shift 2 ;;
     -h | --help) usage ;;
     *) echo "unknown arg: $1" >&2; usage ;;
   esac
@@ -47,6 +49,21 @@ rev1_passes_witness() {
   case "$relation" in
     round_trip) probe="$(witness_field "$witness_line" bytes)" ;;
     involution | conserve_popcount) probe="$(witness_field "$witness_line" x)" ;;
+    size_monotone)
+      if grep -q 'phase=overflow' <<<"$witness_line"; then
+        METAMORPHIC_BLIND=1 ./scripts/agent-eval/metamorphic-verify.sh "$rev1" "$req" 2>/dev/null \
+          | grep -q '^verdict=accept'
+        return $?
+      fi
+      local wx wy
+      wx="$(witness_field "$witness_line" x)"
+      wy="$(witness_field "$witness_line" y)"
+      [[ -n "$wx" && -n "$wy" ]] || return 1
+      METAMORPHIC_PROBES="$(printf '%s\n%s' "$wx" "$wy")" \
+        ./scripts/agent-eval/metamorphic-verify.sh "$rev1" "$req" 2>/dev/null \
+        | grep -q '^verdict=accept'
+      return $?
+      ;;
     flow_composition)
       probe="$(witness_field "$witness_line" n) $(witness_field "$witness_line" m) $(witness_field "$witness_line" seed)"
       ;;
@@ -172,6 +189,14 @@ if [[ "$CORPUS" == backtest-rev2 ]]; then
     "go-base64-streaming:fixtures/backtest/go-base64-streaming/timeline.manifest"
     "rust-crc32fast:fixtures/backtest/rust-crc32fast-combine/timeline.manifest"
   )
+elif [[ "$CORPUS" == holdout-rev1 ]]; then
+  CASES=(
+    "jemalloc-s2u:fixtures/backtest/jemalloc-s2u/timeline.manifest"
+    "conserve-popcount:fixtures/backtest/conserve-popcount/timeline.manifest"
+    "knuth-sgb:fixtures/backtest/knuth-sgb/timeline.manifest"
+    "go-base64-streaming-native:fixtures/backtest/go-base64-streaming-native/timeline.manifest"
+    "rust-base64-native:fixtures/backtest/rust-base64-native/timeline.manifest"
+  )
 else
   echo "unknown corpus: $CORPUS" >&2
   exit 2
@@ -200,7 +225,15 @@ done
 found_pct=$((found * 100 / total))
 true_pct=$((true_found * 100 / total))
 echo "BLIND-PROBE-SEARCH SUMMARY found=$found true_found=$true_found both_reject=$both_reject miss=$miss error=$err total=$total found_rate=${found_pct}% true_rate=${true_pct}%"
-if [[ "$true_pct" -ge 50 ]]; then
+if [[ "$VERDICT" == holdout ]]; then
+  if [[ "$true_pct" -ge 50 ]]; then
+    echo "BLIND-PROBE-SEARCH VERDICT generalizes_bounded"
+  elif [[ "$true_pct" -lt 25 ]]; then
+    echo "BLIND-PROBE-SEARCH VERDICT overfit"
+  else
+    echo "BLIND-PROBE-SEARCH VERDICT inconclusive"
+  fi
+elif [[ "$true_pct" -ge 50 ]]; then
   echo "BLIND-PROBE-SEARCH VERDICT PROVEN_bounded"
 elif [[ "$true_pct" -ge 20 ]]; then
   echo "BLIND-PROBE-SEARCH VERDICT PARTIAL"

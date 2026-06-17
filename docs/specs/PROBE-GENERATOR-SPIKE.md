@@ -119,6 +119,20 @@ Budget: byte/hex/ascii/u32=256, flow seeds=64. Generator hints declared in `.req
 
 Misses are honest budget/domain-size failures, not confirmation-only on those relations. utf8/leb128/wabt need longer hex/decimal enumeration or structured fuzz, not fix-commit hints.
 
+## Results (holdout generalization, G83 separate row)
+
+Run: frozen holdout eval per [`HOLDOUT-EVAL.md`](HOLDOUT-EVAL.md) (#121). Corpus `holdout-rev1` (5 cases outside `backtest-rev2`). Command: `./scripts/agent-eval/run-holdout-eval.sh`. Budget: default (byte/hex/ascii/u32=256, flow=64). Generators pinned at `freeze_commit` in `fixtures/holdout/preregistration.json`.
+
+| Case | Relation | Result | Specificity | wall ms | Notes |
+| --- | --- | --- | --- | ---: | --- |
+| jemalloc-s2u | size_monotone | found | true_found | 14261 | overflow phase; powers-of-2 blind gen |
+| conserve-popcount | conserve_popcount | found | true_found | 503 | x=1 blind u32 sweep |
+| knuth-sgb | round_trip | miss | — | 3848 | `domain=knuth_sgb` integers 1..256; witness not in budget |
+| go-base64-streaming-native | flow_composition | found | true_found | 24235 | seed=5 (`flow_nm` + `seed_start` from `.req`) |
+| rust-base64-native | round_trip | found | true_found | 9590 | witness `AAB=`; `probe_block=4` from `.req` |
+
+**Summary (holdout):** 4/5 found, **4/5 true_found (80%)**, 0 `both_reject`, 1 miss, 0 error. **Verdict: generalizes_bounded** per G83 thresholds (≥50% `generalizes_bounded`, <25% `overfit`). Separate from the 8/13 backtest headline; holdout score is never retroactively improved.
+
 ## Verification
 
 ```bash

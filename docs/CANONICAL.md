@@ -15,6 +15,7 @@
 | **Implementation map** | [`docs/specs/ARCHITECTURE.md`](specs/ARCHITECTURE.md) | Layer → path in this repo |
 | **Agent harness** | [`docs/specs/AGENT-HARNESS.md`](specs/AGENT-HARNESS.md) | How agents run work here |
 | **Probe generator spike** | [`docs/specs/PROBE-GENERATOR-SPIKE.md`](specs/PROBE-GENERATOR-SPIKE.md) | G73 blind detection eval (ADR-020) |
+| **Holdout eval** | [`docs/specs/HOLDOUT-EVAL.md`](specs/HOLDOUT-EVAL.md) | G83 pre-registered holdout generalization (#121) |
 | **Lang packs** | [`docs/specs/LANG-PACKS.md`](specs/LANG-PACKS.md) | Modular language support contract (ADR-021) |
 | **ICP sim eval** | [`docs/specs/ICP-SIM-EVAL.md`](specs/ICP-SIM-EVAL.md) | G81 maintainer cold-start sim (acceptance + live eval) |
 | **Issue labels** | [`docs/specs/ISSUE-LABELS.md`](specs/ISSUE-LABELS.md) | GitHub label taxonomy |

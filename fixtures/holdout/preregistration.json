@@ -1,0 +1,46 @@
+{
+  "freeze_commit": "PLACEHOLDER",
+  "generator_sha256": {
+    "scripts/agent-eval/blind-probe-generators.sh": "6065d3df6481fbfd4afb04deb3a92433b87f4fdb873898692f53255a7edc03d0",
+    "scripts/agent-eval/blind-probe-search.sh": "fa1fc24b0f9722a6731a6e980fe8bc4e2ee1296d818f9e4785c513e73bd32ed7"
+  },
+  "corpus": "holdout-rev1",
+  "cases": [
+    {
+      "label": "jemalloc-s2u",
+      "manifest": "fixtures/backtest/jemalloc-s2u/timeline.manifest",
+      "relation": "size_monotone"
+    },
+    {
+      "label": "conserve-popcount",
+      "manifest": "fixtures/backtest/conserve-popcount/timeline.manifest",
+      "relation": "conserve_popcount"
+    },
+    {
+      "label": "knuth-sgb",
+      "manifest": "fixtures/backtest/knuth-sgb/timeline.manifest",
+      "relation": "round_trip"
+    },
+    {
+      "label": "go-base64-streaming-native",
+      "manifest": "fixtures/backtest/go-base64-streaming-native/timeline.manifest",
+      "relation": "flow_composition"
+    },
+    {
+      "label": "rust-base64-native",
+      "manifest": "fixtures/backtest/rust-base64-native/timeline.manifest",
+      "relation": "round_trip"
+    }
+  ],
+  "budgets": {
+    "METAMORPHIC_BLIND_BYTE": 256,
+    "METAMORPHIC_BLIND_FLOW": 64,
+    "METAMORPHIC_BLIND_U32": 256,
+    "METAMORPHIC_BLIND_ASCII": 256,
+    "METAMORPHIC_BLIND_HEX": 256
+  },
+  "thresholds": {
+    "generalizes_min_pct": 50,
+    "overfit_max_pct": 25
+  }
+}

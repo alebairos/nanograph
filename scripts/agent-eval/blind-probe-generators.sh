@@ -22,6 +22,23 @@ blind_gen_u32() {
   done
 }
 
+blind_gen_integers_1_budget() {
+  local i
+  for ((i = 1; i <= BLIND_BYTE_BUDGET; i++)); do
+    printf '%s\n' "$i"
+  done
+}
+
+blind_gen_size_monotone_powers() {
+  local s=1024 count=0
+  while ((count < BLIND_U32_BUDGET)); do
+    printf '%s\n' "$s"
+    count=$((count + 1))
+    ((s <= 9223372036854775807 / 2)) || break
+    s=$((s * 2))
+  done
+}
+
 blind_gen_seeds_256() {
   local s
   for ((s = 1; s <= 256; s++)); do
@@ -208,6 +225,8 @@ blind_gen_probes() {
   style="$(blind_req_hint probe_style)"
   case "${RELATION:-}" in
     involution) blind_gen_u32 ;;
+    size_monotone) blind_gen_size_monotone_powers ;;
+    conserve_popcount) blind_gen_u32 ;;
     round_trip)
       case "${WIRE:-}" in
         hex)
@@ -219,10 +238,15 @@ blind_gen_probes() {
           ;;
         ascii) blind_gen_ascii_tokens ;;
         *)
-          case "$style" in
-            overlong_utf8) blind_gen_overlong_utf8 ;;
-            nonminimal_leb128) blind_gen_nonminimal_leb128 ;;
-            *) blind_gen_utf8_decimal ;;
+          case "${DOMAIN:-}" in
+            knuth_sgb) blind_gen_integers_1_budget ;;
+            *)
+              case "$style" in
+                overlong_utf8) blind_gen_overlong_utf8 ;;
+                nonminimal_leb128) blind_gen_nonminimal_leb128 ;;
+                *) blind_gen_utf8_decimal ;;
+              esac
+              ;;
           esac
           ;;
       esac
