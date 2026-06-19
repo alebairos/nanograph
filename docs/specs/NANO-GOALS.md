@@ -224,7 +224,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G80 | Complete CLI surface (`./nanograph` entrypoint + adoption guide) | #113 | n/a | **Done** |
 | G81 | ICP maintainer simulation (cold-start adoption eval) | #115, #122 | n/a | **Done** (ref run completed=yes; n=2 stall=16; CI adoption gate) |
 | G82 | Verifier-hash gate (language-blind floor as machine invariant) | #120 | n/a | **Done** |
-| G83 | Pre-registered holdout eval (blind detection generalization) | #121 | n/a | Open (after #102–#105) |
+| G83 | Pre-registered holdout eval (blind detection generalization) | #121 | n/a | **Done** (4/5 true_found 80%; `generalizes_bounded`) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
@@ -290,7 +290,7 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G82** (done, #120). Verifier-hash gate. `fixtures/lang-packs/VERIFIER.sha256` pins `metamorphic-verify.sh`; `check-verifier-frozen.sh` wired into lang-pack CI.
 
-**G83** (open, #121). Pre-registered holdout eval for blind detection. Freeze generator + hint grammar at a commit hash, mine K≥5 fresh bugs via a separate session, run once at declared budgets, report against pre-registered thresholds (≥50% generalizes bounded, <25% overfit verdict). Hint legality rule lives in [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md). Sequenced after #102–#105 (done).
+**G83** (done, #121). Pre-registered holdout eval for blind detection generalization. Five cases outside `backtest-rev2`; generators pinned at `fixtures/holdout/preregistration.json`. Frozen run **4/5 true_found (80%)**, verdict **`generalizes_bounded`**. Bounded signal, not full proof. Cases selected from existing backtests (not freshly mined), two are native-binary ports of train siblings, jemalloc rode a `.req` overflow field; `conserve-popcount` is the clearest independent find. knuth-sgb miss is budget/domain-size (integers 1..256). `holdout-rev2` fresh mining is the follow-up. Spec [`HOLDOUT-EVAL.md`](HOLDOUT-EVAL.md); spike row in [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 
 **G73 follow-on** (done, #102–#105). Four frozen-tier blind misses closed under legal format-aware hints. Full corpus with hints: 12/13 true_found; curated backtests unchanged. Separate spike row preserves the original 8/13 headline.
 
