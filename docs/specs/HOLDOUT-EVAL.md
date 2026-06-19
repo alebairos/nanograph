@@ -1,13 +1,15 @@
 # G83 holdout eval (pre-registered generalization)
 
-Pre-registered train/test split for blind probe detection. The backtest corpus (`backtest-rev2`, 13 cases) was used to harden generators and hints; this holdout corpus (`holdout-rev1`, 5 cases) was mined separately and never appears in `backtest-rev2`.
+Pre-registered split for blind probe detection. The backtest corpus (`backtest-rev2`, 13 cases) was used to harden generators and hints; this holdout corpus (`holdout-rev1`, 5 cases) is drawn from backtests that never appear in `backtest-rev2`.
+
+**Independence caveat.** The five cases were selected from backtests already in the repo, not newly mined in a separate session for G83. This satisfies "outside the train list" but is weaker than the #121 ideal of fresh out-of-session mining. Two cases (`rust-base64-native`, `go-base64-streaming-native`) share a `.req` and bug family with train siblings (`rust-base64`, `go-base64-streaming`), so they test native-binary portability of an already-tuned generator, not independent generalization. `conserve-popcount` is the clearest independent find (a relation the generator was never pointed at). Read `generalizes_bounded` as a bounded positive signal, not proof of generalization to unseen bug families. A `holdout-rev2` of freshly mined bugs would close this gap.
 
 Parent goal: [`NANO-GOALS.md`](NANO-GOALS.md) G83 (#121). Detection spike context: [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md). Decision record: [`../adr/ADR-020-adoption-gap-priority.md`](../adr/ADR-020-adoption-gap-priority.md).
 
 ## Protocol
 
 1. **Freeze the lever.** `fixtures/holdout/preregistration.json` pins `freeze_commit`, generator SHA256 hashes, budgets, thresholds, and the five holdout cases before the single eval run.
-2. **Hint legality.** Generators use only `.req` fields and interface-derived enumeration (see PROBE-GENERATOR-SPIKE Hint legality). No CASE.md witnesses, timeline reject lines, or fix-commit knowledge.
+2. **Hint legality.** Generators use only `.req` fields and interface-derived enumeration (see PROBE-GENERATOR-SPIKE Hint legality). No CASE.md witnesses, timeline reject lines, or fix-commit knowledge. One known exception. The `jemalloc-s2u` `size_monotone` find is driven by the `overflow_size` field in `jemalloc_s2u.req`, a value set during backtest authoring with witness knowledge. Powers-of-2 enumeration did not discover that defect on its own, so count jemalloc as relation-contract confirmation rather than pure blind discovery.
 3. **Holdout corpus.** Five real-history bugs outside `backtest-rev2`:
    - jemalloc-s2u (`size_monotone`)
    - conserve-popcount (`conserve_popcount`)

@@ -290,7 +290,7 @@ These earn issues only when the parent goal's verdict or mining output satisfies
 
 **G82** (done, #120). Verifier-hash gate. `fixtures/lang-packs/VERIFIER.sha256` pins `metamorphic-verify.sh`; `check-verifier-frozen.sh` wired into lang-pack CI.
 
-**G83** (done, #121). Pre-registered holdout eval for blind detection generalization. Five cases outside `backtest-rev2`; generators pinned at `fixtures/holdout/preregistration.json`. Frozen run **4/5 true_found (80%)**, verdict **`generalizes_bounded`**. knuth-sgb miss is budget/domain-size (integers 1..256). Spec [`HOLDOUT-EVAL.md`](HOLDOUT-EVAL.md); spike row in [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
+**G83** (done, #121). Pre-registered holdout eval for blind detection generalization. Five cases outside `backtest-rev2`; generators pinned at `fixtures/holdout/preregistration.json`. Frozen run **4/5 true_found (80%)**, verdict **`generalizes_bounded`**. Bounded signal, not full proof. Cases selected from existing backtests (not freshly mined), two are native-binary ports of train siblings, jemalloc rode a `.req` overflow field; `conserve-popcount` is the clearest independent find. knuth-sgb miss is budget/domain-size (integers 1..256). `holdout-rev2` fresh mining is the follow-up. Spec [`HOLDOUT-EVAL.md`](HOLDOUT-EVAL.md); spike row in [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md).
 
 **G73 follow-on** (done, #102–#105). Four frozen-tier blind misses closed under legal format-aware hints. Full corpus with hints: 12/13 true_found; curated backtests unchanged. Separate spike row preserves the original 8/13 headline.
 

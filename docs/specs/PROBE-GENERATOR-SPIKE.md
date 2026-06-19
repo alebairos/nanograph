@@ -125,13 +125,15 @@ Run: frozen holdout eval per [`HOLDOUT-EVAL.md`](HOLDOUT-EVAL.md) (#121). Corpus
 
 | Case | Relation | Result | Specificity | wall ms | Notes |
 | --- | --- | --- | --- | ---: | --- |
-| jemalloc-s2u | size_monotone | found | true_found | 14261 | overflow phase; powers-of-2 blind gen |
-| conserve-popcount | conserve_popcount | found | true_found | 503 | x=1 blind u32 sweep |
+| jemalloc-s2u | size_monotone | found | true_found | 14261 | overflow phase; reject from `.req` `overflow_size`, not powers-of-2 enumeration (relation-contract confirmation, not blind discovery) |
+| conserve-popcount | conserve_popcount | found | true_found | 503 | x=1 blind u32 sweep; clearest independent find |
 | knuth-sgb | round_trip | miss | — | 3848 | `domain=knuth_sgb` integers 1..256; witness not in budget |
-| go-base64-streaming-native | flow_composition | found | true_found | 24235 | seed=5 (`flow_nm` + `seed_start` from `.req`) |
-| rust-base64-native | round_trip | found | true_found | 9590 | witness `AAB=`; `probe_block=4` from `.req` |
+| go-base64-streaming-native | flow_composition | found | true_found | 24235 | seed=5 (`flow_nm` + `seed_start` from `.req`); train sibling of `go-base64-streaming` (native-binary port, not independent) |
+| rust-base64-native | round_trip | found | true_found | 9590 | witness `AAB=`; `probe_block=4` from `.req`; train sibling of `rust-base64` (native-binary port, not independent) |
 
 **Summary (holdout):** 4/5 found, **4/5 true_found (80%)**, 0 `both_reject`, 1 miss, 0 error. **Verdict: generalizes_bounded** per G83 thresholds (≥50% `generalizes_bounded`, <25% `overfit`). Separate from the 8/13 backtest headline; holdout score is never retroactively improved.
+
+**Independence caveat.** The 80% headline is a bounded positive signal, not proof of generalization to unseen bug families. Cases were selected from existing backtests, not freshly mined in a separate session per the #121 ideal. Two cases are native-binary ports of train siblings, and jemalloc rode a witness-derived `.req` field. The strongest single evidence is `conserve-popcount`, one clean blind find on a relation the generator was never pointed at. A freshly mined `holdout-rev2` would close the independence gap. See [`HOLDOUT-EVAL.md`](HOLDOUT-EVAL.md).
 
 ## Verification
 
