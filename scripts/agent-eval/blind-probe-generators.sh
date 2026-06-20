@@ -130,6 +130,28 @@ for n in lengths:
 PY
 }
 
+blind_gen_base32_tokens() {
+  local block
+  block="$(blind_req_hint probe_block)"
+  python3 - "$BLIND_ASCII_BUDGET" "${block:-8}" <<'PY'
+import itertools
+import sys
+budget = int(sys.argv[1])
+block = int(sys.argv[2])
+chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567="
+lengths = range(block, 3 * block + 1, block) if block else range(8, 25, 8)
+count = 0
+for n in lengths:
+    if count >= budget:
+        break
+    for tup in itertools.product(chars, repeat=n):
+        if count >= budget:
+            break
+        print("".join(tup))
+        count += 1
+PY
+}
+
 blind_gen_ipv4_ascii() {
   python3 - "$BLIND_ASCII_BUDGET" <<'PY'
 import sys
@@ -236,7 +258,12 @@ blind_gen_probes() {
             blind_gen_hex_bytes
           fi
           ;;
-        ascii) blind_gen_ascii_tokens ;;
+        ascii)
+          case "${DOMAIN:-}" in
+            base32) blind_gen_base32_tokens ;;
+            *) blind_gen_ascii_tokens ;;
+          esac
+          ;;
         *)
           case "${DOMAIN:-}" in
             knuth_sgb) blind_gen_integers_1_budget ;;

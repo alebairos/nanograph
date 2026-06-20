@@ -135,9 +135,33 @@ Run: frozen holdout eval per [`HOLDOUT-EVAL.md`](HOLDOUT-EVAL.md) (#121). Corpus
 
 **Independence caveat.** The 80% headline is a bounded positive signal, not proof of generalization to unseen bug families. Cases were selected from existing backtests, not freshly mined in a separate session per the #121 ideal. Two cases are native-binary ports of train siblings, and jemalloc rode a witness-derived `.req` field. The strongest single evidence is `conserve-popcount`, one clean blind find on a relation the generator was never pointed at. A freshly mined `holdout-rev2` would close the independence gap. See [`HOLDOUT-EVAL.md`](HOLDOUT-EVAL.md).
 
+## Results (fresh-wire generalization, base32)
+
+Run: 2026-06-19. Question distinct from the holdout: does the blind generator reach a wire format it was never tuned on? Every prior blind win is the base64 wire family or a relation the generator already carried. base32 (RFC 4648) is a new family: 5-bit groups, 8-char blocks, alphabet `A-Z2-7`, same silent trailing-bits bug class.
+
+Two freestanding specimens differ by one line (`#define INVALID_LAST_CHECK` gates out the trailing-bits check). The generator gained `blind_gen_base32_tokens` keyed on `domain=base32`, a mirror of the base64 `probe_block` path with only alphabet and block size changed. No witness baked in.
+
+| Specimen | Blind verdict | Detail |
+| --- | --- | --- |
+| `base32_honest.ngb` | accept | 248 canonical probes, no false-positive reject |
+| `base32_buggy.ngb` | reject | witness `AAAAAAB=` hex `414141414141423d`, decode `00000000` reencode `AAAAAAA=`, ~7s |
+
+The witness emerges from lexicographic enumeration (`=` sorts last, `B` second), not from a planted string. Read: blind reach generalizes to a fresh wire with only alphabet/block parameterization.
+
+**Caveat.** This is a planted bug, the same limit as the backtests and the holdout. It de-risks the lever for unseen wire formats; it is not discovery on real upstream code. That is G84.
+
 ## Verification
 
 ```bash
 ./scripts/check-canonical-drift.sh
 ./scripts/agent-eval/blind-probe-search.sh --corpus backtest-rev2 --budget default
+```
+
+base32 fresh-wire spike (re-mint from `.c` if `.ngb` absent):
+
+```bash
+./scripts/nanograph mint c fixtures/metamorphic/base32_honest.c fixtures/metamorphic/base32_honest.ngb
+env METAMORPHIC_BLIND=1 RELATION=round_trip DOMAIN=base32 WIRE=ascii \
+  REQ=fixtures/metamorphic/base32.req METAMORPHIC_BLIND_ASCII=256 \
+  ./scripts/agent-eval/metamorphic-verify.sh fixtures/metamorphic/base32_buggy.ngb fixtures/metamorphic/base32.req
 ```

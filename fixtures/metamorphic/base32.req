@@ -1,0 +1,9 @@
+relation=round_trip
+entry=argv_mode
+encode=enc
+decode=dec
+domain=base32
+reject=REJECT
+eq=exact
+wire=ascii
+probe_block=8

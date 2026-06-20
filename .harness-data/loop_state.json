@@ -1,18 +1,18 @@
 {
-  "goal_id": "G83",
-  "current_issue": 121,
+  "goal_id": "G84",
+  "current_issue": 126,
   "milestone": "M7",
   "product_proof_step": "post-P20",
-  "phase": "done",
-  "iteration": 1,
+  "phase": "plan",
+  "iteration": 0,
   "artifacts": {
-    "spec_path": "docs/specs/HOLDOUT-EVAL.md",
+    "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "eval_logs": [".harness-data/agent-eval/icp-sim/"]
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G83 closed (PR #125 merged 60ad50e). Holdout 4/5 true_found generalizes_bounded, gated in check-all-proofs. Next: holdout-rev2 fresh-session mining or new goal."
+    "note": "G84 (#126) bound: blind discovery on real upstream. G73 fresh-wire base32 de-risked the lever (honest accept, buggy reject witness AAAAAAB= on first blind pass). Next: vendor first tranche of 3-5 real upstream codec functions at HEAD, sweep blind, report every reject. Planted bugs no longer earn proof; only a reject on unflagged real code does."
   },
   "history": [
     {
