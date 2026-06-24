@@ -39,6 +39,19 @@ run_target() {
 # shellcheck source=blind-probe-generators.sh
 source "$(dirname "$0")/blind-probe-generators.sh"
 
+# Probe source seam. A target may declare probes_cmd in its .req to supply a wire
+# format the frozen blind generator does not cover (pinned by the holdout prereg).
+# Default stays blind_gen_probes so existing targets are unchanged.
+PROBES_CMD="$(reqval probes_cmd)"
+probe_source() {
+  if [[ -n "$PROBES_CMD" ]]; then
+    [[ -x "$ROOT/$PROBES_CMD" ]] || { echo "native-hunt: probes_cmd not executable: $PROBES_CMD" >&2; exit 2; }
+    "$ROOT/$PROBES_CMD"
+  else
+    blind_gen_probes
+  fi
+}
+
 if [[ "$RELATION" != round_trip ]]; then
   echo "native-hunt: unsupported relation=$RELATION (v1 covers round_trip)" >&2
   exit 2
@@ -79,7 +92,7 @@ while read -r b; do
     exit 1
   fi
   accepted=$((accepted + 1))
-done < <(blind_gen_probes)
+done < <(probe_source)
 
 [[ "$accepted" -ge 1 ]] || {
   echo "native-hunt: round_trip accepted 0 inputs (domain has no canonical sample)" >&2
