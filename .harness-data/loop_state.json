@@ -1,6 +1,6 @@
 {
-  "goal_id": "G86",
-  "current_issue": 127,
+  "goal_id": "G87",
+  "current_issue": 126,
   "milestone": "M7",
   "product_proof_step": "post-P20",
   "phase": "verify",
@@ -12,7 +12,7 @@
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G86 (#127, vehicle #126) DONE. First native upstream defect without transcription: 1200wd/bitcoinlib CompactSize @ bec99a2 via fixtures/native/bitcoinlib_compactsize. native-hunt verdict=reject witness fdffff (decode 65535, reencode feffff0000) on canonical wire input; root cause int_to_varbyteint uses < 0xffff not <= at u16 boundary (also 0xffffffff); varbyteint_to_int lacks minimality check. Severity LOW: only two trigger values (65535, 4294967295). Gated check-bitcoinlib-compactsize-hunt.sh. CASE fixtures/backtest/bitcoinlib-compactsize/CASE.md; ADR-023; THIRD-PARTY.md. Vendored verbatim extract when pip install fails (py3.14/gmp). G85 vehicle proven; rust-bitcoin control accept. NEXT: install-side repro on a box where fastecdsa/gmp builds; human approval before opening upstream issue; higher-value move is seed-corpus/differential vehicle mode to reach Bech32m/Base58Check where a reject carries weight (vs more low-severity CompactSize libs)."
+    "note": "G87 (#126) DONE. Built the differential relation that unlocks acceptance-class codec bugs round_trip cannot see. native-hunt.sh relation=differential compares target vs trusted reference on same mode+probes; divergence is the witness; needs >=1 concurring accept so both-reject pairs cannot vacuously pass. Bech32m: BIP-canonical sipa/bech32 segwit_addr.py vendored (fixtures/native/bech32-vendor, MIT, indentation normalized), reference CLI fixtures/native/bech32m_ref, gen-bech32m.sh mints valid-checksum addresses witver 0..31 + BIP350 vectors; check-bech32m-differential.sh proves a witver>16-lenient target diverges (witness bc13... target_out=17:... vs reference REJECT) while honest concurs (rust-bech32 #274 class). Base58Check: no vehicle change, round_trip + seed corpus; gen-base58check.sh mints valid strings incl leading-zero; check-base58check-hunt.sh catches bignum leading-zero loss (witness 16L5... -> 6L5...). All prior self-tests + holdout prereg + drift green. ADR-023 amended. Commits dd8745c (bech32m differential), da26055 (base58check). G86 defect remains at #127. NEXT (real hunt): fetch a real third-party Bech32m/Base58 lib, wire as target vs vendored reference; a divergence is a candidate upstream defect. Open decision: which third-party lib, and whether to file the G86 bitcoinlib report upstream."
   },
   "history": [
     {
