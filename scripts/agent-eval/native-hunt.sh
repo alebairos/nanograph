@@ -131,7 +131,20 @@ if [[ "$RELATION" == differential ]]; then
     r="$(run_ref "$MODE" "$b")"
     if [[ "$t" != "$r" ]]; then
       hexw="$(hexify "$b")"
-      echo "verdict=reject target=$label reference=$reflabel relation=differential witness input=$b hex=$hexw target_out=$t reference_out=$r"
+      # Divergence direction is the triage. Target rejects what the reference
+      # accepts is a version or capability gap, not a defect (capability_gap,
+      # exit 3). Target accepts what the reference rejects, or both accept and
+      # disagree, is the defect-bearing direction (reject, exit 1).
+      if [[ ( -z "$t" || "$t" == "$REJECT" ) && -n "$r" && "$r" != "$REJECT" ]]; then
+        echo "verdict=capability_gap target=$label reference=$reflabel relation=differential reason=target_rejects_reference_accepts witness input=$b hex=$hexw target_out=$t reference_out=$r"
+        exit 3
+      fi
+      if [[ -n "$r" && "$r" == "$REJECT" ]]; then
+        reason=target_accepts_reference_rejects
+      else
+        reason=payload_mismatch
+      fi
+      echo "verdict=reject target=$label reference=$reflabel relation=differential reason=$reason witness input=$b hex=$hexw target_out=$t reference_out=$r"
       exit 1
     fi
     [[ -n "$t" && "$t" != "$REJECT" ]] && concur_accept=$((concur_accept + 1))
