@@ -213,6 +213,19 @@ Run: 2026-06-24 (#126). First reject on real third-party upstream code without t
 
 **Next.** Optional maintainer report to `1200wd/bitcoinlib` (human approval before opening). Continue sweep on other huntable-now CompactSize targets or invest in seed-corpus mode for Bech32m.
 
+### G87 differential relation (Bech32m + Base58Check huntable)
+
+Run: 2026-06-24 (#126). `round_trip` catches bijection bugs only. A decoder that accepts an invalid input re-encodes to the same string and passes, so the headline Bech32m bugs (witness version > 16, checksum-variant confusion) are invisible to it. `native-hunt.sh` gained `relation=differential`, comparing the target against a trusted reference on the same mode and probes. A divergence is the witness.
+
+| Domain | Relation | Reference | Catches | Self-test |
+| --- | --- | --- | --- | --- |
+| Bech32m | differential | `sipa/bech32` `segwit_addr.py` (vendored) | witver>16 acceptance (rust-bech32 #274 shape), checksum-variant | `check-bech32m-differential.sh` |
+| Base58Check | round_trip (seed corpus) | none (bijection) | leading zero-byte loss | `check-base58check-hunt.sh` |
+
+`gen-bech32m.sh` mints valid-checksum segwit addresses across witness versions 0..31 plus BIP350 vectors. Versions 17 and 31 carry a valid Bech32m checksum but are invalid per BIP350; the reference rejects them, a lenient target accepts, they diverge. Witness on version 17 (`bc13...`, `target_out=17:...` vs `reference_out=REJECT`). `gen-base58check.sh` mints spec-valid Base58Check strings including leading zero-byte payloads; a bignum decoder drops the leading `1` and fails the re-encode (witness `16L5...` re-encodes to `6L5...`).
+
+Both are hermetic honest-vs-buggy self-tests that prove the vehicle separates the class. The real hunt wires a fetched third-party Bech32m or Base58 library as the target against the vendored reference; that is the follow-on.
+
 ## Verification
 
 ```bash

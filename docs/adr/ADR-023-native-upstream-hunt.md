@@ -34,6 +34,18 @@ Bitcoin prep on `rust-bitcoin` `VarInt` yielded an honest null (`verdict=accept`
 - Bech32m and Base58Check targets need a seed corpus or differential mode before they join the huntable-now set.
 - Do not open maintainer issues from this repo until the human approves external contact; the CASE.md is the report draft.
 
+## Amendment (G87, #126): differential relation
+
+`round_trip` catches bijection bugs only. It cannot see an acceptance bug, because a decoder that accepts an invalid input re-encodes to the same string and passes. The headline Bech32m bugs (witness version > 16, Bech32/Bech32m checksum confusion) are acceptance bugs.
+
+`native-hunt.sh` gains `relation=differential`. The `.req` names `mode`, `reject`, and `reference` (an executable honoring the same CLI). Each probe runs through target and reference; a divergence is the witness, agreement on accept or reject concurs. A run accepts only with at least one concurring accept, so a both-reject-everything pair cannot vacuously pass.
+
+The reference is a trusted oracle, not the thing under test. For Bech32m it is the BIP-canonical `sipa/bech32` `segwit_addr.py`, vendored verbatim with indentation normalized. `gen-bech32m.sh` mints valid-checksum addresses across witness versions including 17 and 31, which carry a valid Bech32m checksum but are invalid per BIP350.
+
+Base58Check needs no vehicle change. It is a bijection bug (leading zero-byte loss), so `round_trip` with a seed-corpus `probes_cmd` (`gen-base58check.sh`) covers it. A bignum decoder that drops leading zeros fails the re-encode.
+
+Both demonstrations are hermetic self-tests (`check-bech32m-differential.sh`, `check-base58check-hunt.sh`) that separate an honest codec from a planted-buggy one. They prove the vehicle catches the class. A real third-party target wired as `target` with the reference as oracle is the follow-on hunt.
+
 ## Kill trigger
 
 If native wrappers routinely require full vendoring of entire packages because install is broken everywhere, revisit a containerized target runner rather than growing vendor trees.
