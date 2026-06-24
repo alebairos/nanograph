@@ -1,10 +1,10 @@
 {
-  "goal_id": "G84",
+  "goal_id": "G85",
   "current_issue": 126,
   "milestone": "M7",
   "product_proof_step": "post-P20",
-  "phase": "plan",
-  "iteration": 0,
+  "phase": "build",
+  "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
@@ -12,7 +12,7 @@
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G84 (#126) tranche-1 done + option-1 implemented: .req canonical=enforced|lenient (default enforced); lenient round_trip reject -> verdict=relation_gap (exit 3), poka-yoke for the leniency trap. cpython_base64 self-classifies; enforced corpus unchanged (relation_gap=0); verifier re-pinned. Idempotence second pass designed (lenient backstop) but not built (no concrete inconsistency bug yet). Open decision: targeted hunt on canonical-enforcing contracts vs pivot effort to external validation/adoption."
+    "note": "G85 (#126) native-upstream hunt vehicle shipped: native-hunt.sh runs round_trip on any executable honoring `target <mode> <value>`, reuses blind-probe-generators.sh + canonical classification, leaves VERIFIER.sha256 untouched (sibling, not verifier edit); check-native-hunt.sh self-test green (honest vs lenient base32 live python). First mined target: live CPython base64 (fixtures/native/cpython_base64) reproduces tranche-1 relation_gap (witness AAB=) transcription-free on Python 3.14.3. Honest null for defects (lenient by design), vehicle proven end to end. NEXT: canonical-enforcing target where a native reject is a candidate defect; Bech32m-class differential vs published vectors needs a fetched reference library wired through the same CLI. Open decision unchanged: push the real defect hunt vs pivot to external validation/adoption."
   },
   "history": [
     {
