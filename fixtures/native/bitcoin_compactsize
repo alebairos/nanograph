@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+BIN="$(cd "$(dirname "$0")/bitcoin-compactsize" && pwd)/target/release/bitcoin-compactsize"
+if [[ ! -x "$BIN" ]]; then
+  echo "bitcoin_compactsize: build first: cargo build --release --manifest-path fixtures/native/bitcoin-compactsize/Cargo.toml" >&2
+  exit 2
+fi
+exec "$BIN" "$@"
