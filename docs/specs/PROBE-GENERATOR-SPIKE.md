@@ -200,6 +200,19 @@ The frozen blind generator stays untouched. CompactSize is a new wire format the
 
 **Next.** rust-bitcoin's `VarInt` is correct, so this is a proven vehicle on real Bitcoin code and an honest null for a defect. The real defect hunt needs a thinner, less-audited Bitcoin-adjacent codec (a third-party CompactSize, address, or Bech32m implementation) wired through the same CLI, where a native reject is a candidate to report upstream. Bech32m differential against published vectors remains the higher-yield branch but needs a seed corpus for valid checksummed strings.
 
+### G86 first native upstream defect (1200wd/bitcoinlib CompactSize)
+
+Run: 2026-06-24 (#126). First reject on real third-party upstream code without transcription, closing the G84 skeptic objection for at least one maintained library.
+
+| Target | Vehicle | Verdict | Detail |
+| --- | --- | --- | --- |
+| `1200wd/bitcoinlib` `encoding.py` @ `bec99a2` | native-hunt | reject | witness `fdffff`, decode `65535`, reencode `feffff0000`; canonical wire input fails because `int_to_varbyteint` uses `< 0xffff` at the u16 boundary |
+| `rust-bitcoin` `VarInt` 0.32 (control) | native-hunt | accept | same probes, honest null |
+
+`fixtures/native/bitcoinlib_compactsize` imports upstream `int_to_varbyteint` / `varbyteint_to_int` when `pip install bitcoinlib` works; otherwise runs a verbatim vendored extract in `fixtures/native/bitcoinlib-vendor/compactsize.py` (same commit). ADR-023 records the policy. `scripts/check-bitcoinlib-compactsize-hunt.sh` gates the witness. Full narrative in `fixtures/backtest/bitcoinlib-compactsize/CASE.md`.
+
+**Next.** Optional maintainer report to `1200wd/bitcoinlib` (human approval before opening). Continue sweep on other huntable-now CompactSize targets or invest in seed-corpus mode for Bech32m.
+
 ## Verification
 
 ```bash
@@ -240,4 +253,11 @@ Bitcoin CompactSize native hunt (build real rust-bitcoin target, then run):
 cargo build --release --manifest-path fixtures/native/bitcoin-compactsize/Cargo.toml
 ./scripts/agent-eval/native-hunt.sh fixtures/native/bitcoin_compactsize fixtures/native/bitcoin_compactsize.req
 ./scripts/check-compactsize-hunt.sh
+```
+
+G86 bitcoinlib CompactSize native defect hunt:
+
+```bash
+./scripts/agent-eval/native-hunt.sh fixtures/native/bitcoinlib_compactsize fixtures/native/bitcoinlib_compactsize.req
+./scripts/check-bitcoinlib-compactsize-hunt.sh
 ```
