@@ -12,7 +12,7 @@
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G84 (#126) tranche-1 done: real base-N decoders (Go base32 by source, CPython base64 strict by minted specimen + live interpreter) are trailing-bits-lenient by design, so blind round_trip rejects are relation gaps not bugs. No bug-nobody-flagged found. Honest read: blind discovery via round_trip on lenient stdlib decoders is structurally low-yield; value prop is confirmation+witness on suspected code. Open decision: targeted hunt on canonical-enforcing contracts vs pivot effort to external validation/adoption."
+    "note": "G84 (#126) tranche-1 done + option-1 implemented: .req canonical=enforced|lenient (default enforced); lenient round_trip reject -> verdict=relation_gap (exit 3), poka-yoke for the leniency trap. cpython_base64 self-classifies; enforced corpus unchanged (relation_gap=0); verifier re-pinned. Idempotence second pass designed (lenient backstop) but not built (no concrete inconsistency bug yet). Open decision: targeted hunt on canonical-enforcing contracts vs pivot effort to external validation/adoption."
   },
   "history": [
     {

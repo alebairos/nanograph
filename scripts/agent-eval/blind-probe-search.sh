@@ -162,6 +162,9 @@ run_case() {
     echo "case=$label relation=$relation result=found specificity=$spec wall_ms=$wall $witness"
   elif grep -q '^verdict=accept' <<<"$out"; then
     echo "case=$label relation=$relation result=miss wall_ms=$wall reason=budget-exhausted"
+  elif grep -q '^verdict=relation_gap' <<<"$out"; then
+    gap="$(grep '^verdict=relation_gap' <<<"$out" | head -1)"
+    echo "case=$label relation=$relation result=relation_gap wall_ms=$wall $gap"
   else
     echo "case=$label relation=$relation result=error wall_ms=$wall detail=$(tr '\n' ' ' <<<"$out" | head -c 120)"
   fi
@@ -207,6 +210,7 @@ true_found=0
 both_reject=0
 miss=0
 err=0
+relation_gap=0
 total=${#CASES[@]}
 
 echo "BLIND-PROBE-SEARCH corpus=$CORPUS budget=default cases=$total"
@@ -220,11 +224,12 @@ for entry in "${CASES[@]}"; do
   if grep -q 'specificity=both_reject' <<<"$line"; then both_reject=$((both_reject + 1)); fi
   if grep -q 'result=miss' <<<"$line"; then miss=$((miss + 1)); fi
   if grep -q 'result=error' <<<"$line"; then err=$((err + 1)); fi
+  if grep -q 'result=relation_gap' <<<"$line"; then relation_gap=$((relation_gap + 1)); fi
 done
 
 found_pct=$((found * 100 / total))
 true_pct=$((true_found * 100 / total))
-echo "BLIND-PROBE-SEARCH SUMMARY found=$found true_found=$true_found both_reject=$both_reject miss=$miss error=$err total=$total found_rate=${found_pct}% true_rate=${true_pct}%"
+echo "BLIND-PROBE-SEARCH SUMMARY found=$found true_found=$true_found both_reject=$both_reject miss=$miss error=$err relation_gap=$relation_gap total=$total found_rate=${found_pct}% true_rate=${true_pct}%"
 if [[ "$VERDICT" == holdout ]]; then
   if [[ "$true_pct" -ge 50 ]]; then
     echo "BLIND-PROBE-SEARCH VERDICT generalizes_bounded"

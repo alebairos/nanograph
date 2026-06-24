@@ -317,6 +317,8 @@ if [[ "$RELATION" == round_trip ]]; then
   DECODE="$(reqval decode)"
   REJECT="$(reqval reject)"
   WIRE="$(reqval wire)"
+  CANONICAL="$(reqval canonical)"
+  CANONICAL="${CANONICAL:-enforced}"
   [[ -n "$ENCODE" && -n "$DECODE" && -n "$REJECT" ]] || {
     echo "metamorphic-verify: round_trip needs encode, decode, reject in $REQ" >&2
     exit 2
@@ -359,6 +361,10 @@ if [[ "$RELATION" == round_trip ]]; then
         else
           hexb="$(printf '%X' "$b")"
           hexw="${hexb:1}"
+        fi
+        if [[ "$CANONICAL" == lenient ]]; then
+          echo "verdict=relation_gap hash=${hash:0:12} relation=round_trip reason=lenient_contract witness bytes=$b hex=$hexw decode=$cp2 reencode=$b3"
+          exit 3
         fi
         echo "verdict=reject hash=${hash:0:12} relation=round_trip witness bytes=$b hex=$hexw decode=$cp2 reencode=$b3"
         exit 1

@@ -14,6 +14,7 @@ A language-neutral kv file (`.req`) declares the task. It is the seam between a 
 | `entry` | how operands reach the binary | `argv` |
 | `domain` | input generator | `u32` |
 | `eq` | output comparison | `exact` |
+| `canonical` | `round_trip` contract: `enforced` (default) means the decoder admits only canonical encodings, so a reject is a defect; `lenient` means the decoder tolerates non-canonical input by design, so a `round_trip` reject is reported as `verdict=relation_gap`, not a bug (G84) | absent (=`enforced`) |
 
 `fixtures/metamorphic/bswap32.req`:
 

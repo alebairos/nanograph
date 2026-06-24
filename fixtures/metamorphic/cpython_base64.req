@@ -7,3 +7,4 @@ reject=REJECT
 eq=exact
 wire=ascii
 probe_block=4
+canonical=lenient
