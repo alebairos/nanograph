@@ -226,6 +226,24 @@ Run: 2026-06-24 (#126). `round_trip` catches bijection bugs only. A decoder that
 
 Both are hermetic honest-vs-buggy self-tests that prove the vehicle separates the class. The real hunt wires a fetched third-party Bech32m or Base58 library as the target against the vendored reference; that is the follow-on.
 
+#### Divergence-direction asymmetry (triage)
+
+A real run against the pre-BIP350 `bech32` 1.2.0 diverged on the first Taproot probe, but it was a false positive. That library has no Bech32m support, so rejecting a Bech32m address is correct, not a defect. The direction of the divergence is the triage. The target rejecting what the reference accepts is a version or capability gap (`verdict=capability_gap`, exit 3). The target accepting what the reference rejects, or both accepting and disagreeing, is the defect-bearing direction (`verdict=reject`, exit 1). The classifier is encoded in `native-hunt.sh` and asserted three ways in `check-bech32m-differential.sh` (honest concurs, witver>16-lenient is a defect, bech32-only is a capability_gap).
+
+#### Long-tail sweep (2026-06-24, #126)
+
+Installable PyPI codecs run as targets against the canonical reference. All install pure-Python with no `gmp`/`fastecdsa` friction.
+
+| Target | Surface | Verdict |
+| --- | --- | --- |
+| `bech32m` 1.0.0 | differential (witver 0..31, cross-spec) | accept (concurs, correct) |
+| `bech32` 1.2.0 | differential | capability_gap (pre-BIP350, no Bech32m) |
+| `base58` 2.1.1 | leading-zero | null (preserves leading zeros) |
+| `base58check` 1.0.2 | leading-zero | null (preserves leading zeros) |
+| `based58` 0.1.1 | leading-zero | null (preserves leading zeros) |
+
+No defect in the maintained PyPI long tail. These libraries are correct on the probed surfaces. The classifier correctly labels `bech32` 1.2.0 as a capability gap rather than a false defect. Reaching a defect now requires GitHub-only ports and altcoin forks not packaged on PyPI, each needing per-target glue, or wider probe surfaces (mixed case, length>90, HRP validation).
+
 ## Verification
 
 ```bash

@@ -233,7 +233,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G84 | Blind discovery on real upstream (reject nobody flagged) | #126 | n/a | **Active** (tranche-1: real base-N decoders are trailing-bits-lenient by design; blind round_trip rejects are relation gaps, not bugs; Go base32 + CPython base64 confirmed) |
 | G85 | Native-upstream hunt vehicle (relation on live code, not transcription) | #126 | n/a | **Done** (vehicle + self-tests; CPython `relation_gap`; rust-bitcoin honest null; first defect moved to G86) |
 | G86 | First native upstream defect (1200wd/bitcoinlib CompactSize) | #127 | n/a | **Done** (`verdict=reject` witness `fdffff`; gated `check-bitcoinlib-compactsize-hunt.sh`; CASE + ADR-023; severity low; pending install-side repro + human approval before upstream report) |
-| G87 | Differential relation + Bech32m/Base58Check huntability | #126 | n/a | **Done** (`relation=differential` in `native-hunt.sh`; `sipa/bech32` reference vendored; `gen-bech32m.sh`/`gen-base58check.sh`; `check-bech32m-differential.sh` catches witver>16, `check-base58check-hunt.sh` catches leading-zero; real third-party target is follow-on) |
+| G87 | Differential relation + Bech32m/Base58Check huntability | #126 | n/a | **Done** (`relation=differential` in `native-hunt.sh`; `sipa/bech32` reference vendored; `gen-bech32m.sh`/`gen-base58check.sh`; `check-bech32m-differential.sh` catches witver>16, `check-base58check-hunt.sh` catches leading-zero; divergence-direction asymmetry encoded (`capability_gap` exit 3 vs `reject` exit 1); long-tail PyPI sweep = honest null, all 5 codecs correct, `bech32` 1.2.0 classified capability_gap) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 
