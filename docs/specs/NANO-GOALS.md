@@ -37,6 +37,7 @@ What the program has settled versus what still needs a goal.
 | Candidate-ID sidecar at `.req` seam helps agent build-verify loops | **Partial (G55)** | ADR-015 **skill-only**; H1 4/5 + H2 proven; H3 **PROVEN** under frozen sidecar on novel + 5/5 mined house-style specimens (#85–#87); recall is convention-lint (prose dependency); G63–G64 parked; [`CANDIDATE-ID-SPIKE-FOLLOWON.md`](CANDIDATE-ID-SPIKE-FOLLOWON.md) |
 | Verification floor discovers defects without curated probes | **Proven (bounded, G73)** | Frozen default tier **8/13 true_found (61%)** (#96); format-aware hint tier **12/13 true_found (92%)** (#102–#105, separate row); one documented relation gap (capnproto); [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
 | Blind generator reaches a wire format it was never tuned on | **Proven (planted, G73 fresh-wire)** | base32 (RFC 4648) honest accepts, buggy reject witness `AAAAAAB=` on first blind pass; only alphabet/block mirror added; planted-bug caveat stands (not real-upstream discovery, that is G84); [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
+| Relation runs against live upstream code, not a transcription | **Proven (G85, vehicle)** | `native-hunt.sh` reuses the blind generator and `canonical` classification, runs `round_trip` on real executables; live CPython base64 reproduces the tranche-1 `relation_gap` (witness `AAB=`) with no transcription; honest null for defects, vehicle proven; [`PROBE-GENERATOR-SPIKE.md`](PROBE-GENERATOR-SPIKE.md) |
 | Relation taxonomy guides mining before new MR branches | **Proven** | G66 RELATION-TAXONOMY + BACKTEST checklist; gated `check-relation-taxonomy.sh` |
 | Homomorphism family (`linear_xor`) catches non-linear CA rule | **Proven** | G67 rule 90 vs rule 30 imposter; gated `check-linear-xor.sh` |
 | Scalar conservation applies to Wolfram particle rule 184 | **Proven** | G68 `conserve_popcount` on rule 184 step; gated `check-rule184-conserve.sh` |
@@ -227,6 +228,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G82 | Verifier-hash gate (language-blind floor as machine invariant) | #120 | n/a | **Done** |
 | G83 | Pre-registered holdout eval (blind detection generalization) | #121 | n/a | **Done** (4/5 true_found 80%; `generalizes_bounded`) |
 | G84 | Blind discovery on real upstream (reject nobody flagged) | #126 | n/a | **Active** (tranche-1: real base-N decoders are trailing-bits-lenient by design; blind round_trip rejects are relation gaps, not bugs; Go base32 + CPython base64 confirmed) |
+| G85 | Native-upstream hunt vehicle (relation on live code, not transcription) | #126 | n/a | **Active** (`native-hunt.sh` + self-test; first mined target live CPython base64 reproduces tranche-1 `relation_gap` transcription-free; canonical-enforcing Bech32m-class defect hunt is next) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 

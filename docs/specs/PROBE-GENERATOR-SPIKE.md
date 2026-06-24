@@ -169,6 +169,22 @@ CPython detail. `cpython_base64.ngb` is a faithful transcription (validated agai
 
 **Idempotence as the lenient second pass (design, not yet built).** For a `lenient` decoder, `round_trip` cannot separate a benign leniency from a hidden inconsistency bug, so it stops at `relation_gap`. The principled second pass is `idempotence` of normalize, `encode(decode(encode(decode(b)))) == encode(decode(b))`. It is leniency-immune (confirmed against CPython: `normalize("AAB=")="AAA="`, stable). A lenient decoder that is self-consistent passes it; a lenient decoder whose encoder and decoder disagree on the canonical subset fails it, surfacing a real bug the leniency was masking. This is the same cheap-pre-filter, expensive-backstop composition as the relation/value-oracle handoff (G25). Build it when a concrete `canonical=lenient` case needs the deeper check; until then it is a relation in search of a defect.
 
+## Results (G85, native-upstream hunt vehicle)
+
+Run: 2026-06-23 (#126). Tranche-1 confirmed the leniency finding against a faithful transcription (`cpython_base64.ngb`). A transcription reject is ambiguous between an upstream bug and a transcription error, which blocks a maintainer-facing report. The native vehicle removes that ambiguity by running the relation against real code.
+
+`scripts/agent-eval/native-hunt.sh` runs `round_trip` against any executable honoring the ELF CLI contract `target <mode> <value>`, reusing `blind-probe-generators.sh` unchanged. It shares the witness format and the `canonical=enforced|lenient` classification with `metamorphic-verify.sh`, and leaves `VERIFIER.sha256` untouched because it is a sibling, not an edit to the pinned verifier. `scripts/agent-eval/check-native-hunt.sh` is the hermetic self-test, an honest strict base32 codec clears `round_trip` (126 canonical tokens) and a trailing-bits-lenient one yields witness `AAAAAAB=`, both run as live python processes.
+
+First mined target. The live CPython base64 codec via `fixtures/native/cpython_base64` (`canonical=lenient`).
+
+| Target | Vehicle | Verdict | Detail |
+| --- | --- | --- | --- |
+| live `python3` base64 (Python 3.14.3) | native-hunt | relation_gap | witness `AAB=`, decode `0000`, reencode `AAA=`; live interpreter agrees |
+
+This converts the tranche-1 transcription result into a transcription-free confirmation on the actual interpreter. It is an honest null for defects (the decoder is lenient by design) and a positive proof that the vehicle runs end to end on real third-party code.
+
+**Next.** A canonical-enforcing target is where a native reject is a candidate defect rather than a relation gap. The Bech32m-class differential against published vectors is the first real defect hunt; it needs a fetched reference library wired through the same CLI contract.
+
 ## Verification
 
 ```bash
