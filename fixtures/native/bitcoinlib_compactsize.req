@@ -1,0 +1,8 @@
+relation=round_trip
+domain=compactsize
+wire=hex
+encode=csenc
+decode=csdec
+reject=REJECT
+canonical=enforced
+probes_cmd=scripts/agent-eval/gen-compactsize.sh
