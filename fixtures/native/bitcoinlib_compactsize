@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+_VENDOR = os.path.join(_ROOT, "bitcoinlib-vendor")
+if _VENDOR not in sys.path:
+    sys.path.insert(0, _VENDOR)
+
+try:
+    from bitcoinlib.encoding import int_to_varbyteint, varbyteint_to_int
+except ImportError:
+    from compactsize import int_to_varbyteint, varbyteint_to_int
+
+mode, val = sys.argv[1], sys.argv[2]
+if mode == "csdec":
+    try:
+        n, _ = varbyteint_to_int(bytes.fromhex(val))
+        print(n)
+    except Exception:
+        print("REJECT")
+elif mode == "csenc":
+    try:
+        print(int_to_varbyteint(int(val)).hex())
+    except Exception:
+        print("REJECT")
+else:
+    print("REJECT")
