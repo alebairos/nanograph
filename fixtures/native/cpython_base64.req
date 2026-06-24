@@ -1,0 +1,8 @@
+relation=round_trip
+domain=base64
+wire=ascii
+encode=b64enc
+decode=b64dec
+reject=REJECT
+canonical=lenient
+probe_block=4
