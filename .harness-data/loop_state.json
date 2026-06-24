@@ -12,7 +12,7 @@
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G84 (#126) bound: blind discovery on real upstream. G73 fresh-wire base32 de-risked the lever (honest accept, buggy reject witness AAAAAAB= on first blind pass). Next: vendor first tranche of 3-5 real upstream codec functions at HEAD, sweep blind, report every reject. Planted bugs no longer earn proof; only a reject on unflagged real code does."
+    "note": "G84 (#126) tranche-1 done: real base-N decoders (Go base32 by source, CPython base64 strict by minted specimen + live interpreter) are trailing-bits-lenient by design, so blind round_trip rejects are relation gaps not bugs. No bug-nobody-flagged found. Honest read: blind discovery via round_trip on lenient stdlib decoders is structurally low-yield; value prop is confirmation+witness on suspected code. Open decision: targeted hunt on canonical-enforcing contracts vs pivot effort to external validation/adoption."
   },
   "history": [
     {

@@ -226,7 +226,7 @@ G40 scores the llamafile-stack subcases mined from [Justine Tunney](https://gith
 | G81 | ICP maintainer simulation (cold-start adoption eval) | #115, #122 | n/a | **Done** (ref run completed=yes; n=2 stall=16; CI adoption gate) |
 | G82 | Verifier-hash gate (language-blind floor as machine invariant) | #120 | n/a | **Done** |
 | G83 | Pre-registered holdout eval (blind detection generalization) | #121 | n/a | **Done** (4/5 true_found 80%; `generalizes_bounded`) |
-| G84 | Blind discovery on real upstream (reject nobody flagged) | #126 | n/a | **Active** (G73 fresh-wire base32 de-risked the lever) |
+| G84 | Blind discovery on real upstream (reject nobody flagged) | #126 | n/a | **Active** (tranche-1: real base-N decoders are trailing-bits-lenient by design; blind round_trip rejects are relation gaps, not bugs; Go base32 + CPython base64 confirmed) |
 
 ### ICP adoption gaps (priority order, ADR-020)
 

@@ -150,11 +150,44 @@ The witness emerges from lexicographic enumeration (`=` sorts last, `B` second),
 
 **Caveat.** This is a planted bug, the same limit as the backtests and the holdout. It de-risks the lever for unseen wire formats; it is not discovery on real upstream code. That is G84.
 
+## Results (G84 tranche-1, real-upstream discovery)
+
+Run: 2026-06-23 (#126). Question: does blind round_trip find a bug nobody flagged in a real maintained decoder at HEAD? Target selection read the actual source and live behavior before minting, because a reject is only a discovery if the function's contract forbids the input.
+
+Two obvious fresh base-N targets are **trailing-bits-lenient by design**, so a round_trip reject is a relation gap, not a bug. This generalizes the documented capnproto WHATWG case to two more major libraries.
+
+| Target | Source check | Verdict | Classification |
+| --- | --- | --- | --- |
+| Go `encoding/base32` (go1.22.0) | final byte `dbuf[0]<<3 \| dbuf[1]>>2`, discarded low bits never checked | not minted (source-confirmed lenient) | relation gap |
+| CPython `a2b_base64` strict_mode (binascii.c, v3.12.0) | minted faithful specimen, 17/17 vs `python3` oracle | blind reject witness `AAB=` | relation gap, confirmed |
+
+CPython detail. `cpython_base64.ngb` is a faithful transcription (validated against `base64.b64decode(s, validate=True)` on 17 cases incl. the leniency witnesses). Blind round_trip rejects with witness `AAB=` (decode `0000`, reencode `AAA=`). The live interpreter agrees. `base64.b64decode("AAB=", validate=True)` returns `0000` and re-encodes to `AAA=`. CPython accepts the non-canonical input by design (strict_mode promises alphabet + padding + excess-after-padding, not canonical trailing bits). No bug; the reject is the relation gap.
+
+**Tranche-1 read.** No bug-nobody-flagged found. The relation that is cheapest to enumerate (round_trip over canonical base-N bytes) is dominated by designed trailing-bits leniency on real stdlib decoders, which surfaces as relation-gap rejects. The libraries that gave true blind finds (rust-base64) are the ones that **enforce** canonical form. Honest conclusion: blind discovery via round_trip on lenient stdlib decoders is structurally low-yield. Real discovery needs canonical-enforcing contracts or non-leniency relations (involution, cmp_order, conserve_popcount). This sharpens the product claim toward confirmation-plus-witness on code the maintainer already suspects, not blind discovery on arbitrary maintained code.
+
 ## Verification
 
 ```bash
 ./scripts/check-canonical-drift.sh
 ./scripts/agent-eval/blind-probe-search.sh --corpus backtest-rev2 --budget default
+```
+
+base32 fresh-wire spike (re-mint from `.c` if `.ngb` absent):
+
+```bash
+./scripts/nanograph mint c fixtures/metamorphic/base32_honest.c fixtures/metamorphic/base32_honest.ngb
+env METAMORPHIC_BLIND=1 RELATION=round_trip DOMAIN=base32 WIRE=ascii \
+  REQ=fixtures/metamorphic/base32.req METAMORPHIC_BLIND_ASCII=256 \
+  ./scripts/agent-eval/metamorphic-verify.sh fixtures/metamorphic/base32_buggy.ngb fixtures/metamorphic/base32.req
+```
+
+G84 tranche-1 CPython relation-gap (witness reproduces against `python3`):
+
+```bash
+env METAMORPHIC_BLIND=1 RELATION=round_trip DOMAIN=cpython_base64 WIRE=ascii \
+  REQ=fixtures/metamorphic/cpython_base64.req METAMORPHIC_BLIND_ASCII=256 \
+  ./scripts/agent-eval/metamorphic-verify.sh fixtures/metamorphic/cpython_base64.ngb fixtures/metamorphic/cpython_base64.req
+python3 -c "import base64; print(base64.b64decode('AAB=', validate=True).hex())"
 ```
 
 base32 fresh-wire spike (re-mint from `.c` if `.ngb` absent):
