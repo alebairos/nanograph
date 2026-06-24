@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+_VENDOR = os.path.join(_ROOT, "bech32-vendor")
+if _VENDOR not in sys.path:
+    sys.path.insert(0, _VENDOR)
+
+import segwit_addr
+
+
+def b32mdec(addr):
+    pos = addr.rfind("1")
+    if pos < 1:
+        return "REJECT"
+    hrp = addr[:pos].lower()
+    try:
+        witver, prog = segwit_addr.decode(hrp, addr)
+    except Exception:
+        return "REJECT"
+    if witver is None:
+        return "REJECT"
+    return f"{witver}:{bytes(prog).hex()}"
+
+
+mode, val = sys.argv[1], sys.argv[2]
+print(b32mdec(val) if mode == "b32mdec" else "REJECT")

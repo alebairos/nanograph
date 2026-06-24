@@ -52,21 +52,6 @@ probe_source() {
   fi
 }
 
-if [[ "$RELATION" != round_trip ]]; then
-  echo "native-hunt: unsupported relation=$RELATION (v1 covers round_trip)" >&2
-  exit 2
-fi
-
-ENCODE="$(reqval encode)"
-DECODE="$(reqval decode)"
-REJECT="$(reqval reject)"
-CANONICAL="$(reqval canonical)"
-CANONICAL="${CANONICAL:-enforced}"
-[[ -n "$ENCODE" && -n "$DECODE" && -n "$REJECT" ]] || {
-  echo "native-hunt: round_trip needs encode, decode, reject in $REQ" >&2
-  exit 2
-}
-
 hexify() {
   if [[ "$WIRE" == ascii ]]; then
     printf '%s' "$1" | hexdump -ve '1/1 "%02x"'
@@ -75,28 +60,89 @@ hexify() {
   fi
 }
 
+REJECT="$(reqval reject)"
+REJECT="${REJECT:-REJECT}"
 label="$(basename "$TARGET")"
-accepted=0
-while read -r b; do
-  [[ -z "$b" ]] && continue
-  cp="$(run_target "$DECODE" "$b")"
-  [[ -z "$cp" || "$cp" == "$REJECT" ]] && continue
-  b3="$(run_target "$ENCODE" "$cp")"
-  if [[ "$b3" != "$b" ]]; then
-    hexw="$(hexify "$b")"
-    if [[ "$CANONICAL" == lenient ]]; then
-      echo "verdict=relation_gap target=$label relation=round_trip reason=lenient_contract witness bytes=$b hex=$hexw decode=$cp reencode=$b3"
-      exit 3
-    fi
-    echo "verdict=reject target=$label relation=round_trip witness bytes=$b hex=$hexw decode=$cp reencode=$b3"
-    exit 1
-  fi
-  accepted=$((accepted + 1))
-done < <(probe_source)
 
-[[ "$accepted" -ge 1 ]] || {
-  echo "native-hunt: round_trip accepted 0 inputs (domain has no canonical sample)" >&2
-  exit 2
-}
-echo "verdict=accept target=$label relation=round_trip accepted=$accepted separator=none"
-exit 0
+if [[ "$RELATION" == round_trip ]]; then
+  ENCODE="$(reqval encode)"
+  DECODE="$(reqval decode)"
+  CANONICAL="$(reqval canonical)"
+  CANONICAL="${CANONICAL:-enforced}"
+  [[ -n "$ENCODE" && -n "$DECODE" ]] || {
+    echo "native-hunt: round_trip needs encode, decode, reject in $REQ" >&2
+    exit 2
+  }
+  accepted=0
+  while read -r b; do
+    [[ -z "$b" ]] && continue
+    cp="$(run_target "$DECODE" "$b")"
+    [[ -z "$cp" || "$cp" == "$REJECT" ]] && continue
+    b3="$(run_target "$ENCODE" "$cp")"
+    if [[ "$b3" != "$b" ]]; then
+      hexw="$(hexify "$b")"
+      if [[ "$CANONICAL" == lenient ]]; then
+        echo "verdict=relation_gap target=$label relation=round_trip reason=lenient_contract witness bytes=$b hex=$hexw decode=$cp reencode=$b3"
+        exit 3
+      fi
+      echo "verdict=reject target=$label relation=round_trip witness bytes=$b hex=$hexw decode=$cp reencode=$b3"
+      exit 1
+    fi
+    accepted=$((accepted + 1))
+  done < <(probe_source)
+  [[ "$accepted" -ge 1 ]] || {
+    echo "native-hunt: round_trip accepted 0 inputs (domain has no canonical sample)" >&2
+    exit 2
+  }
+  echo "verdict=accept target=$label relation=round_trip accepted=$accepted separator=none"
+  exit 0
+fi
+
+# Differential. Compare target against a trusted reference executable on the same
+# mode and probes. A divergence is the witness, so this catches acceptance bugs a
+# round_trip cannot see (a decoder that accepts an invalid input re-encodes to the
+# same string, passing round_trip; the reference rejects, so they diverge here).
+if [[ "$RELATION" == differential ]]; then
+  MODE="$(reqval mode)"
+  REFERENCE="$(reqval reference)"
+  [[ -n "$MODE" && -n "$REFERENCE" ]] || {
+    echo "native-hunt: differential needs mode, reference in $REQ" >&2
+    exit 2
+  }
+  [[ -x "$ROOT/$REFERENCE" || -f "$ROOT/$REFERENCE" ]] || {
+    echo "native-hunt: missing reference $REFERENCE" >&2
+    exit 2
+  }
+  run_ref() {
+    local mode="$1" val="$2"
+    if command -v timeout >/dev/null 2>&1; then
+      timeout -s KILL "$TLIMIT" "$ROOT/$REFERENCE" "$mode" "$val" 2>/dev/null | tr -d '\r\n' || true
+    elif command -v gtimeout >/dev/null 2>&1; then
+      gtimeout -s KILL "$TLIMIT" "$ROOT/$REFERENCE" "$mode" "$val" 2>/dev/null | tr -d '\r\n' || true
+    else
+      "$ROOT/$REFERENCE" "$mode" "$val" 2>/dev/null | tr -d '\r\n' || true
+    fi
+  }
+  reflabel="$(basename "$REFERENCE")"
+  concur_accept=0
+  while read -r b; do
+    [[ -z "$b" ]] && continue
+    t="$(run_target "$MODE" "$b")"
+    r="$(run_ref "$MODE" "$b")"
+    if [[ "$t" != "$r" ]]; then
+      hexw="$(hexify "$b")"
+      echo "verdict=reject target=$label reference=$reflabel relation=differential witness input=$b hex=$hexw target_out=$t reference_out=$r"
+      exit 1
+    fi
+    [[ -n "$t" && "$t" != "$REJECT" ]] && concur_accept=$((concur_accept + 1))
+  done < <(probe_source)
+  [[ "$concur_accept" -ge 1 ]] || {
+    echo "native-hunt: differential had 0 concurring accepts (probes never decoded)" >&2
+    exit 2
+  }
+  echo "verdict=accept target=$label reference=$reflabel relation=differential concur_accept=$concur_accept"
+  exit 0
+fi
+
+echo "native-hunt: unsupported relation=$RELATION (covers round_trip, differential)" >&2
+exit 2
