@@ -1,9 +1,9 @@
 {
-  "goal_id": "G85",
+  "goal_id": "G86",
   "current_issue": 126,
   "milestone": "M7",
   "product_proof_step": "post-P20",
-  "phase": "build",
+  "phase": "verify",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
@@ -12,7 +12,7 @@
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G85 (#126) bitcoin hunt prep DONE. native-hunt.sh runs round_trip on any executable honoring `target <mode> <value>`; new probes_cmd seam lets a .req name an external probe source so new wire formats plug in WITHOUT editing the holdout-frozen blind-probe-generators.sh (check-holdout-prereg.sh stays green). First canonical-enforcing real target: fixtures/native/bitcoin-compactsize is a cargo binary on bitcoin=0.32 exposing csdec/csenc over rust-bitcoin VarInt (NonMinimalVarInt enforcement). native-hunt verdict=accept 43/64 (21 non-minimal rejected, none accepted) = honest null for a Bitcoin defect at HEAD. Negative control scripts/check-compactsize-hunt.sh proves the same probes catch a lenient codec (witness fd0000), so the accept is not a blind pass. gen-compactsize.sh emits canonical + non-minimal fd/fe/ff probes. Earlier: live CPython base64 reproduced tranche-1 relation_gap (witness AAB=) transcription-free. NEXT (real defect hunt): a THINNER, less-audited Bitcoin-adjacent codec (third-party CompactSize/address/Bech32m) wired through the same CLI where a native reject is a candidate to report upstream; Bech32m differential vs published vectors is higher-yield but needs a valid-checksum seed corpus. Open decision unchanged: push the real defect hunt vs pivot to external validation/adoption."
+    "note": "G86 (#126) DONE. First native upstream defect without transcription: 1200wd/bitcoinlib CompactSize @ bec99a2 via fixtures/native/bitcoinlib_compactsize. native-hunt verdict=reject witness fdffff (decode 65535, reencode feffff0000) on canonical wire input; root cause int_to_varbyteint uses < 0xffff not <= at u16 boundary; varbyteint_to_int lacks minimality check. Gated check-bitcoinlib-compactsize-hunt.sh. CASE fixtures/backtest/bitcoinlib-compactsize/CASE.md; ADR-023; THIRD-PARTY.md. Vendored verbatim extract when pip install fails (py3.14/gmp). G85 vehicle proven; rust-bitcoin control accept. NEXT: human approval before opening maintainer issue; optional sweep petertodd/python-bitcoinlib VarInt or Bech32m targets after seed-corpus vehicle mode."
   },
   "history": [
     {
