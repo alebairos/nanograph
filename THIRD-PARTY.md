@@ -41,3 +41,7 @@ LLVM Project, https://github.com/llvm/llvm-project , Apache-2.0 WITH LLVM-except
 ## Bit Twiddling Hacks (G26)
 
 Sean Eron Anderson, public-domain "Reverse bits in parallel" routine, vendored verbatim in `fixtures/metamorphic/reverse32.c`. See `docs/adr/ADR-009-real-vendored-code.md`.
+
+## bitcoinlib (G86)
+
+`1200wd/bitcoinlib`, https://github.com/1200wd/bitcoinlib , MIT. `fixtures/native/bitcoinlib_compactsize` runs upstream `int_to_varbyteint` and `varbyteint_to_int` from `bitcoinlib/encoding.py` at `bec99a2` (2026-06-05). When the full package cannot install, the same functions are vendored verbatim in `fixtures/native/bitcoinlib-vendor/compactsize.py`. This is a native hunt (G85), not a freestanding transcription. See `fixtures/backtest/bitcoinlib-compactsize/CASE.md` and ADR-023.
