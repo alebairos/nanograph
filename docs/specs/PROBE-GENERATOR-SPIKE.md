@@ -183,7 +183,22 @@ First mined target. The live CPython base64 codec via `fixtures/native/cpython_b
 
 This converts the tranche-1 transcription result into a transcription-free confirmation on the actual interpreter. It is an honest null for defects (the decoder is lenient by design) and a positive proof that the vehicle runs end to end on real third-party code.
 
-**Next.** A canonical-enforcing target is where a native reject is a candidate defect rather than a relation gap. The Bech32m-class differential against published vectors is the first real defect hunt; it needs a fetched reference library wired through the same CLI contract.
+### Bitcoin prep (CompactSize, canonical-enforcing)
+
+Run: 2026-06-24 (#126). The CPython target proves the vehicle on a lenient contract, where a mismatch is a relation gap. To make a native reject mean a candidate defect, the target must be canonical-enforcing. Bitcoin's CompactSize is that shape, consensus forbids non-minimal encodings, and unlike Bech32m its canonical inputs are trivial to generate blind, so it fits `round_trip` v1 without a checksummed seed corpus.
+
+The target is real `rust-bitcoin` code, not a transcription. `fixtures/native/bitcoin-compactsize` is a small cargo binary depending on `bitcoin = "0.32"`, exposing `csdec` (hex CompactSize to decoded `u64`, or `REJECT`) and `csenc` (`u64` to canonical hex) over `bitcoin::consensus::encode::VarInt`, which returns `NonMinimalVarInt` on non-minimal input. `fixtures/native/bitcoin_compactsize` execs the built binary.
+
+The frozen blind generator stays untouched. CompactSize is a new wire format the holdout-pinned `blind-probe-generators.sh` does not cover, so editing it would break `check-holdout-prereg.sh`. `native-hunt.sh` gained a `probes_cmd` seam, a `.req` may name an external probe source, default stays `blind_gen_probes`. `scripts/agent-eval/gen-compactsize.sh` emits canonical 1-byte and multi-byte encodings plus non-minimal `fd`/`fe`/`ff` forms a correct decoder must reject.
+
+| Target | Vehicle | Verdict | Detail |
+| --- | --- | --- | --- |
+| real `rust-bitcoin` `VarInt` 0.32 | native-hunt | accept | 43/64 round-trip, 21 non-minimal rejected, none accepted; canonical-enforcing, honest null at HEAD |
+| lenient CompactSize (negative control) | native-hunt | reject | witness `fd0000` (non-minimal zero), decode `0`, reencode `00` |
+
+`scripts/check-compactsize-hunt.sh` is the hermetic guard, an honest minimal-enforcing python codec accepts and a non-minimal-lenient one yields the `fd0000` witness on the same probes, so the rust accept is not a blind harness passing everything. No rust or cargo in the guard.
+
+**Next.** rust-bitcoin's `VarInt` is correct, so this is a proven vehicle on real Bitcoin code and an honest null for a defect. The real defect hunt needs a thinner, less-audited Bitcoin-adjacent codec (a third-party CompactSize, address, or Bech32m implementation) wired through the same CLI, where a native reject is a candidate to report upstream. Bech32m differential against published vectors remains the higher-yield branch but needs a seed corpus for valid checksummed strings.
 
 ## Verification
 
@@ -217,4 +232,12 @@ base32 fresh-wire spike (re-mint from `.c` if `.ngb` absent):
 env METAMORPHIC_BLIND=1 RELATION=round_trip DOMAIN=base32 WIRE=ascii \
   REQ=fixtures/metamorphic/base32.req METAMORPHIC_BLIND_ASCII=256 \
   ./scripts/agent-eval/metamorphic-verify.sh fixtures/metamorphic/base32_buggy.ngb fixtures/metamorphic/base32.req
+```
+
+Bitcoin CompactSize native hunt (build real rust-bitcoin target, then run):
+
+```bash
+cargo build --release --manifest-path fixtures/native/bitcoin-compactsize/Cargo.toml
+./scripts/agent-eval/native-hunt.sh fixtures/native/bitcoin_compactsize fixtures/native/bitcoin_compactsize.req
+./scripts/check-compactsize-hunt.sh
 ```
