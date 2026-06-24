@@ -1,6 +1,6 @@
 {
   "goal_id": "G86",
-  "current_issue": 126,
+  "current_issue": 127,
   "milestone": "M7",
   "product_proof_step": "post-P20",
   "phase": "verify",
@@ -12,7 +12,7 @@
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G86 (#126) DONE. First native upstream defect without transcription: 1200wd/bitcoinlib CompactSize @ bec99a2 via fixtures/native/bitcoinlib_compactsize. native-hunt verdict=reject witness fdffff (decode 65535, reencode feffff0000) on canonical wire input; root cause int_to_varbyteint uses < 0xffff not <= at u16 boundary; varbyteint_to_int lacks minimality check. Gated check-bitcoinlib-compactsize-hunt.sh. CASE fixtures/backtest/bitcoinlib-compactsize/CASE.md; ADR-023; THIRD-PARTY.md. Vendored verbatim extract when pip install fails (py3.14/gmp). G85 vehicle proven; rust-bitcoin control accept. NEXT: human approval before opening maintainer issue; optional sweep petertodd/python-bitcoinlib VarInt or Bech32m targets after seed-corpus vehicle mode."
+    "note": "G86 (#127, vehicle #126) DONE. First native upstream defect without transcription: 1200wd/bitcoinlib CompactSize @ bec99a2 via fixtures/native/bitcoinlib_compactsize. native-hunt verdict=reject witness fdffff (decode 65535, reencode feffff0000) on canonical wire input; root cause int_to_varbyteint uses < 0xffff not <= at u16 boundary (also 0xffffffff); varbyteint_to_int lacks minimality check. Severity LOW: only two trigger values (65535, 4294967295). Gated check-bitcoinlib-compactsize-hunt.sh. CASE fixtures/backtest/bitcoinlib-compactsize/CASE.md; ADR-023; THIRD-PARTY.md. Vendored verbatim extract when pip install fails (py3.14/gmp). G85 vehicle proven; rust-bitcoin control accept. NEXT: install-side repro on a box where fastecdsa/gmp builds; human approval before opening upstream issue; higher-value move is seed-corpus/differential vehicle mode to reach Bech32m/Base58Check where a reject carries weight (vs more low-severity CompactSize libs)."
   },
   "history": [
     {
