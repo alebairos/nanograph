@@ -1,0 +1,15 @@
+[package]
+name = "bitcoin-compactsize"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "bitcoin-compactsize"
+path = "src/main.rs"
+
+[dependencies]
+bitcoin = "0.32"
+
+[profile.release]
+opt-level = 1
