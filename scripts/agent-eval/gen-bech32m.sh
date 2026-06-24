@@ -33,6 +33,12 @@ out.append(addr("tb", 1, PROG32, s.Encoding.BECH32M))
 out.append(addr("bc", 17, PROG32, s.Encoding.BECH32M))
 out.append(addr("bc", 31, PROG20, s.Encoding.BECH32M))
 
+# cross-spec confusion: valid checksum under the wrong spec for the witness
+# version. BIP350 requires version 0 to use Bech32 and 1..16 to use Bech32m. A
+# decoder that accepts either checksum regardless of version diverges here.
+out.append(addr("bc", 1, PROG32, s.Encoding.BECH32))
+out.append(addr("bc", 0, PROG20, s.Encoding.BECH32M))
+
 # BIP350 official valid vectors
 out.append("bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvaryvaxxpcs")
 out.append("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0")
