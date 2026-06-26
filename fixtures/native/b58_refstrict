@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+import sys
+
+ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+MAP = {c: i for i, c in enumerate(ALPHABET)}
+
+
+def decode_strict(s: str) -> str:
+    n = 0
+    for c in s:
+        if c not in MAP:
+            return "REJECT"
+        n = n * 58 + MAP[c]
+    body = n.to_bytes((n.bit_length() + 7) // 8, "big") if n else b""
+    pad = len(s) - len(s.lstrip("1"))
+    return (b"\x00" * pad + body).hex()
+
+
+mode, val = sys.argv[1], sys.argv[2]
+if mode == "b58dec":
+    print(decode_strict(val))
+else:
+    print("REJECT")

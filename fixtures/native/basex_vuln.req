@@ -1,0 +1,7 @@
+relation=differential
+domain=base58
+wire=ascii
+mode=b58dec
+reject=REJECT
+reference=fixtures/native/b58_refstrict
+probes_cmd=scripts/agent-eval/gen-basex-homoglyph.sh

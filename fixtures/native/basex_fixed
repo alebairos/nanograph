@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+DIR="$(cd "$(dirname "$0")/base-x-fixed" && pwd)"
+if [[ ! -d "$DIR/node_modules/base-x" ]]; then
+  echo "basex_fixed: missing deps; run npm install in fixtures/native/base-x-fixed" >&2
+  exit 2
+fi
+exec node "$DIR/../basex_codec.js" "$DIR" "$@"
