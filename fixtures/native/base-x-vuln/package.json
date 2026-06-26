@@ -1,0 +1,10 @@
+{
+  "name": "nanograph-basex-vuln",
+  "private": true,
+  "description": "Pinned vulnerable base-x for CVE-2025-27611 repro",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "base-x": "5.0.0"
+  }
+}
