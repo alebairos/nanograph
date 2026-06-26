@@ -244,6 +244,26 @@ Installable PyPI codecs run as targets against the canonical reference. All inst
 
 No defect in the maintained PyPI long tail. These libraries are correct on the probed surfaces. The classifier correctly labels `bech32` 1.2.0 as a capability gap rather than a false defect. Reaching a defect now requires GitHub-only ports and altcoin forks not packaged on PyPI, each needing per-target glue, or wider probe surfaces (mixed case, length>90, HRP validation).
 
+### G88 pinned historical repro (base-x CVE-2025-27611)
+
+Run: 2026-06-26 (#126). Converted the recommendation into a checkable repro loop using a known vulnerable historical version and its fixed comparator.
+
+| Target | Relation | Witness | Verdict |
+| --- | --- | --- | --- |
+| `base-x@5.0.0` (pinned vulnerable) | differential (`b58dec`) vs strict Base58 reference | `ABCĀDEF` (`hex=414243c480444546`) | `reject` with `reason=target_accepts_reference_rejects`, `target_out=50f12020b0`, `reference_out=REJECT` |
+| `base-x@5.0.1` (pinned fixed comparator) | same relation/probes | same corpus | `accept` (concur_accept=8) |
+
+Implementation artifacts:
+
+- `fixtures/native/base-x-vuln/package.json` pins `base-x` `5.0.0`
+- `fixtures/native/base-x-fixed/package.json` pins `base-x` `5.0.1`
+- shared Node target wrapper `fixtures/native/basex_codec.js`
+- strict reference decoder `fixtures/native/b58_refstrict`
+- probes `scripts/agent-eval/gen-basex-homoglyph.sh` (valid Base58 + Unicode homoglyph)
+- gate `scripts/check-basex-homoglyph-hunt.sh`
+
+The gate installs pinned versions locally if missing, runs both hunts, asserts defect-direction reject on vulnerable and accept on fixed, and stores logs under `.harness-data/agent-eval/g84-pinned-repro/`.
+
 ## Verification
 
 ```bash
