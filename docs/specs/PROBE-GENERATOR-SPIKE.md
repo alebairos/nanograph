@@ -288,6 +288,18 @@ Excluded from this queue (out of scope or unverified): `secp256k1-node` ECDH CVE
 
 **Novel-discovery queue (separate ranking).** Thin unaudited libraries for blind defect yield, not historical CVE pins. Top entries: `petertodd/python-bitcoinlib` VarInt (#320), `KarpelesLab/bech32m`, `pbech32`, `ebellocchia/bip_utils`, `embit`, `btclib`, `ofek/bit`, `pycoin`, `JackalLabs/bech32`, `bs58`. Well-audited flagships (`@scure/base`, maintained `btcd`/`btcutil` for discovery, `NBitcoin`, `libwally-core`) were left off after the PyPI long-tail sweep returned honest null.
 
+**Novel-discovery sweep status.** Run: 2026-06-27 (#126).
+
+| Target | Tier | Surfaces probed | Result |
+| --- | --- | --- | --- |
+| `pbech32` 0.2.0 (Rust) | thin, single-maintainer | raw bech32/bech32m decode vs sipa reference | **Reject (G91, novel).** Accepts a >90-char valid-checksum bech32m string; reference rejects on the BIP173 length cap. |
+| `embit` (Python) | maintained PyPI | witver>16, base58check leading-zero | null (correct on all) |
+| `python-bitcoinlib` (Python) | maintained PyPI | witver>16, base58 leading-zero | null (correct on all) |
+| `keis/base58` (Python) | maintained PyPI | base58check leading-zero, unicode homoglyph | null (rejects unicode, preserves leading zero) |
+| `pycoin` (Python) | maintained PyPI | base58 leading-zero, unicode homoglyph | null (rejects unicode, preserves leading zero) |
+
+Maintained PyPI tier is null on the three known surfaces, a second confirmation of the earlier long-tail null. `KarpelesLab/bech32m` and `JackalLabs/bech32` stay blocked (no Go toolchain); `btclib` blocked (native secp256k1 build fails on py3.14); `bip_utils` blocked (native dep).
+
 **Recommended next pin.** None remaining at low wiring cost. Unblock Go toolchain for #3/#7/#8, or add a taproot-strict reference for #4, or a checksum-strength relation for #12.
 
 ### G89 pinned historical repro (rust-bech32 #274)
@@ -311,6 +323,16 @@ Run: 2026-06-26 (#126). Base58Swift `2.1.x` drops leading zero bytes on decode; 
 | `base58swift-fixed` | round_trip seed corpus | same probes | `accept` (accepted=6) |
 
 Gate: `scripts/check-base58swift-hunt.sh`. Aggregate gate: `scripts/check-pinned-historical-repros.sh` (G88+G89+G90).
+
+### G91 novel discovery (pbech32 missing BIP173 length cap)
+
+Run: 2026-06-27 (#126). First novel divergence the differential vehicle found on unaudited code with no pre-existing issue, distinct from the historical pins (G88–G90). `pbech32` 0.2.0 is a single-maintainer general-purpose Rust bech32 codec whose `RawBech32` length constraint is `(8, None)`; the source comment notes "BIP173 max is 91" but no upper bound is enforced.
+
+| Target | Relation | Witness | Verdict |
+| --- | --- | --- | --- |
+| `pbech32_target` (`RawBech32::new`) | differential vs `bech32raw_ref` (sipa raw decode) | 109-char valid-checksum bech32m (`bc1qqqq…hajhhf`) | `reject`, `reason=target_accepts_reference_rejects`, `target_out=b32m:bc:00…`, `reference_out=REJECT` |
+
+The divergence is precisely a missing length cap, not blind acceptance: tampering one checksum character of the same overlong string makes `pbech32` reject, and target and reference agree byte-for-byte on short valid strings. Severity low. Plausibly an intentional relaxation for a general-purpose codec, but it weakens the checksum's bounded error-detection guarantee that the 90-char cap exists to protect, and the vehicle surfaced it blind. Gate: `scripts/check-pbech32-hunt.sh`. Logs under `.harness-data/agent-eval/g91-novel-pbech32/`.
 
 ## Verification
 

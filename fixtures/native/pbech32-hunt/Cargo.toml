@@ -1,0 +1,15 @@
+[package]
+name = "pbech32-hunt"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "pbech32-target"
+path = "src/main.rs"
+
+[dependencies]
+pbech32 = "=0.2.0"
+
+[profile.release]
+opt-level = 1
