@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+_VENDOR = os.path.join(_ROOT, "bech32-vendor")
+if _VENDOR not in sys.path:
+    sys.path.insert(0, _VENDOR)
+
+import segwit_addr
+
+
+def b32raw(addr):
+    hrp, data, spec = segwit_addr.bech32_decode(addr)
+    if hrp is None or data is None:
+        return "REJECT"
+    scheme = "b32" if spec == segwit_addr.Encoding.BECH32 else "b32m"
+    return f"{scheme}:{hrp}:" + "".join(f"{d:02x}" for d in data)
+
+
+mode, val = sys.argv[1], sys.argv[2]
+print(b32raw(val) if mode == "b32raw" else "REJECT")

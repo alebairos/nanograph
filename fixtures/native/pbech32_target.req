@@ -1,0 +1,7 @@
+relation=differential
+domain=bech32
+wire=ascii
+mode=b32raw
+reject=REJECT
+reference=fixtures/native/bech32raw_ref
+probes_cmd=scripts/agent-eval/gen-bech32raw.sh

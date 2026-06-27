@@ -1,9 +1,9 @@
 {
-  "goal_id": "G90",
+  "goal_id": "G91",
   "current_issue": 126,
   "milestone": "M7",
   "product_proof_step": "post-P20",
-  "phase": "verify",
+  "phase": "done",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
@@ -12,12 +12,13 @@
       ".harness-data/agent-eval/icp-sim/",
       ".harness-data/agent-eval/g84-pinned-repro/",
       ".harness-data/agent-eval/g89-pinned-repro/",
-      ".harness-data/agent-eval/g90-pinned-repro/"
+      ".harness-data/agent-eval/g90-pinned-repro/",
+      ".harness-data/agent-eval/g91-novel-pbech32/"
     ]
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G90 DONE (#126). Pinned historical queue wired through G88+G89+G90. G88 base-x CVE-2025-27611; G89 rust-bech32 #274 validate_segwit witver>16; G90 Base58Swift #23 leading-zero decode. Aggregate gate check-pinned-historical-repros.sh PASS. Remaining queue rows blocked (Go toolchain #3/#7/#8, taproot-strict ref #4, encode-side #6, Ruby/Elixir #9/#10, new relation #12) or skipped (#11 relation_gap). NEXT: novel-discovery sweep or unblock Go for btcutil/btcd pins."
+    "note": "G91 DONE (#126). Pivoted from historical pins to the novel-discovery queue. First novel reject with no pre-existing issue: pbech32 0.2.0 (thin single-maintainer Rust bech32) accepts a >90-char valid-checksum bech32m string the sipa BIP173 reference rejects on the length cap; checksum-tamper rejects so it is a missing length cap not blind accept; severity low, plausibly intentional. Gated check-pbech32-hunt.sh. Maintained PyPI tier (embit, python-bitcoinlib, keis/base58, pycoin) null again on the three known surfaces, second confirmation. Remaining novel queue blocked: KarpelesLab/bech32m + JackalLabs/bech32 (no Go toolchain), btclib (native secp256k1 build fails py3.14), bip_utils (native dep). NEXT: unblock Go toolchain for the thin Go bech32 ports, or report pbech32 upstream if the human judges severity worth it."
   },
   "history": [
     {

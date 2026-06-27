@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+BIN="$(cd "$(dirname "$0")/pbech32-hunt" && pwd)/target/release/pbech32-target"
+if [[ ! -x "$BIN" ]]; then
+  echo "pbech32_target: build first: cargo build --release --manifest-path fixtures/native/pbech32-hunt/Cargo.toml" >&2
+  exit 2
+fi
+exec "$BIN" "$@"
