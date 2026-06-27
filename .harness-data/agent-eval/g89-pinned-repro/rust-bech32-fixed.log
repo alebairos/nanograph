@@ -1,0 +1,1 @@
+verdict=accept target=rust_bech32_fixed reference=bech32m_ref relation=differential concur_accept=7

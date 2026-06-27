@@ -1,0 +1,19 @@
+[package]
+name = "rust-bech32-hunt"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "rust-bech32-vuln"
+path = "src/vuln.rs"
+
+[[bin]]
+name = "rust-bech32-fixed"
+path = "src/fixed.rs"
+
+[dependencies]
+bech32 = "=0.12.0"
+
+[profile.release]
+opt-level = 1

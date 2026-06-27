@@ -1,21 +1,23 @@
 {
-  "goal_id": "G89",
+  "goal_id": "G90",
   "current_issue": 126,
   "milestone": "M7",
   "product_proof_step": "post-P20",
-  "phase": "plan",
+  "phase": "verify",
   "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
     "eval_logs": [
       ".harness-data/agent-eval/icp-sim/",
-      ".harness-data/agent-eval/g84-pinned-repro/"
+      ".harness-data/agent-eval/g84-pinned-repro/",
+      ".harness-data/agent-eval/g89-pinned-repro/",
+      ".harness-data/agent-eval/g90-pinned-repro/"
     ]
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G88 DONE (#126). Pinned historical repro for base-x CVE-2025-27611 gated and merged. Candidate queue documented in PROBE-GENERATOR-SPIKE.md (13 rows, 2 done G86+G88). G89 queued: recommended next pin rust-bech32 pre-#274 (vehicle+probes exist). G84 partial: G86 novel low-severity defect (#127), maintained PyPI null, novel high-severity needs thin targets or next pin. NEXT: wire G89 pin or sweep novel-discovery queue (petertodd/python-bitcoinlib VarInt, KarpelesLab/bech32m, pbech32)."
+    "note": "G90 DONE (#126). Pinned historical queue wired through G88+G89+G90. G88 base-x CVE-2025-27611; G89 rust-bech32 #274 validate_segwit witver>16; G90 Base58Swift #23 leading-zero decode. Aggregate gate check-pinned-historical-repros.sh PASS. Remaining queue rows blocked (Go toolchain #3/#7/#8, taproot-strict ref #4, encode-side #6, Ruby/Elixir #9/#10, new relation #12) or skipped (#11 relation_gap). NEXT: novel-discovery sweep or unblock Go for btcutil/btcd pins."
   },
   "history": [
     {

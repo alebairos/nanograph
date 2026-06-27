@@ -1,0 +1,7 @@
+relation=differential
+domain=base58check
+wire=ascii
+mode=b58dec
+reject=REJECT
+reference=fixtures/native/base58swift_fixed
+probes_cmd=scripts/agent-eval/gen-base58check.sh
