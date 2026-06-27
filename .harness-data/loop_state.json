@@ -1,10 +1,10 @@
 {
-  "goal_id": "G88",
+  "goal_id": "G89",
   "current_issue": 126,
   "milestone": "M7",
   "product_proof_step": "post-P20",
-  "phase": "verify",
-  "iteration": 2,
+  "phase": "plan",
+  "iteration": 1,
   "artifacts": {
     "spec_path": "docs/specs/PROBE-GENERATOR-SPIKE.md",
     "queue_path": ".harness-data/product_proof_queue.json",
@@ -15,7 +15,7 @@
   },
   "next_action": {
     "type": "issue-driven",
-    "note": "G88 DONE on #126. Pinned historical repro implemented and gated for base-x CVE-2025-27611. differential relation (`b58dec`) with strict Base58 reference yields defect-direction reject on vulnerable `base-x@5.0.0` witness `ABCĀDEF` (target_out=50f12020b0, reference_out=REJECT), and accept on fixed `base-x@5.0.1` comparator (concur_accept=8). Artifacts: fixtures/native/base-x-vuln|fixed package pins, shared Node wrapper `basex_codec.js`, strict reference `b58_refstrict`, probes `gen-basex-homoglyph.sh`, gate `check-basex-homoglyph-hunt.sh`, logs `.harness-data/agent-eval/g84-pinned-repro/`. NEXT: choose whether to report this as maintainer-facing proof of vehicle capability (historical known CVE repro) or continue novel bug hunt in less-audited targets."
+    "note": "G88 DONE (#126). Pinned historical repro for base-x CVE-2025-27611 gated and merged. Candidate queue documented in PROBE-GENERATOR-SPIKE.md (13 rows, 2 done G86+G88). G89 queued: recommended next pin rust-bech32 pre-#274 (vehicle+probes exist). G84 partial: G86 novel low-severity defect (#127), maintained PyPI null, novel high-severity needs thin targets or next pin. NEXT: wire G89 pin or sweep novel-discovery queue (petertodd/python-bitcoinlib VarInt, KarpelesLab/bech32m, pbech32)."
   },
   "history": [
     {
