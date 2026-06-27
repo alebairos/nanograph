@@ -264,6 +264,32 @@ Implementation artifacts:
 
 The gate installs pinned versions locally if missing, runs both hunts, asserts defect-direction reject on vulnerable and accept on fixed, and stores logs under `.harness-data/agent-eval/g84-pinned-repro/`.
 
+### Pinned historical candidate queue (G88 follow-on)
+
+Run: 2026-06-26 (#126). After G88 proved the differential vehicle on a published CVE, the next pins are ranked by vehicle fit and credibility. Status is **mapped**, not wired, unless noted.
+
+| # | Target (pin) | Defect | Relation | Severity | Status | Source |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | `base-x` npm `<3.0.11` / `5.0.0` | Unicode homoglyph decode bypass | differential | HIGH (CVE-2025-27611) | **Done (G88)** | [NVD CVE-2025-27611](https://nvd.nist.gov/vuln/detail/CVE-2025-27611) |
+| 2 | `rust-bitcoin/rust-bech32` pre-#274 fix | accepts witness version 17..31 | differential | low | mapped | [issue #274](https://github.com/rust-bitcoin/rust-bech32/issues/274) |
+| 3 | `btcsuite/btcutil` pre-#152 fix | bech32 `Encode` accepts uppercase HRP | differential | medium | mapped | [issue #152](https://github.com/btcsuite/btcutil/issues/152) |
+| 4 | `bitcoinjs-lib` pre-#1750 fix | Taproot v1 program length unchecked | differential | medium | mapped | [issue #1750](https://github.com/bitcoinjs/bitcoinjs-lib/issues/1750) |
+| 5 | `keefertaylor/Base58Swift` #23 | base58check decode fails on leading `0x00` | round_trip seed | medium | mapped | [issue #23](https://github.com/keefertaylor/Base58Swift/issues/23) |
+| 6 | `bitcoinjs-lib` #1537 | bech32 encode throws on version >31 | differential | low | mapped | [issue #1537](https://github.com/bitcoinjs/bitcoinjs-lib/issues/1537) |
+| 7 | `cosmos-sdk` pre-#10163 fix | mixed-case bech32 accepted | differential | medium | mapped | [issue #10163](https://github.com/cosmos/cosmos-sdk/issues/10163) |
+| 8 | `btcsuite/btcd` #1798 | mixed-case `DecodeAddress` breakage | differential | low | mapped | [issue #1798](https://github.com/btcsuite/btcd/issues/1798) |
+| 9 | `dougal/base58` (Ruby) #8 | leading `0x00` bytes dropped on encode | round_trip | low | mapped | [issue #8](https://github.com/dougal/base58/issues/8) |
+| 10 | `dwyl/base58` (Elixir) pre-#5 fix | missing leading `1` for leading zero | round_trip | low | mapped | [issue #5](https://github.com/dwyl/base58/issues/5) |
+| 11 | `keis/base58` #30 | `b58encode_int` drops leading zeros | round_trip | informational | mapped (likely `relation_gap`) | [issue #30](https://github.com/keis/base58/issues/30) |
+| 12 | `sipa/bech32` pre-BIP350 / #51 | `q` insertion length-extension | new relation | spec weakness | mapped | [BIP-350](https://github.com/sipa/bips/blob/bip-bech32m/bip-0350.mediawiki) |
+| 13 | `1200wd/bitcoinlib` @ `bec99a2` | CompactSize non-minimal at boundaries | round_trip | low | **Done (G86, novel)** | #127, `fixtures/backtest/bitcoinlib-compactsize/CASE.md` |
+
+Excluded from this queue (out of scope or unverified): `secp256k1-node` ECDH CVE (not a codec), `libbase58` zero-byte overflow (sketchy secondary sources only).
+
+**Novel-discovery queue (separate ranking).** Thin unaudited libraries for blind defect yield, not historical CVE pins. Top entries: `petertodd/python-bitcoinlib` VarInt (#320), `KarpelesLab/bech32m`, `pbech32`, `ebellocchia/bip_utils`, `embit`, `btclib`, `ofek/bit`, `pycoin`, `JackalLabs/bech32`, `bs58`. Well-audited flagships (`@scure/base`, maintained `btcd`/`btcutil` for discovery, `NBitcoin`, `libwally-core`) were left off after the PyPI long-tail sweep returned honest null.
+
+**Recommended next pin.** `rust-bitcoin/rust-bech32` pre-#274. Vehicle and probes already exist (`gen-bech32m.sh`, `check-bech32m-differential.sh`). Severity is low, but wiring cost is minimal.
+
 ## Verification
 
 ```bash

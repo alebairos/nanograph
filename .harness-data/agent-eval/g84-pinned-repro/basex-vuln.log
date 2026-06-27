@@ -1,0 +1,1 @@
+verdict=reject target=basex_vuln reference=b58_refstrict relation=differential reason=target_accepts_reference_rejects witness input=ABCĀDEF hex=414243c480444546 target_out=50f12020b0 reference_out=REJECT

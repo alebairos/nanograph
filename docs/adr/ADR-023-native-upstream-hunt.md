@@ -46,6 +46,22 @@ Base58Check needs no vehicle change. It is a bijection bug (leading zero-byte lo
 
 Both demonstrations are hermetic self-tests (`check-bech32m-differential.sh`, `check-base58check-hunt.sh`) that separate an honest codec from a planted-buggy one. They prove the vehicle catches the class. A real third-party target wired as `target` with the reference as oracle is the follow-on hunt.
 
+## Amendment (G88, #126): pinned historical repro
+
+G86 proved novel discovery on live upstream (`1200wd/bitcoinlib`, severity low). G88 adds the complementary claim: the differential vehicle reproduces a **published** high-severity defect on demand.
+
+Pattern:
+
+1. Pin vulnerable package version in `fixtures/native/<name>-vuln/` (e.g. `base-x@5.0.0`).
+2. Pin fixed comparator in `fixtures/native/<name>-fixed/` (e.g. `base-x@5.0.1`).
+3. Shared CLI wrapper + strict reference decoder at the boundary.
+4. Probe generator for the witness class (`gen-basex-homoglyph.sh`).
+5. Gate asserts defect-direction reject on vulnerable and accept on fixed (`check-basex-homoglyph-hunt.sh`).
+
+Witness on CVE-2025-27611: `ABCĀDEF` (`target_out=50f12020b0`, `reference_out=REJECT`, `reason=target_accepts_reference_rejects`).
+
+Further pins are tracked in [`PROBE-GENERATOR-SPIKE.md`](../specs/PROBE-GENERATOR-SPIKE.md) pinned historical candidate queue. Do not conflate historical repro with novel discovery; both belong in the claims ledger separately.
+
 ## Kill trigger
 
 If native wrappers routinely require full vendoring of entire packages because install is broken everywhere, revisit a containerized target runner rather than growing vendor trees.
