@@ -1,0 +1,1 @@
+verdict=accept target=base58swift_fixed relation=round_trip accepted=6 separator=none

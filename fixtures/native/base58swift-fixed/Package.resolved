@@ -1,0 +1,22 @@
+{
+  "pins" : [
+    {
+      "identity" : "base58swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/keefertaylor/Base58Swift.git",
+      "state" : {
+        "revision" : "06f76ebb80c155a56b1f495a9ae2063b5e983862"
+      }
+    },
+    {
+      "identity" : "bigint",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/attaswift/BigInt.git",
+      "state" : {
+        "revision" : "e07e00fa1fd435143a2dcf8b7eec9a7710b2fdfe",
+        "version" : "5.7.0"
+      }
+    }
+  ],
+  "version" : 2
+}

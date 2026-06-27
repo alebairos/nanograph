@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+BIN="$(cd "$(dirname "$0")/base58swift-fixed" && pwd)/.build/release/base58swift-fixed"
+if [[ ! -x "$BIN" ]]; then
+  echo "base58swift_fixed: build first: swift build -c release --package-path fixtures/native/base58swift-fixed" >&2
+  exit 2
+fi
+exec "$BIN" "$@"

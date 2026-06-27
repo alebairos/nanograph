@@ -1,0 +1,8 @@
+relation=round_trip
+domain=base58check
+wire=ascii
+encode=b58enc
+decode=b58dec
+reject=REJECT
+canonical=enforced
+probes_cmd=scripts/agent-eval/gen-base58check.sh

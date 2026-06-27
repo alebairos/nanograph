@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+BIN="$(cd "$(dirname "$0")/rust-bech32-hunt" && pwd)/target/release/rust-bech32-vuln"
+if [[ ! -x "$BIN" ]]; then
+  echo "rust_bech32_vuln: build first: cargo build --release --manifest-path fixtures/native/rust-bech32-hunt/Cargo.toml" >&2
+  exit 2
+fi
+exec "$BIN" "$@"
